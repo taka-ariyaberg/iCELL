@@ -1,0 +1,18 @@
+[project]
+name = "icell"
+version = "0.1.0"
+description = "Cell seeding and dye planning toolkit with notebook and web app workflows"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyterlab",
+    "ipykernel",
+]

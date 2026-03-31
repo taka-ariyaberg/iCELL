@@ -1,0 +1,28 @@
+{
+  "name": "96-well plate",
+  "description": "96-well plate: 8 rows (A-H) × 12 columns",
+  "rows": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"
+  ],
+  "columns": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ]
+}

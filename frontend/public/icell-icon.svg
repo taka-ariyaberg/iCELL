@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#278EFF"/>
+      <stop offset="1" stop-color="#0D355C"/>
+    </linearGradient>
+    <linearGradient id="dish" x1="140" y1="116" x2="382" y2="396" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#43A6F1"/>
+      <stop offset="1" stop-color="#1B557F"/>
+    </linearGradient>
+  </defs>
+  <rect x="48" y="48" width="416" height="416" rx="96" fill="#0B1F36"/>
+  <rect x="48" y="48" width="416" height="416" rx="96" fill="url(#bg)" fill-opacity="0.18"/>
+  <rect x="48" y="48" width="416" height="416" rx="96" stroke="#81EBFF" stroke-opacity="0.5" stroke-width="6"/>
+  <rect x="116" y="78" width="280" height="56" rx="28" fill="#081423" fill-opacity="0.78"/>
+  <path d="M175 112.6V96.6H183V112.6C183 117.5 180.3 121.2 174.3 121.2C173 121.2 171.7 121 170.6 120.6V114.8C171.4 115.1 172.3 115.3 173.1 115.3C174.3 115.3 175 114.5 175 112.6Z" fill="#F3FBFF"/>
+  <path d="M194 121V88H201V121H194Z" fill="#F3FBFF"/>
+  <path d="M209 121V88H231.5V94H215.9V101.2H229.8V107H215.9V115H231.9V121H209Z" fill="#F3FBFF"/>
+  <path d="M251.2 121.7C240.9 121.7 233.5 114.5 233.5 104.5C233.5 94.5 240.9 87.3 251.2 87.3C257.3 87.3 262 89.4 265.4 93.2L260.8 97.8C258.5 95.4 255.5 94.1 251.5 94.1C245.2 94.1 240.7 98.4 240.7 104.5C240.7 110.6 245.2 114.9 251.5 114.9C255.5 114.9 258.5 113.6 260.8 111.1L265.4 115.7C262 119.5 257.3 121.7 251.2 121.7Z" fill="#F3FBFF"/>
+  <path d="M278.2 121V94H268.8V88H294.6V94H285.2V121H278.2Z" fill="#F3FBFF"/>
+  <circle cx="256" cy="275" r="154" fill="#143A61" stroke="#8DE9FF" stroke-width="8"/>
+  <circle cx="256" cy="275" r="128" fill="url(#dish)" stroke="#D1F8FF" stroke-opacity="0.52" stroke-width="5"/>
+  <ellipse cx="229" cy="178" rx="98" ry="28" fill="white" fill-opacity="0.15"/>
+  <circle cx="194" cy="230" r="40" fill="#FF66A6" stroke="#FFE0EE" stroke-opacity="0.7" stroke-width="4"/>
+  <circle cx="194" cy="230" r="15" fill="#FFDDEB"/>
+  <circle cx="311" cy="212" r="31" fill="#FFD14E" stroke="#FFF0B5" stroke-opacity="0.68" stroke-width="4"/>
+  <circle cx="311" cy="212" r="12" fill="#FFF4CC"/>
+  <circle cx="291" cy="316" r="47" fill="#44E2AD" stroke="#D5FFF0" stroke-opacity="0.65" stroke-width="4"/>
+  <circle cx="291" cy="316" r="18" fill="#DEFFF4"/>
+</svg>

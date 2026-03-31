@@ -1,0 +1,277 @@
+.plate-container {
+  background-color: var(--icell-bg);
+  padding: 20px;
+  border-radius: var(--icell-radius-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2a3847 transparent;
+}
+
+.plate-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.plate-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.plate-container::-webkit-scrollbar-thumb {
+  background: var(--icell-border);
+  border-radius: 10px;
+}
+
+.plate-container::-webkit-scrollbar-thumb:hover {
+  background: var(--icell-border-strong);
+}
+
+.plate-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--icell-panel);
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--icell-panel);
+  padding: 8px 12px;
+  border-radius: var(--icell-radius-control);
+  border: 1px solid var(--icell-border);
+}
+
+.zoom-btn {
+  padding: 4px 8px;
+  font-size: 16px;
+  background-color: var(--icell-surface);
+  border: 1px solid var(--icell-border-strong);
+  color: var(--icell-text-muted);
+  min-width: 32px;
+  border-radius: var(--icell-radius-tag);
+}
+
+.zoom-btn:hover {
+  background-color: var(--icell-border);
+  border-color: var(--icell-accent);
+  color: var(--icell-accent);
+}
+
+.zoom-level {
+  min-width: 50px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--icell-text-muted);
+  font-weight: 500;
+}
+
+.plate-info {
+  font-size: 12px;
+  color: var(--icell-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.plate-grid-wrapper {
+  overflow: auto;
+  max-width: 100%;
+  border: 1px solid var(--icell-panel);
+  border-radius: var(--icell-radius-panel);
+  padding: 8px;
+  background-color: var(--icell-bg-alt);
+  scrollbar-width: thin;
+  scrollbar-color: #2a3847 transparent;
+}
+
+.plate-grid-wrapper::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.plate-grid-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.plate-grid-wrapper::-webkit-scrollbar-thumb {
+  background: var(--icell-border);
+  border-radius: 10px;
+}
+
+.plate-grid-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--icell-border-strong);
+}
+
+.plate-grid-wrapper::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.plate-grid {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  background-color: rgba(0, 184, 255, 0.03);
+  border-radius: var(--icell-radius-control);
+  width: fit-content;
+  user-select: none;
+}
+
+.grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--icell-accent);
+  padding: 2px;
+}
+
+.corner-cell {
+  background-color: transparent;
+}
+
+.col-header {
+  min-width: 28px;
+  min-height: 24px;
+}
+
+.row-header {
+  min-width: 24px;
+  min-height: 28px;
+}
+
+.well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--icell-border-strong);
+  border-radius: var(--icell-radius-tag);
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: all 0.1s ease;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.well:hover {
+  border-color: var(--icell-accent);
+  box-shadow: 0 0 8px rgba(0, 184, 255, 0.2), inset 0 0 4px rgba(0, 184, 255, 0.1);
+}
+
+.well.selected {
+  border-color: var(--icell-accent);
+  border-width: 2px;
+  box-shadow: 0 0 12px rgba(0, 184, 255, 0.4), inset 0 0 6px rgba(0, 184, 255, 0.2);
+}
+
+/* Gloss sphere overlay — makes dye-assigned wells look like deep glossy beads */
+
+
+.well-label {
+  z-index: 3;
+  position: relative;
+}
+
+.well-dye-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  z-index: 3;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.well-hover-tooltip {
+  position: fixed;
+  z-index: 1000;
+  min-width: 150px;
+  max-width: 220px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(9, 14, 22, 0.96);
+  border: 1px solid rgba(0, 184, 255, 0.22);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+}
+
+.well-hover-tooltip-title {
+  color: #f5fbff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.well-hover-tooltip-line {
+  color: #9ab2c4;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.plate-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 16px;
+  background-color: var(--icell-panel);
+  border-radius: var(--icell-radius-control);
+  border: 1px solid var(--icell-border);
+}
+
+.legend-section h4 {
+  font-size: 12px;
+  color: var(--icell-accent);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-items {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--icell-text-muted);
+}
+
+.legend-text {
+  font-size: 12px;
+  color: var(--icell-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .plate-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .plate-grid-wrapper {
+    max-height: 400px;
+  }
+
+  .plate-legend {
+    grid-template-columns: 1fr;
+  }
+}
