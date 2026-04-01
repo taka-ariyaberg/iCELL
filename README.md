@@ -14,6 +14,15 @@ iCELL is open source and released under the MIT License.
 - Full license text: [LICENSE](LICENSE)
 - You can use, modify, and distribute the project under the terms of that license.
 
+## Repository Status
+
+This repository is intended to reflect the current iCELL application state:
+
+- The notebook/config workflow remains supported.
+- The React + FastAPI web app is the maintained interactive workflow.
+- Example inputs are tracked.
+- Local run inputs, generated outputs, and machine-specific environment files are intentionally gitignored.
+
 ## Supported Workflows
 
 ### Notebook and Config Workflow
@@ -96,9 +105,22 @@ The browser UI in [frontend](frontend) provides:
 
 ### Python Environment
 
+Use either Conda or a virtual environment.
+
+Conda:
+
 ```bash
 conda env create -f environment.yml
 conda activate iCELL
+pip install -r backend/requirements.txt
+```
+
+Virtual environment:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
 ```
 
 ### Notebook Workflow
@@ -118,7 +140,7 @@ In short:
 ```bash
 # terminal 1
 cd /path/to/iCELL_V2
-conda activate iCELL
+source .venv/bin/activate  # or: conda activate iCELL
 ./scripts/start_backend.sh
 
 # terminal 2
@@ -147,6 +169,8 @@ Generated outputs are written under [data/output](data/output):
 - `tables/` for CSV summaries and merged layouts
 - `instructions/` for human-readable preparation instructions
 - `logs/` for calculation logs and traceability
+
+These runtime outputs are not intended to be committed back into the repository.
 
 ## Development Notes
 

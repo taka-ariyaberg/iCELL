@@ -11,9 +11,22 @@ Use this when you want to run from files and keep the original iCELL process.
 
 ### 1. Create the Python environment
 
+Use either Conda or a virtual environment.
+
+Conda:
+
 ```bash
 conda env create -f environment.yml
 conda activate iCELL
+pip install -r backend/requirements.txt
+```
+
+Virtual environment:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
 ```
 
 ### 2. Prepare inputs
@@ -58,7 +71,7 @@ Replace `/path/to/iCELL_V2` below with the actual location of your local repo.
 
 ```bash
 cd /path/to/iCELL_V2
-conda activate iCELL
+source .venv/bin/activate  # or: conda activate iCELL
 ./scripts/start_backend.sh
 ```
 
@@ -94,6 +107,8 @@ iCELL writes run artifacts under [data/output](data/output):
 - `tables/` for CSV outputs
 - `instructions/` for step-by-step instructions
 - `logs/` for calculation traces
+
+These outputs are local runtime artifacts and are intentionally excluded from Git.
 
 ## Troubleshooting
 

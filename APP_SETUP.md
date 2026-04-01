@@ -8,7 +8,7 @@ The web app is an additional interface on top of the existing iCELL engine in [s
 
 - Node.js 18+
 - Python 3.11+
-- The `iCELL` conda environment from [environment.yml](environment.yml), or an equivalent Python environment
+- A working Python environment for the backend, either from [environment.yml](environment.yml) or a local virtual environment
 
 ## Backend
 
@@ -16,9 +16,21 @@ Install backend dependencies and start the API:
 
 Replace `/path/to/iCELL_V2` below with the actual location of your local repo.
 
+Conda:
+
 ```bash
 cd /path/to/iCELL_V2
 conda activate iCELL
+pip install -r backend/requirements.txt
+./scripts/start_backend.sh
+```
+
+Virtual environment:
+
+```bash
+cd /path/to/iCELL_V2
+python3.11 -m venv .venv
+source .venv/bin/activate
 pip install -r backend/requirements.txt
 ./scripts/start_backend.sh
 ```
@@ -64,7 +76,7 @@ Terminal 1:
 
 ```bash
 cd /path/to/iCELL_V2
-conda activate iCELL
+source .venv/bin/activate  # or: conda activate iCELL
 ./scripts/start_backend.sh
 ```
 

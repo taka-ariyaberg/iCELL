@@ -80,10 +80,16 @@ def create_temp_config(config_input: SeededConfigInput) -> Dict:
         # Map custom format to the file we just created
         plate_type = f"custom_{plate_type.replace(',', 'x')}"
     
-    # Use provided dead volumes or defaults
-    dead_volume_cells = config_input.dead_volume_cells_ul or 2000.0
-    dead_volume_dye = config_input.dead_volume_dye_ul or 500.0
-    final_volume = config_input.final_well_volume_ul or 40.0
+    # Preserve explicit zero values; only fall back when the field is omitted.
+    dead_volume_cells = (
+        2000.0 if config_input.dead_volume_cells_ul is None else config_input.dead_volume_cells_ul
+    )
+    dead_volume_dye = (
+        500.0 if config_input.dead_volume_dye_ul is None else config_input.dead_volume_dye_ul
+    )
+    final_volume = (
+        40.0 if config_input.final_well_volume_ul is None else config_input.final_well_volume_ul
+    )
     
     # Calculate dispense volumes based on mode
     if config_input.mode == "no_dye":

@@ -4,7 +4,7 @@
 
 - Node.js 18+
 - Python 3.11+
-- A working `iCELL` conda environment for the backend
+- A working backend Python environment, either Conda or a local virtual environment
 
 ## Local Development
 
@@ -14,7 +14,7 @@ Start the backend:
 
 ```bash
 cd /path/to/iCELL_V2
-conda activate iCELL
+source .venv/bin/activate  # or: conda activate iCELL
 ./scripts/start_backend.sh
 ```
 

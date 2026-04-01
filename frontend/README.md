@@ -4,6 +4,8 @@ This frontend provides the interactive browser workflow for iCELL.
 
 It is a React + TypeScript + Vite application that talks to the FastAPI backend and ultimately uses the same calculation engine as the notebook workflow.
 
+This documentation reflects the current frontend structure in the final iCELL 1.0 repository state.
+
 ## Documentation
 
 - [ORGANIZATION.md](./ORGANIZATION.md) for structure and responsibilities
@@ -17,7 +19,7 @@ Replace `/path/to/iCELL_V2` below with the actual location of your local repo.
 ```bash
 # backend
 cd /path/to/iCELL_V2
-conda activate iCELL
+source .venv/bin/activate  # or: conda activate iCELL
 ./scripts/start_backend.sh
 
 # frontend
@@ -63,6 +65,7 @@ frontend/
 - Components handle reusable visualization and presentation logic
 - The Zustand store owns interactive plate state and undo/redo history
 - The API client is the single integration point for backend requests
+- Calculation rules continue to live in the Python engine, with the frontend acting as the interactive client
 
 ## Environment Variables
 
@@ -80,7 +83,7 @@ If neither is provided, the frontend defaults to `http://localhost:8000/api`.
 - Keep transient interaction state in the store rather than prop drilling
 - Prefer focused components and minimal cross-cutting styling changes
 
-## 📝 Common Tasks
+## Common Tasks
 
 | Task | File | How |
 |------|------|-----|
@@ -91,44 +94,33 @@ If neither is provided, the frontend defaults to `http://localhost:8000/api`.
 | Add utility | `utils/` | Create function file, import where needed |
 | Add styling | `styles/` | Create class-based CSS, import in component |
 
----
+## Contributing
 
-## 🤝 Contributing
+1. Understand the architecture in [ORGANIZATION.md](./ORGANIZATION.md)
+2. Follow existing page, store, and API patterns
+3. Test the browser flow before committing
+4. Update docs when changing user-facing behavior
 
-1. **Understand the architecture** - Read ORGANIZATION.md first
-2. **Follow the patterns** - Look at similar components for style
-3. **Test in browser** - Verify features work before committing
-4. **Update docs** - If adding major features, update this file
+## FAQ
 
----
+**Q: How do I add a new export format?**
+A: Edit `utils/exportUtils.ts`, export the new helper there, and wire the action into the owning page or component.
 
-## ❓ FAQ
+**Q: Can I modify the Python code?**
+A: Yes, when the change belongs to calculation rules, validation, or shared workflow behavior. Keep those changes in the Python engine rather than duplicating them in React.
 
-**Q: How do I add a new export format?**  
-A: Edit `utils/exportUtils.ts` → Add `generateNewFormatName()` function → Export from there → Import in DesignerPage.tsx → Add button.
+**Q: How do I debug CORS errors?**
+A: Check the backend CORS configuration in `backend/app.py` and confirm the frontend is running on the origin Vite printed.
 
-**Q: Can I modify the Python code?**  
-A: Only if fixing a bug. New features go in React app (frontend/).
-
-**Q: How do I debug CORS errors?**  
-A: Check backend `app.py` has `allow_origins` including `localhost:3003`.
-
-**Q: Why Zustand instead of Redux?**  
+**Q: Why Zustand instead of Redux?**
 A: Simpler, smaller bundle, less boilerplate for this use case.
 
-**Q: Can I add new plate types?**  
+**Q: Can I add new plate types?**
 A: Configuration in backend, UI updates in PlateVisualization.tsx and store.
 
----
-
-## 📞 Support
+## Support
 
 - **Architecture questions** → See ORGANIZATION.md
 - **Setup problems** → See DEVELOPER.md Troubleshooting
 - **Feature ideas** → Check current pages/components first
 - **Backend integration** → Check apiClient.ts patterns
-
----
-
-**Last Updated**: March 2026  
-**Next Refactor Target**: Component size review in `DesignPage.tsx`
