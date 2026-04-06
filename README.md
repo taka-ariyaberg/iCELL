@@ -1,189 +1,114 @@
 # iCELL
 
-iCELL is a cell seeding and dye preparation planning toolkit with two supported interfaces:
+Cell seeding and dye preparation planning toolkit. MIT licensed — see [LICENSE](LICENSE).
 
-- The original notebook and config-driven workflow for reproducible runs from files
-- A React + FastAPI web app for interactive plate design and review
+Two interfaces, one engine ([src/icell](src/icell)):
 
-Both workflows use the same Python calculation engine in [src/icell](src/icell).
-
-## Open Source
-
-iCELL is open source and released under the MIT License.
-
-- Full license text: [LICENSE](LICENSE)
-- You can use, modify, and distribute the project under the terms of that license.
-
-## Repository Status
-
-This repository is intended to reflect the current iCELL application state:
-
-- The notebook/config workflow remains supported.
-- The React + FastAPI web app is the maintained interactive workflow.
-- Example inputs are tracked.
-- Local run inputs, generated outputs, and machine-specific environment files are intentionally gitignored.
-
-## Supported Workflows
-
-### Notebook and Config Workflow
-
-Use this workflow when you want a file-based process driven by `config.json` and CSV inputs.
-
-1. Edit [config/config.json](config/config.json)
-2. Prepare input files in [data/input](data/input)
-3. Run [notebooks/run.ipynb](notebooks/run.ipynb)
-
-This remains the canonical notebook-first workflow and is fully supported.
-
-### Web App Workflow
-
-Use this workflow when you want to design plates in the browser and submit them directly to the backend.
-
-- Frontend: [frontend](frontend)
-- Backend API: [backend](backend)
-
-The UI writes the same conceptual inputs and calls the same calculation engine used by the notebook workflow.
+| Interface | When to use |
+|---|---|
+| Notebook + config | File-driven, reproducible runs |
+| Web app (React + FastAPI) | Interactive plate design in the browser |
 
 ## Repository Layout
 
 ```text
 iCELL/
 ├── backend/                FastAPI wrapper around the Python engine
-├── config/                 Notebook/config workflow configuration files
+│   ├── app.py              App entry point
+│   ├── api/routes.py       API endpoints
+│   ├── api/schemas.py      Request/response models
+│   └── services/           Bridges API to the engine
+├── config/                 config.json, schema, plate type definitions
 ├── data/
-│   ├── examples/           Reference inputs for common runs
-│   ├── input/              Working input files for notebook/API runs
-│   └── output/             Generated tables, instructions, and logs
-├── frontend/               React + TypeScript application
-├── notebooks/              Notebook entry point for the original workflow
+│   ├── examples/           Reference inputs for common run scenarios
+│   ├── input/              Working inputs for notebook/API runs
+│   └── output/             Generated tables, instructions, and logs (gitignored)
+├── frontend/               React + TypeScript UI
+├── notebooks/run.ipynb     Notebook entry point
+├── scripts/start.sh        Single-script launcher for the web app
 ├── src/icell/              Core calculation engine
-├── APP_SETUP.md            Web app setup and run guide
-├── QUICKSTART.md           Fast start for both workflows
-├── README.md               Repository overview
-├── environment.yml         Conda environment for the Python workflow
+├── environment.yml         Conda environment spec
 └── pyproject.toml          Python package metadata
 ```
 
-## Core Components
+---
 
-### Python Engine
+## Web App — First-Time Setup
 
-The calculation engine in [src/icell](src/icell) is responsible for:
+> Do this once after cloning.
 
-- Loading and validating config and input files
-- Parsing plate layouts
-- Computing cell suspension requirements
-- Computing dye mastermix requirements
-- Writing instructions, logs, and summary tables
-
-Key entry points:
-
-- [src/icell/main.py](src/icell/main.py)
-- [src/icell/pipeline.py](src/icell/pipeline.py)
-
-### Backend API
-
-The API layer in [backend](backend) exposes the engine for the web app while preserving the original file-based workflow.
-
-Key files:
-
-- [backend/app.py](backend/app.py)
-- [backend/api/routes.py](backend/api/routes.py)
-- [backend/api/schemas.py](backend/api/schemas.py)
-- [backend/services/icell_service.py](backend/services/icell_service.py)
-
-### Frontend
-
-The browser UI in [frontend](frontend) provides:
-
-- Plate design and well selection
-- Group and dye program assignment
-- Submission to the backend API
-- Results review and export
-
-## Getting Started
-
-### Python Environment
-
-Use either Conda or a virtual environment.
-
-Conda:
+**1. Python environment** — pick one:
 
 ```bash
+# Option A: virtual environment
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+
+# Option B: Conda
 conda env create -f environment.yml
 conda activate iCELL
 pip install -r backend/requirements.txt
 ```
 
-Virtual environment:
+**2. Frontend dependencies:**
 
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r backend/requirements.txt
+cd frontend
+npm install
+cd ..
 ```
 
-### Notebook Workflow
+**3. Launch:**
+
+```bash
+./scripts/start.sh
+```
+
+Backend → `http://localhost:8000` · Frontend → `http://localhost:3000`
+
+---
+
+## Web App — Returning Users
+
+```bash
+./scripts/start.sh
+```
+
+Press `Ctrl+C` to stop both services. To stop from a separate terminal:
+
+```bash
+./scripts/start.sh stop
+```
+
+Logs: `/tmp/icell_backend.log`, `/tmp/icell_frontend.log`
+
+---
+
+## Notebook Workflow
 
 1. Edit [config/config.json](config/config.json)
-2. Put input files in [data/input](data/input)
-3. Open and run [notebooks/run.ipynb](notebooks/run.ipynb)
+2. Place input CSVs in [data/input](data/input)
+3. Run [notebooks/run.ipynb](notebooks/run.ipynb)
 
-### Web App Workflow
+**Inputs:** `config/config.json`, `config/schema.json`, `data/input/cell_layout.csv`, `data/input/dye_layout.csv`, `data/input/meta_dye.csv`
 
-See [APP_SETUP.md](APP_SETUP.md).
+**Outputs** (written to [data/output](data/output), not committed):
+- `tables/` — CSV summaries and merged layouts
+- `instructions/` — human-readable preparation steps
+- `logs/` — calculation logs for traceability
 
-Replace `/path/to/iCELL_V2` below with the actual location of your local repo.
-
-In short:
-
-```bash
-# terminal 1
-cd /path/to/iCELL_V2
-source .venv/bin/activate  # or: conda activate iCELL
-./scripts/start_backend.sh
-
-# terminal 2
-cd /path/to/iCELL_V2/frontend
-npm install
-../scripts/start_frontend.sh
-```
-
-To stop either server, go to its terminal and press `Ctrl+C`.
-
-## Inputs and Outputs
-
-### Inputs
-
-- [config/config.json](config/config.json)
-- [config/config.template.json](config/config.template.json)
-- [config/schema.json](config/schema.json)
-- [data/input/cell_layout.csv](data/input/cell_layout.csv)
-- [data/input/dye_layout.csv](data/input/dye_layout.csv)
-- [data/input/meta_dye.csv](data/input/meta_dye.csv)
-
-### Outputs
-
-Generated outputs are written under [data/output](data/output):
-
-- `tables/` for CSV summaries and merged layouts
-- `instructions/` for human-readable preparation instructions
-- `logs/` for calculation logs and traceability
-
-These runtime outputs are not intended to be committed back into the repository.
+---
 
 ## Development Notes
 
-- The notebook/config workflow is still fully supported and should remain stable.
-- The web app is an additional interface, not a replacement for the original engine.
-- Changes to calculation logic should be made in [src/icell](src/icell) first, then verified in both workflows.
-- Changes to interaction, layout design, and results presentation generally belong in [frontend](frontend).
+- Calculation logic lives in [src/icell](src/icell) — changes there apply to both workflows.
+- API layer is in [backend](backend); UI logic is in [frontend](frontend).
+- Run inputs, generated outputs, and environment files are gitignored.
 
 ## Additional Documentation
 
 - [QUICKSTART.md](QUICKSTART.md)
-- [APP_SETUP.md](APP_SETUP.md)
-- [LICENSE](LICENSE)
 - [frontend/README.md](frontend/README.md)
 - [frontend/DEVELOPER.md](frontend/DEVELOPER.md)
 - [frontend/ORGANIZATION.md](frontend/ORGANIZATION.md)

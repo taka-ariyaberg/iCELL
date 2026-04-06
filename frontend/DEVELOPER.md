@@ -152,4 +152,6 @@ git push origin feature/my-feature
 
 ## Questions?
 
+Check UI_DESIGN_RULES.md for the current frontend visual and interaction rules.
+
 Check ORGANIZATION.md for architecture overview and component responsibilities.
