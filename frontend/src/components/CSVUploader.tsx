@@ -61,7 +61,8 @@ const TEMPLATE_GENERATORS = {
     return JSON.stringify({
       project: {
         name: "My Project",
-        run_name: "Run 1"
+        plate_id: "Plate 1",
+        run_name: "Plate 1"
       },
       mode: "no_dye",
       plate_type: "384_well",

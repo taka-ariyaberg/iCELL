@@ -94,7 +94,8 @@ function toFrontendConfig(config: Record<string, any>, cellMatrix: ParsedMatrix)
   const finalWellVolume = Number(config.seeding?.final_well_volume_ul ?? 40.0);
   return {
     project_name: String(config.project?.name ?? 'iCELL'),
-    run_name: String(config.project?.run_name ?? 'Uploaded Run'),
+    plate_id: String(config.project?.plate_id ?? config.project?.run_name ?? 'Uploaded Plate'),
+    seeding_date: typeof config.project?.seeding_date === 'string' ? config.project.seeding_date : undefined,
     plate_type: inferPlateType(config, cellMatrix),
     mode: config.mode === 'dye' ? 'dye' : 'no_dye',
     stock_cell_concentration: Number(config.seeding?.stock_cell_concentration_cells_per_ml ?? 5000000),

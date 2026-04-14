@@ -167,3 +167,11 @@
 .meta-dye-btn:hover {
   border-color: var(--icell-warning);
 }
+
+.imeta-btn {
+  border-color: rgba(87, 204, 153, 0.45);
+}
+
+.imeta-btn:hover {
+  border-color: #57cc99;
+}

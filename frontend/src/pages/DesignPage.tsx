@@ -14,7 +14,8 @@ export const SAVED_PROGRAMS_KEY = 'iCELL_savedDyePrograms_v2';
 
 export interface DesignOutput {
   project_name: string;
-  run_name: string;
+  plate_id: string;
+  seeding_date?: string;
   /** Backend-formatted plate type, e.g. '96_well' or '6,9' */
   plate_type: string;
   num_plates: number;
@@ -90,6 +91,14 @@ function parseInitialPlateType(raw: string | undefined) {
   return { typeStr: pt, custom: false, rows: 16, cols: 24 };
 }
 
+function getTodayDateInputValue(): string {
+  const now = new Date();
+  const year = String(now.getFullYear());
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 export const DesignPage: React.FC<DesignPageProps> = ({
   onProcess,
@@ -102,7 +111,9 @@ export const DesignPage: React.FC<DesignPageProps> = ({
 
   // Config-bar state
   const [projectName, setProjectName] = useState(() => initialDesign?.project_name || 'My Project');
-  const [runName, setRunName] = useState(() => initialDesign?.run_name || 'Run 1');
+  const [plateId, setPlateId] = useState(() => initialDesign?.plate_id || 'Plate 1');
+  const [seedingDate, setSeedingDate] = useState(() => initialDesign?.seeding_date || getTodayDateInputValue());
+  const [seedingDateTouched, setSeedingDateTouched] = useState(() => Boolean(initialDesign?.seeding_date));
   const [plateType, setPlateTypeState] = useState(() => init.typeStr);
   const [numPlates, setNumPlates] = useState(() => initialDesign?.num_plates || 1);
   const [mode, setMode] = useState<'no_dye' | 'dye'>(() => initialDesign?.mode || 'no_dye');
@@ -177,6 +188,11 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   useEffect(() => {
     storeSetPlateType(normalizedPlateType);
   }, [normalizedPlateType]); // eslint-disable-line
+
+  useEffect(() => {
+    if (!isActive || seedingDateTouched) return;
+    setSeedingDate(getTodayDateInputValue());
+  }, [isActive, seedingDateTouched]);
 
   // Derived
   const groupColors = useMemo(() => generateDistinctColors(Object.keys(groups)), [groups]);
@@ -301,12 +317,13 @@ export const DesignPage: React.FC<DesignPageProps> = ({
 
     const config: ConfigInput = {
       project_name: projectName,
-      run_name: runName,
+      plate_id: plateId,
       plate_type: formattedPlateType,
       mode,
       stock_cell_concentration: stockCellConc,
       overage_fraction: overagePct / 100,
       num_plates: numPlates,
+      seeding_date: seedingDate || undefined,
       final_well_volume_ul: finalWellVolume,
       dead_volume_cells_ul: deadVolumeCells,
       dead_volume_dye_ul: deadVolumeDye,
@@ -401,9 +418,22 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                 onFocus={e => e.target.select()} disabled={isLoading} style={{ ...S.input, width: '150px' }} />
             </div>
             <div>
-              <div style={S.label}>Run Name</div>
-              <input type="text" value={runName} onChange={e => setRunName(e.target.value)}
+              <div style={S.label}>Plate ID</div>
+              <input type="text" value={plateId} onChange={e => setPlateId(e.target.value)}
                 onFocus={e => e.target.select()} disabled={isLoading} style={{ ...S.input, width: '110px' }} />
+            </div>
+            <div>
+              <div style={S.label}>Seeding Date</div>
+              <input
+                type="date"
+                value={seedingDate}
+                onChange={e => {
+                  setSeedingDate(e.target.value);
+                  setSeedingDateTouched(true);
+                }}
+                disabled={isLoading}
+                style={{ ...S.input, width: '145px' }}
+              />
             </div>
           </div>
 

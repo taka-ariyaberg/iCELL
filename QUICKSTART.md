@@ -39,6 +39,8 @@ Put your working files in [data/input](data/input):
 
 Reference examples are available in [data/examples](data/examples).
 
+`meta_dye.csv` is an input recipe file. The exported metadata report is `iMETA.csv`.
+
 ### 3. Edit config
 
 Update [config/config.json](config/config.json) for your run.
@@ -47,6 +49,11 @@ Important fields:
 
 ```json
 {
+  "project": {
+    "name": "iCELL",
+    "plate_id": "example_plate",
+    "seeding_date": "2026-04-14"
+  },
   "mode": "no_dye",
   "seeding": {
     "stock_cell_concentration_cells_per_ml": 5000000,
@@ -54,6 +61,12 @@ Important fields:
   }
 }
 ```
+
+Notes:
+
+- `project.plate_id` is the primary identifier used across exports and the web app
+- `project.run_name` is still accepted as a legacy alias, but new configs should use `plate_id`
+- `project.seeding_date` is optional in file-based runs and auto-filled in the web UI unless the user changes it
 
 ### 4. Run the notebook
 
@@ -87,6 +100,12 @@ Open the Vite URL shown in the terminal. Depending on your local config, this ma
 
 To stop either server, return to its terminal and press `Ctrl+C`.
 
+The results page gives you:
+
+- an interactive protocol navigator with cell and dye batch regions on the plate
+- formatted seeding and dye summary CSV downloads
+- a direct `iMETA.csv` download beside the protocol instructions
+
 ## Modes
 
 ### `no_dye`
@@ -104,9 +123,13 @@ To stop either server, return to its terminal and press `Ctrl+C`.
 
 iCELL writes run artifacts under [data/output](data/output):
 
-- `tables/` for CSV outputs
+- `tables/` for CSV outputs, including `seeding_summary.csv`, `dye_program_summary.csv`, and `iMETA.csv`
 - `instructions/` for step-by-step instructions
 - `logs/` for calculation traces
+
+Notebook and web-app runs share the same export naming convention:
+
+- `ProjectName__PlateID__YYYY-MM-DD__artifact`
 
 These outputs are local runtime artifacts and are intentionally excluded from Git.
 
@@ -119,5 +142,5 @@ These outputs are local runtime artifacts and are intentionally excluded from Gi
 ## More Detail
 
 - [README.md](README.md)
-- [APP_SETUP.md](APP_SETUP.md)
+- [frontend/README.md](frontend/README.md)
 - [config/schema.json](config/schema.json)

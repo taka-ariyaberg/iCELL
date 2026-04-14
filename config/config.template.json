@@ -1,7 +1,8 @@
 {
   "project": {
     "name": "iCELL",
-    "run_name": "example_run"
+    "plate_id": "example_plate",
+    "run_name": "example_plate"
   },
   "mode": "no_dye",
   "plate_type": "384_well",

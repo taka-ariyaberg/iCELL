@@ -6,8 +6,8 @@ Two interfaces, one engine ([src/icell](src/icell)):
 
 | Interface | When to use |
 |---|---|
-| Notebook + config | File-driven, reproducible runs |
-| Web app (React + FastAPI) | Interactive plate design in the browser |
+| Notebook + config | File-driven, reproducible runs with the shared export pipeline |
+| Web app (React + FastAPI) | Interactive plate design in the browser with the same calculations and exports |
 
 ## Repository Layout
 
@@ -93,10 +93,21 @@ Logs: `/tmp/icell_backend.log`, `/tmp/icell_frontend.log`
 
 **Inputs:** `config/config.json`, `config/schema.json`, `data/input/cell_layout.csv`, `data/input/dye_layout.csv`, `data/input/meta_dye.csv`
 
+`meta_dye.csv` remains the dye recipe input file. It is separate from the exported metadata report.
+
 **Outputs** (written to [data/output](data/output), not committed):
-- `tables/` — CSV summaries and merged layouts
-- `instructions/` — human-readable preparation steps
+- `tables/` — formatted CSV summaries, merged layouts, and `iMETA.csv`
+- `instructions/` — human-readable preparation steps and downloadable protocol text
 - `logs/` — calculation logs for traceability
+
+Exported artifacts use a shared base name:
+
+- `ProjectName__PlateID__YYYY-MM-DD__seeding_summary.csv`
+- `ProjectName__PlateID__YYYY-MM-DD__dye_program_summary.csv`
+- `ProjectName__PlateID__YYYY-MM-DD__iMETA.csv`
+- `ProjectName__PlateID__YYYY-MM-DD__instructions.txt`
+
+`iMETA.csv` is the per-well metadata export. It includes Plate ID, seeding date, cell suspension concentration, dye program assignment, and per-component mastermix additions in a single wide table.
 
 ---
 
@@ -104,6 +115,8 @@ Logs: `/tmp/icell_backend.log`, `/tmp/icell_frontend.log`
 
 - Calculation logic lives in [src/icell](src/icell) — changes there apply to both workflows.
 - API layer is in [backend](backend); UI logic is in [frontend](frontend).
+- The design workflow now uses `Plate ID` as the primary project identifier. Legacy `run_name` is still accepted for backward compatibility.
+- The results page includes an interactive protocol navigator plus direct downloads for instructions and `iMETA.csv`.
 - Run inputs, generated outputs, and environment files are gitignored.
 
 ## Additional Documentation

@@ -2,6 +2,13 @@
 
 This directory contains plate format definitions. Each JSON file defines the layout of a different plate type.
 
+These definitions are shared by:
+
+- the notebook pipeline
+- the design-page plate editor
+- the results-page summary viewers
+- the protocol navigator plate viewer
+
 ## Available Plate Types
 
 - **384_well.json** - 384-well plate (16 rows × 24 columns)

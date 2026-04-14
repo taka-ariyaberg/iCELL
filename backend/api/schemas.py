@@ -7,12 +7,14 @@ from typing import Optional, Dict, List
 class SeededConfigInput(BaseModel):
     """Configuration input from frontend."""
     project_name: str = Field(..., description="Project name")
-    run_name: str = Field(..., description="Run identifier")
+    plate_id: str = Field(..., description="Plate identifier")
+    run_name: Optional[str] = Field(default=None, description="Deprecated alias for plate_id")
     plate_type: str = Field(..., description="96_well, 384_well, 1536_well, or custom like 6,9")
     mode: str = Field(..., description="no_dye or dye")
     stock_cell_concentration: int = Field(..., description="Stock concentration in cells/mL")
     overage_fraction: float = Field(default=0.3, description="Overage as decimal (0.3 = 30%)")
     num_plates: int = Field(default=1, description="Number of plates")
+    seeding_date: Optional[str] = Field(default=None, description="Optional seeding date in YYYY-MM-DD format")
     final_well_volume_ul: Optional[float] = Field(default=40.0, description="Total volume per well in µL")
     dead_volume_cells_ul: Optional[float] = Field(default=2000.0, description="Dead volume for cell suspension in µL")
     dead_volume_dye_ul: Optional[float] = Field(default=500.0, description="Dead volume for dye in µL")
@@ -52,6 +54,9 @@ class CalculationResult(BaseModel):
     instructions: str
     seeding_summary: List[Dict] = []
     dye_summary: List[Dict] = []
+    formatted_seeding_summary: List[Dict] = []
+    formatted_dye_summary: List[Dict] = []
+    imeta_rows: List[Dict] = []
     seeded_layout: Optional[List[Dict]] = None
     error: Optional[str] = None
 

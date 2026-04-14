@@ -33,7 +33,7 @@ def build_run_log_text(
     lines.append(_section("RUN LOG").rstrip())
     lines.append(f"Timestamp: {timestamp}")
     lines.append(f"Project name: {config['project']['name']}")
-    lines.append(f"Run name: {config['project']['run_name']}")
+    lines.append(f"Plate ID: {config['project'].get('plate_id', config['project']['run_name'])}")
     lines.append("")
 
     lines.append(_section("INPUT FILES").rstrip())

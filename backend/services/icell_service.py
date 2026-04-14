@@ -104,7 +104,9 @@ def create_temp_config(config_input: SeededConfigInput) -> Dict:
     return {
         "project": {
             "name": config_input.project_name,
-            "run_name": config_input.run_name
+            "plate_id": config_input.plate_id,
+            "run_name": config_input.plate_id,
+            "seeding_date": config_input.seeding_date or "",
         },
         "mode": config_input.mode,
         "plate_type": plate_type,
@@ -284,6 +286,9 @@ def run_icell_calculation(config_input: SeededConfigInput, plate_layout: PlateLa
             "instructions": results.get("instructions_text", ""),
             "seeding_summary": results.get("seeding_summary_df", pd.DataFrame()).to_dict(orient="records"),
             "dye_summary": results.get("dye_program_summary_df", pd.DataFrame()).to_dict(orient="records"),
+            "formatted_seeding_summary": results.get("formatted_seeding_summary_df", pd.DataFrame()).to_dict(orient="records"),
+            "formatted_dye_summary": results.get("formatted_dye_summary_df", pd.DataFrame()).to_dict(orient="records"),
+            "imeta_rows": results.get("imeta_df", pd.DataFrame()).to_dict(orient="records"),
             "seeded_layout": results.get("seeded_layout_df", pd.DataFrame()).to_dict(orient="records")
         }
     

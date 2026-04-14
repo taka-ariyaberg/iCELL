@@ -1,11 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PlateVisualization, generateDistinctColors } from './PlateVisualization';
+import { ProtocolSection } from './ProtocolSection';
+import { ViewModeSwitch } from './ViewModeSwitch';
+import { downloadFile } from '../utils/exportUtils';
+import { serializeRecordsToCsv } from '../utils/csvExport';
 import '../styles/ResultsDisplay.css';
 
 interface ResultsDisplayProps {
   instructions: string;
   seedingSummary: Record<string, unknown>[];
   dyeSummary?: Record<string, unknown>[];
+  formattedSeedingSummary?: Record<string, unknown>[];
+  formattedDyeSummary?: Record<string, unknown>[];
+  exportBaseName?: string;
+  onDownloadIMeta?: (() => void) | null;
+  hasIMetaDownload?: boolean;
   plateType?: string;
   numPlates?: number;
   mode?: string;
@@ -53,6 +62,11 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   instructions,
   seedingSummary,
   dyeSummary,
+  formattedSeedingSummary = [],
+  formattedDyeSummary = [],
+  exportBaseName = 'iCELL__plate__date',
+  onDownloadIMeta = null,
+  hasIMetaDownload = false,
   plateType = '96',
   numPlates = 1,
   mode = 'no_dye',
@@ -61,11 +75,8 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   dyePrograms = {},
 }) => {
   const [selectedWells, setSelectedWells] = useState<Set<string>>(new Set());
-  const [currentPlate] = useState(1);
+  const currentPlate = 1;
   const [summaryMode, setSummaryMode] = useState<'cells' | 'dyes'>('cells');
-  const displayInstructions = numPlates > 1
-    ? instructions
-    : instructions.replace(/\bP\d+-([A-Z]+\d+)\b/g, '$1');
   const allPlatesSuffix = numPlates > 1 ? ' (all plates)' : '';
   const groupColorMap = useMemo(() => generateDistinctColors(Object.keys(groups)), [groups]);
   const dyeProgramColorMap = useMemo(() => {
@@ -144,6 +155,11 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     })
   );
 
+  const toggleSummaryMode = () => {
+    setSummaryMode((prev) => prev === 'cells' ? 'dyes' : 'cells');
+    setSelectedWells(new Set());
+  };
+
   // Keyboard shortcuts: Cmd/Ctrl+A = select all assigned wells, Cmd/Ctrl+D = deselect all
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -164,15 +180,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         e.preventDefault();
         setSelectedWells(new Set());
       }
-      if (e.key === 'm' && mode === 'dye') {
+      if (e.key.toLowerCase() === 'm' && mode === 'dye') {
         e.preventDefault();
-        setSummaryMode(prev => prev === 'cells' ? 'dyes' : 'cells');
-        setSelectedWells(new Set());
+        toggleSummaryMode();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [wells, dyePrograms, summaryMode, mode]);
+  }, [wells, dyePrograms, mode]);
 
   // ── Viewer mode interaction handlers ───────────────────────────────────────
   const handleViewerToggle = (well: string) => {
@@ -286,85 +301,43 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     return Array.from(seen.values());
   };
 
-  const downloadInstructions = () => {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(instructions));
-    element.setAttribute('download', 'instructions.txt');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
-
   const downloadTable = (data: Record<string, unknown>[], filename: string) => {
     if (data.length === 0) return;
-    
-    const headers = Object.keys(data[0]);
-    const csv = [
-      headers.join(','),
-      ...data.map(row =>
-        headers.map(h => {
-          const val = row[h];
-          return typeof val === 'string' && val.includes(',') ? `"${val}"` : val;
-        }).join(',')
-      )
-    ].join('\n');
-
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv));
-    element.setAttribute('download', filename);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    downloadFile(serializeRecordsToCsv(data), filename, 'text/csv');
   };
 
   return (
     <div className="results-display">
-      <h2>📋 Results Summary</h2>
-
-      {/* Instructions */}
-      <section className="results-section">
-        <h3>📑 Protocol Instructions</h3>
-        <div className="instructions-box">
-          <pre className="instructions-text">{displayInstructions}</pre>
-        </div>
-        <button onClick={downloadInstructions} className="download-btn secondary">
-          📥 Download Instructions
-        </button>
-      </section>
+      <ProtocolSection
+        instructions={instructions}
+        exportBaseName={exportBaseName}
+        onDownloadIMeta={onDownloadIMeta}
+        hasIMetaDownload={hasIMetaDownload}
+        seedingSummary={seedingSummary}
+        dyeSummary={dyeSummary}
+        plateType={plateType}
+        numPlates={numPlates}
+        mode={mode}
+        wells={wells}
+      />
 
       {/* Summary toggle + unified section */}
       <section className="results-section">
-        {/* Mode toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <h3 style={{ margin: 0 }}>
+        <div className="summary-toolbar">
+          <h3 className="summary-toolbar-title">
             {summaryMode === 'cells' ? '🧪 Seeding Summary' : '🎨 Dye Program Summary'}
           </h3>
-          {mode === 'dye' && dyeSummary && dyeSummary.length > 0 && (
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: '4px', background: '#1a1f2e', border: '1px solid #2a3847', borderRadius: '6px', padding: '3px' }}>
-                <button
-                  onClick={() => { setSummaryMode('cells'); setSelectedWells(new Set()); }}
-                  style={{
-                    padding: '5px 16px', borderRadius: '4px', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600,
-                    background: summaryMode === 'cells' ? '#00b8ff' : 'transparent',
-                    color: summaryMode === 'cells' ? '#0f1419' : '#7a8c99',
-                  }}
-                >Cells</button>
-                <button
-                  onClick={() => { setSummaryMode('dyes'); setSelectedWells(new Set()); }}
-                  style={{
-                    padding: '5px 16px', borderRadius: '4px', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600,
-                    background: summaryMode === 'dyes' ? '#00b8ff' : 'transparent',
-                    color: summaryMode === 'dyes' ? '#0f1419' : '#7a8c99',
-                  }}
-                >Dyes</button>
-              </div>
-              <span style={{ fontSize: '11px', color: '#4a6070', marginLeft: '4px' }}>⌘/Ctrl+M</span>
-            </div>
-          )}
         </div>
+
+        {mode === 'dye' && dyeSummary && dyeSummary.length > 0 && (
+          <ViewModeSwitch
+            mode={summaryMode}
+            onToggle={toggleSummaryMode}
+            className="summary-mode-switch"
+            shortcutHint="⌘/Ctrl+M"
+          />
+        )}
+
         {/* ── Cells view ── */}
         {summaryMode === 'cells' && (
           <>
@@ -429,9 +402,9 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                           {detailsByGroup.map((detail) => (
                             <div key={detail.detailKey} className="detail-card" style={{ borderColor: groupColorMap[detail.groupName] }}>
                               <div className="detail-card-header" style={{ borderBottomColor: `${groupColorMap[detail.groupName]}44` }}>
-                                <div>
-                                  <h4 style={{ color: groupColorMap[detail.groupName], marginBottom: '4px' }}>{detail.groupName}</h4>
-                                  <div style={{ color: '#8ea2b4', fontSize: '11px' }}>{detail.dispensePerWell.toFixed(1)} µL cell suspension / well</div>
+                                <div className="detail-card-title-block">
+                                  <h4 className="detail-card-title" style={{ color: groupColorMap[detail.groupName] }}>{detail.groupName}</h4>
+                                  <div className="detail-card-subtitle">{detail.dispensePerWell.toFixed(1)} µL cell suspension / well</div>
                                 </div>
                                 <span className="detail-card-badge" style={{ background: `${groupColorMap[detail.groupName]}22`, color: groupColorMap[detail.groupName], borderColor: `${groupColorMap[detail.groupName]}66` }}>
                                   {numPlates > 1
@@ -480,7 +453,13 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                     )}
                   </div>
                 </div>
-                <button onClick={() => downloadTable(seedingSummary, 'seeding_summary.csv')} className="download-btn secondary">
+                <button
+                  onClick={() => downloadTable(
+                    formattedSeedingSummary.length > 0 ? formattedSeedingSummary : seedingSummary,
+                    `${exportBaseName}__seeding_summary.csv`
+                  )}
+                  className="download-btn secondary"
+                >
                   📥 Download as CSV
                 </button>
               </>
@@ -610,9 +589,9 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                         {dyeDetails.map(({ prog, row, count, dispensePerWell, totalNeededVolume, totalPreparedVolume, selectedNeededVolume, remainingPreparedVolume }) => (
                           <div key={prog} className="detail-card" style={{ borderColor: dyeProgramColorMap[prog] }}>
                             <div className="detail-card-header" style={{ borderBottomColor: `${dyeProgramColorMap[prog]}44` }}>
-                              <div>
-                                <h4 style={{ color: dyeProgramColorMap[prog], marginBottom: '4px' }}>{prog}</h4>
-                                <div style={{ color: '#8ea2b4', fontSize: '11px' }}>{dispensePerWell.toFixed(1)} µL dye mastermix / well</div>
+                              <div className="detail-card-title-block">
+                                <h4 className="detail-card-title" style={{ color: dyeProgramColorMap[prog] }}>{prog}</h4>
+                                <div className="detail-card-subtitle">{dispensePerWell.toFixed(1)} µL dye mastermix / well</div>
                               </div>
                               <span className="detail-card-badge" style={{ background: `${dyeProgramColorMap[prog]}22`, color: dyeProgramColorMap[prog], borderColor: `${dyeProgramColorMap[prog]}66` }}>{count} selected / {Number(row.n_wells)} total wells</span>
                             </div>
@@ -652,7 +631,13 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   )}
                 </div>
               </div>
-              <button onClick={() => downloadTable(dyeSummary, 'dye_summary.csv')} className="download-btn secondary">
+              <button
+                onClick={() => downloadTable(
+                  formattedDyeSummary.length > 0 ? formattedDyeSummary : dyeSummary,
+                  `${exportBaseName}__dye_program_summary.csv`
+                )}
+                className="download-btn secondary"
+              >
                 📥 Download as CSV
               </button>
             </>

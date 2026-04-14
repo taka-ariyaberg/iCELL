@@ -3,12 +3,16 @@ import { ResultsDisplay } from '../components/ResultsDisplay';
 import { usePlateStore } from '../store/plateStore';
 import { ConfigInput } from '../services/apiClient';
 import { generateCellLayout, generateDyeLayout, generateMetaDye, downloadFile } from '../utils/exportUtils';
+import { buildExportBaseName, serializeRecordsToCsv } from '../utils/csvExport';
 import '../styles/ResultsPage.css';
 
 interface ResultsPageProps {
   instructions: string;
   seedingSummary: Record<string, unknown>[];
   dyeSummary?: Record<string, unknown>[];
+  formattedSeedingSummary?: Record<string, unknown>[];
+  formattedDyeSummary?: Record<string, unknown>[];
+  imetaRows?: Record<string, unknown>[];
   plateType?: string;
   numPlates?: number;
   mode?: string;
@@ -20,6 +24,9 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
   instructions,
   seedingSummary,
   dyeSummary,
+  formattedSeedingSummary = [],
+  formattedDyeSummary = [],
+  imetaRows = [],
   plateType = '96',
   numPlates = 1,
   mode = 'no_dye',
@@ -46,13 +53,19 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
   const uploadedCellLayoutFile = sessionStorage.getItem('lastUploadedCellLayoutFile');
   const uploadedDyeLayoutFile = sessionStorage.getItem('lastUploadedDyeLayoutFile');
   const uploadedMetaDyeFile = sessionStorage.getItem('lastUploadedMetaDyeFile');
+  const exportBaseName = buildExportBaseName(
+    configData?.project_name,
+    configData?.plate_id,
+  );
 
   const buildReimportConfig = () => {
     if (!configData) return null;
     return {
       project: {
         name: configData.project_name,
-        run_name: configData.run_name,
+        plate_id: configData.plate_id,
+        run_name: configData.plate_id,
+        seeding_date: configData.seeding_date ?? '',
       },
       mode: configData.mode,
       plate_type: configData.plate_type,
@@ -108,8 +121,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
     const config = uploadedConfigFile
       ? uploadedConfigFile
       : JSON.stringify(buildReimportConfig(), null, 2);
-    const timestamp = new Date().toISOString().split('T')[0];
-    downloadFile(config, `config_${timestamp}.json`, 'application/json');
+    downloadFile(config, `${exportBaseName}__config.json`, 'application/json');
   };
 
   const handleDownloadCellLayout = () => {
@@ -118,8 +130,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
       wells,
       groups: storeGroups,
     });
-    const timestamp = new Date().toISOString().split('T')[0];
-    downloadFile(csv, `cell_layout_${timestamp}.csv`, 'text/csv');
+    downloadFile(csv, `${exportBaseName}__cell_layout.csv`, 'text/csv');
   };
 
   const handleDownloadDyeLayout = () => {
@@ -128,16 +139,20 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
       wells,
       dyePrograms,
     });
-    const timestamp = new Date().toISOString().split('T')[0];
-    downloadFile(csv, `dye_layout_${timestamp}.csv`, 'text/csv');
+    downloadFile(csv, `${exportBaseName}__dye_layout.csv`, 'text/csv');
   };
 
   const handleDownloadMetaDye = () => {
     const storedPrograms = sessionStorage.getItem('dyePrograms');
     const programs = storedPrograms ? JSON.parse(storedPrograms) : [];
     const csv = uploadedMetaDyeFile || generateMetaDye(programs);
-    const timestamp = new Date().toISOString().split('T')[0];
-    downloadFile(csv, `meta_dye_${timestamp}.csv`, 'text/csv');
+    downloadFile(csv, `${exportBaseName}__meta_dye.csv`, 'text/csv');
+  };
+
+  const handleDownloadIMeta = () => {
+    if (imetaRows.length === 0) return;
+    const csv = serializeRecordsToCsv(imetaRows);
+    downloadFile(csv, `${exportBaseName}__iMETA.csv`, 'text/csv');
   };
 
   return (
@@ -152,6 +167,11 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
           instructions={instructions}
           seedingSummary={seedingSummary}
           dyeSummary={dyeSummary}
+          formattedSeedingSummary={formattedSeedingSummary}
+          formattedDyeSummary={formattedDyeSummary}
+          exportBaseName={exportBaseName}
+          onDownloadIMeta={imetaRows.length > 0 ? handleDownloadIMeta : null}
+          hasIMetaDownload={imetaRows.length > 0}
           plateType={plateType}
           numPlates={numPlates}
           mode={mode}

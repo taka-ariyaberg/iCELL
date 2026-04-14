@@ -14,6 +14,8 @@ This example demonstrates iCELL with **cell seeding + dye staining**.
 3. Update the config if needed:
    - Change `stock_cell_concentration_cells_per_ml` to match your cell suspension
    - Adjust `overage_fraction` if needed (default 30%)
+   - Set `project.plate_id` to the identifier you want to see in exports
+   - Optionally set `project.seeding_date`
    - Update dye `meta_dye_csv` path if necessary
 
 4. Run the notebook!
@@ -24,6 +26,8 @@ This example demonstrates iCELL with **cell seeding + dye staining**.
 - Dye mastermix is **20 µL** per well
 - Required cell suspension concentration **doubles** to compensate for reduced volume
 - Dye preparation instructions are included in the output
+- `meta_dye.csv` stays as the dye recipe input file, while `iMETA.csv` is generated as the per-well metadata export
+- Mastermix instructions describe `Diluent` first, then add each dye component into the diluent
 
 ## Expected Output
 
@@ -31,4 +35,9 @@ The notebook will generate:
 - **Seeding summary table** - cell suspension volumes per concentration group
 - **Dye mastermix summary table** - dye volumes per dye program
 - **Cell and dye preparation instructions** - complete mixing steps
+- **iMETA.csv** - per-well metadata export with Plate ID, seeding date, cell suspension concentration, and dye-component additions
 - **Run log** - detailed trace of the calculation
+
+Artifacts use the shared naming format:
+
+- `ProjectName__PlateID__YYYY-MM-DD__artifact`

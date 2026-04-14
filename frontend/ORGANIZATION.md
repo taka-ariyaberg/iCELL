@@ -14,6 +14,7 @@ frontend/
 │   ├── components/
 │   │   ├── CSVUploader.tsx
 │   │   ├── PlateVisualization.tsx
+│   │   ├── ProtocolSection.tsx
 │   │   └── ResultsDisplay.tsx
 │   ├── store/
 │   │   └── plateStore.ts
@@ -39,7 +40,8 @@ frontend/
 
 - `CSVUploader.tsx` handles file-driven submission and uploaded input files
 - `PlateVisualization.tsx` is the core well-grid interaction component
-- `ResultsDisplay.tsx` renders processed summaries and details
+- `ProtocolSection.tsx` renders the protocol navigator, plate-region legend, and instruction cards
+- `ResultsDisplay.tsx` renders processed seeding and dye summaries plus summary CSV downloads
 
 ## State and Data Flow
 
@@ -49,6 +51,7 @@ Page
   -> API client
   -> backend
   -> results page reconstruction and display
+  -> protocol navigator and export actions
 ```
 
 The store owns interactive design state. The backend remains the source of truth for calculations.
@@ -59,6 +62,7 @@ The store owns interactive design state. The backend remains the source of truth
 - Keep calculation logic in the Python engine
 - Keep API transport details in `services/apiClient.ts`
 - Keep file-based notebook support independent of frontend state
+- Keep export semantics aligned with backend outputs, especially `meta_dye.csv` as input and `iMETA.csv` as output
 
 ## Environment
 

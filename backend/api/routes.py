@@ -18,6 +18,10 @@ def clean_values(obj):
         return {k: clean_values(v) for k, v in obj.items()}
     elif isinstance(obj, list):
         return [clean_values(v) for v in obj]
+    elif obj is None:
+        return None
+    elif pd.isna(obj):
+        return None
     elif isinstance(obj, float):
         if math.isnan(obj) or math.isinf(obj):
             return None
@@ -61,7 +65,10 @@ def _normalize_uploaded_config(
     normalized = dict(config_data)
     normalized.setdefault("project", {})
     normalized["project"].setdefault("name", normalized["project"].get("name", "iCELL"))
-    normalized["project"].setdefault("run_name", normalized["project"].get("run_name", "uploaded_run"))
+    project_plate_id = normalized["project"].get("plate_id") or normalized["project"].get("run_name") or "uploaded_plate"
+    normalized["project"]["plate_id"] = str(project_plate_id)
+    normalized["project"]["run_name"] = str(normalized["project"].get("run_name") or project_plate_id)
+    normalized["project"].setdefault("seeding_date", normalized["project"].get("seeding_date", ""))
     normalized.setdefault("mode", "no_dye")
     normalized.setdefault("num_plates", 1)
     normalized.setdefault("dead_volume", {})
@@ -152,12 +159,18 @@ async def run_calculation(request: RunRequest):
     # Clean NaN/inf values for JSON serialization
     seeding_summary = clean_values(result.get("seeding_summary", []))
     dye_summary = clean_values(result.get("dye_summary", []))
+    formatted_seeding_summary = clean_values(result.get("formatted_seeding_summary", []))
+    formatted_dye_summary = clean_values(result.get("formatted_dye_summary", []))
+    imeta_rows = clean_values(result.get("imeta_rows", []))
     
     return CalculationResult(
         status=result["status"],
         instructions=result.get("instructions", ""),
         seeding_summary=seeding_summary,
-        dye_summary=dye_summary
+        dye_summary=dye_summary,
+        formatted_seeding_summary=formatted_seeding_summary,
+        formatted_dye_summary=formatted_dye_summary,
+        imeta_rows=imeta_rows,
     )
 
 
@@ -214,12 +227,30 @@ async def upload_csv_files(
             
             # Run iCELL
             results = run_icell(str(config_file_path))
+            seeding_summary = clean_values(
+                results.get("seeding_summary_df", pd.DataFrame()).to_dict(orient="records")
+            )
+            dye_summary = clean_values(
+                results.get("dye_program_summary_df", pd.DataFrame()).to_dict(orient="records")
+            )
+            formatted_seeding_summary = clean_values(
+                results.get("formatted_seeding_summary_df", pd.DataFrame()).to_dict(orient="records")
+            )
+            formatted_dye_summary = clean_values(
+                results.get("formatted_dye_summary_df", pd.DataFrame()).to_dict(orient="records")
+            )
+            imeta_rows = clean_values(
+                results.get("imeta_df", pd.DataFrame()).to_dict(orient="records")
+            )
             
             return CalculationResult(
                 status="success",
                 instructions=results.get("instructions_text", ""),
-                seeding_summary=results.get("seeding_summary_df", pd.DataFrame()).to_dict(orient="records"),
-                dye_summary=results.get("dye_program_summary_df", pd.DataFrame()).to_dict(orient="records")
+                seeding_summary=seeding_summary,
+                dye_summary=dye_summary,
+                formatted_seeding_summary=formatted_seeding_summary,
+                formatted_dye_summary=formatted_dye_summary,
+                imeta_rows=imeta_rows,
             )
     
     except Exception as e:

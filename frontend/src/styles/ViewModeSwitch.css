@@ -1,0 +1,117 @@
+.view-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.view-mode-toggle {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.view-mode-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  width: 188px;
+  min-height: 48px;
+  padding: 4px;
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid var(--icell-border-strong);
+  border-radius: calc(var(--icell-radius-control) + 6px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.view-mode-toggle:hover .view-mode-track {
+  border-color: var(--icell-accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 0 1px rgba(0, 184, 255, 0.08);
+}
+
+.view-mode-toggle:focus-visible {
+  outline: none;
+}
+
+.view-mode-toggle:focus-visible .view-mode-track {
+  border-color: var(--icell-accent);
+  box-shadow: 0 0 0 3px rgba(0, 184, 255, 0.22);
+}
+
+.view-mode-side {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #5f7588;
+  font-size: 14px;
+  line-height: 1;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.view-mode-toggle.is-dyes .view-mode-side-cells,
+.view-mode-toggle:not(.is-dyes) .view-mode-side-dyes {
+  color: #7e93a6;
+  opacity: 0.55;
+}
+
+.view-mode-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  padding: 0 14px;
+  background: linear-gradient(135deg, var(--icell-accent) 0%, var(--icell-accent-strong) 100%);
+  border-radius: calc(var(--icell-radius-control) + 2px);
+  color: white;
+  box-shadow: var(--icell-shadow-accent);
+  transform: translateX(0);
+  transition: transform 0.22s ease;
+}
+
+.view-mode-toggle.is-dyes .view-mode-thumb {
+  transform: translateX(100%);
+}
+
+.view-mode-thumb-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.view-mode-thumb-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.view-mode-shortcut {
+  font-size: 11px;
+  color: #5f7588;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 768px) {
+  .view-mode-switch {
+    width: 100%;
+  }
+
+  .view-mode-toggle {
+    flex: 1;
+  }
+
+  .view-mode-track {
+    width: 100%;
+  }
+}

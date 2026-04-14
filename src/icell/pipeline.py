@@ -46,9 +46,9 @@ def run_pipeline(config_path: str | None = None) -> dict:
     print("\n1. Loading configuration...")
     config = load_config(config_path)
     mode = config.get("mode", "unknown")
-    run_name = config["project"]["run_name"]
+    plate_id = config["project"].get("plate_id", config["project"]["run_name"])
     print(f"   ✓ Mode: {mode}")
-    print(f"   ✓ Run name: {run_name}")
+    print(f"   ✓ Plate ID: {plate_id}")
     
     # Run calculations
     print("\n2. Running calculations...")

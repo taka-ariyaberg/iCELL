@@ -139,53 +139,6 @@ def build_dye_prep_instructions(
             lines.append("")
             continue
 
-        for _, dye_row in recipe.iterrows():
-            dye_name = str(dye_row["dye_name"])
-            stock_conc = float(dye_row["stock_concentration"])
-            stock_unit = str(dye_row["stock_concentration_unit"])
-            final_conc = float(dye_row["final_concentration"])
-            final_unit = str(dye_row["final_concentration_unit"])
-            mastermix_target_conc = float(dye_row["mastermix_target_concentration"])
-            stock_volume_ul = float(dye_row["dye_stock_volume_ul"])
-            needs_intermediate = bool(dye_row["needs_intermediate"])
-
-            lines.append(
-                f"   - {dye_name}: target final concentration {final_conc:g} {final_unit}; "
-                f"mastermix target {mastermix_target_conc:g} {final_unit}"
-            )
-
-            if not needs_intermediate:
-                lines.append(
-                    f"     Add {_fmt_ul(stock_volume_ul)} from stock ({stock_conc:g} {stock_unit})."
-                )
-            else:
-                intermediate_concentration = float(dye_row["intermediate_concentration"])
-                intermediate_transfer_ul = float(dye_row["intermediate_transfer_ul"])
-                intermediate_stock_volume_ul = float(dye_row["intermediate_stock_volume_ul"])
-                intermediate_final_volume_ul = float(dye_row["intermediate_final_volume_ul"])
-                intermediate_diluent_volume_ul = float(dye_row["intermediate_diluent_volume_ul"])
-
-                lines.append(
-                    "     Direct dye transfer is NOT acceptable because the required stock "
-                    f"volume is below {_fmt_ul(min_dye_handling_volume_ul)}."
-                )
-                # intermediate_concentration is in canonical units — use the stored canonical unit for display
-                canonical_unit = str(dye_row.get("_canonical_unit", final_unit))
-                lines.append(
-                    f"     First prepare a dye intermediate at {intermediate_concentration:g} {canonical_unit}:"
-                )
-                lines.append(
-                    f"     Mix {_fmt_ul(intermediate_stock_volume_ul)} of {dye_name} stock "
-                    f"({stock_conc:g} {stock_unit})"
-                )
-                lines.append(f"     with {_fmt_ul(intermediate_diluent_volume_ul)} of diluent/media.")
-                lines.append(
-                    f"     This yields {_fmt_ul(intermediate_final_volume_ul)} of dye intermediate."
-                )
-                lines.append(
-                    f"     Then add {_fmt_ul(intermediate_transfer_ul)} of this intermediate to the mastermix."
-                )
-
         if "final_diluent_volume_ul" in summary_row.index:
             diluent_ul = float(summary_row["final_diluent_volume_ul"])
         else:
@@ -195,9 +148,40 @@ def build_dye_prep_instructions(
         if diluent_ul < 0:
             raise ValueError(f"Computed negative diluent volume for dye program {dye_program}")
 
+        lines.append("   - Diluent")
         lines.append(
-            f"   Add {_fmt_ul(diluent_ul)} of media/diluent to bring the mastermix to {_fmt_ul(total_mastermix_volume_ul)}."
+            f"     Add {_fmt_ul(diluent_ul)} of media to the mastermix vessel."
         )
+
+        for _, dye_row in recipe.iterrows():
+            dye_name = str(dye_row["dye_name"])
+            stock_conc = float(dye_row["stock_concentration"])
+            stock_unit = str(dye_row["stock_concentration_unit"])
+            final_unit = str(dye_row["final_concentration_unit"])
+            mastermix_target_conc = float(dye_row["mastermix_target_concentration"])
+            stock_volume_ul = float(dye_row["dye_stock_volume_ul"])
+            needs_intermediate = bool(dye_row["needs_intermediate"])
+
+            lines.append(
+                f"   - {dye_name}: mastermix target concentration {mastermix_target_conc:g} {final_unit}"
+            )
+
+            if not needs_intermediate:
+                lines.append(
+                    f"     Add {_fmt_ul(stock_volume_ul)} from stock ({stock_conc:g} {stock_unit}) to the diluent."
+                )
+            else:
+                intermediate_transfer_ul = float(dye_row["intermediate_transfer_ul"])
+                intermediate_stock_volume_ul = float(dye_row["intermediate_stock_volume_ul"])
+                intermediate_diluent_volume_ul = float(dye_row["intermediate_diluent_volume_ul"])
+
+                lines.append(
+                    f"     Prepare dye intermediate: mix {_fmt_ul(intermediate_stock_volume_ul)} of {dye_name} stock "
+                    f"({stock_conc:g} {stock_unit}) with {_fmt_ul(intermediate_diluent_volume_ul)} of media."
+                )
+                lines.append(
+                    f"     Add {_fmt_ul(intermediate_transfer_ul)} of this intermediate to the diluent."
+                )
         lines.append(
             f"   Mix well and dispense {_fmt_ul(mastermix_dispense_ul_per_well)} per assigned well."
         )
@@ -217,7 +201,7 @@ def build_run_summary_instructions(
     lines = [
         "RUN SUMMARY",
         "=" * 11,
-        f"Run name: {config['project']['run_name']}",
+        f"Plate ID: {config['project'].get('plate_id', config['project']['run_name'])}",
         f"Seeded wells: {n_seeded}",
         f"Wells: {wells}",
         f"Final well volume: {_fmt_ul(config['seeding']['final_well_volume_ul'])}",

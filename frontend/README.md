@@ -43,6 +43,7 @@ frontend/
 │   ├── components/
 │   │   ├── CSVUploader.tsx
 │   │   ├── PlateVisualization.tsx
+│   │   ├── ProtocolSection.tsx
 │   │   └── ResultsDisplay.tsx
 │   ├── services/
 │   │   └── apiClient.ts
@@ -63,6 +64,8 @@ frontend/
 - Pages orchestrate major views and user flows
 - The upload workflow is owned by `App.tsx` plus `CSVUploader.tsx`, not a separate import page
 - Components handle reusable visualization and presentation logic
+- `ProtocolSection.tsx` owns the results-page protocol navigator, including the interactive plate-driven instruction view and the `iMETA.csv` download entry point
+- `ResultsDisplay.tsx` owns the seeding and dye summary viewers plus their CSV exports
 - The Zustand store owns interactive plate state and undo/redo history
 - The API client is the single integration point for backend requests
 - Calculation rules continue to live in the Python engine, with the frontend acting as the interactive client
@@ -82,6 +85,7 @@ If neither is provided, the frontend defaults to `http://localhost:8000/api`.
 - Keep API access centralized in `src/services/apiClient.ts`
 - Keep transient interaction state in the store rather than prop drilling
 - Prefer focused components and minimal cross-cutting styling changes
+- Keep results-page plate viewers visually aligned with the shared `PlateVisualization` patterns used elsewhere in the UI
 
 ## Common Tasks
 
@@ -104,7 +108,10 @@ If neither is provided, the frontend defaults to `http://localhost:8000/api`.
 ## FAQ
 
 **Q: How do I add a new export format?**
-A: Edit `utils/exportUtils.ts`, export the new helper there, and wire the action into the owning page or component.
+A: Prefer wiring shared backend outputs through the results page. Frontend-only downloads should use `utils/csvExport.ts` or `utils/exportUtils.ts` and be attached in the owning page or component.
+
+**Q: What is `iMETA.csv`?**
+A: It is the per-well metadata export. It is separate from `meta_dye.csv`, which remains an input file for dye recipe definitions.
 
 **Q: Can I modify the Python code?**
 A: Yes, when the change belongs to calculation rules, validation, or shared workflow behavior. Keep those changes in the Python engine rather than duplicating them in React.

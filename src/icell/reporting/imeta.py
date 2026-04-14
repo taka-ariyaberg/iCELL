@@ -1,0 +1,271 @@
+from __future__ import annotations
+
+import re
+
+import pandas as pd
+from icell import __version__
+
+
+def _is_missing(value: object) -> bool:
+    try:
+        return bool(pd.isna(value))
+    except TypeError:
+        return False
+
+
+def _has_text(value: object) -> bool:
+    return not _is_missing(value) and str(value).strip() != ""
+
+
+def _clean_text(value: object, default: str = "") -> str:
+    if _is_missing(value):
+        return default
+    text = str(value).strip()
+    return text if text else default
+
+
+def _to_float(value: object, default: float = 0.0) -> float:
+    if _is_missing(value):
+        return default
+    return float(value)
+
+
+def _format_number(value: float, digits: int = 6) -> str:
+    text = f"{float(value):.{digits}f}".rstrip("0").rstrip(".")
+    return text or "0"
+
+
+def _normalize_header_text(value: str) -> str:
+    text = re.sub(r"\s+", " ", value.strip())
+    return text.replace("\n", " ").replace("\r", " ") or "unnamed"
+
+
+def _format_well(row_label: str, column_index: int, pad_width: int) -> str:
+    return f"{row_label}{str(int(column_index)).zfill(pad_width)}"
+
+
+def _component_column_name(dye_program: str, component_name: str) -> str:
+    return f"{_normalize_header_text(dye_program)}_{_normalize_header_text(component_name)}"
+
+
+def _component_cell_value(
+    mastermix_concentration_label: str,
+    addition_volume_ul_per_well: float,
+) -> str:
+    return (
+        f"{mastermix_concentration_label} in mastermix; "
+        f"{_format_number(addition_volume_ul_per_well)} uL/well"
+    )
+
+
+def _build_program_summary_map(
+    dye_program_summary_df: pd.DataFrame | None,
+) -> dict[str, dict[str, float]]:
+    program_summary_map: dict[str, dict[str, float]] = {}
+
+    if dye_program_summary_df is None or dye_program_summary_df.empty:
+        return program_summary_map
+
+    for _, row in dye_program_summary_df.iterrows():
+        dye_program = _clean_text(row.get("dye_program"))
+        if not dye_program:
+            continue
+
+        program_summary_map[dye_program] = {
+            "mastermix_dispense_ul_per_well": _to_float(
+                row.get("mastermix_dispense_ul_per_well"),
+                0.0,
+            ),
+            "total_mastermix_volume_ul": _to_float(
+                row.get("total_mastermix_volume_ul"),
+                0.0,
+            ),
+        }
+
+    return program_summary_map
+
+
+def _build_component_value_map(
+    dye_recipe_df: pd.DataFrame | None,
+    program_summary_map: dict[str, dict[str, float]],
+) -> tuple[dict[str, dict[str, str]], list[str]]:
+    component_value_map: dict[str, dict[str, str]] = {}
+    ordered_component_columns: list[str] = []
+    seen_columns: set[str] = set()
+
+    if dye_recipe_df is None or dye_recipe_df.empty:
+        return component_value_map, ordered_component_columns
+
+    for dye_program, program_df in dye_recipe_df.groupby("dye_program", sort=False, dropna=False):
+        program_name = _clean_text(dye_program)
+        if not program_name:
+            continue
+
+        summary = program_summary_map.get(program_name, {})
+        mastermix_dispense_ul_per_well = float(
+            summary.get("mastermix_dispense_ul_per_well", 0.0)
+        )
+        total_mastermix_volume_ul = float(summary.get("total_mastermix_volume_ul", 0.0))
+        per_well_factor = 0.0
+        if mastermix_dispense_ul_per_well > 0 and total_mastermix_volume_ul > 0:
+            per_well_factor = mastermix_dispense_ul_per_well / total_mastermix_volume_ul
+
+        component_values: dict[str, str] = {}
+        total_component_volume_ul_per_well = 0.0
+
+        for _, component_row in program_df.reset_index(drop=True).iterrows():
+            component_name = _clean_text(component_row.get("dye_name"))
+            if not component_name:
+                continue
+
+            column_name = _component_column_name(program_name, component_name)
+            if column_name not in seen_columns:
+                ordered_component_columns.append(column_name)
+                seen_columns.add(column_name)
+
+            mastermix_target_concentration = _to_float(
+                component_row.get("mastermix_target_concentration"),
+                0.0,
+            )
+            mastermix_target_unit = _clean_text(
+                component_row.get("final_concentration_unit")
+            )
+            effective_addition_volume_ul = _to_float(
+                component_row.get("effective_addition_volume_ul"),
+                0.0,
+            )
+            addition_volume_ul_per_well = effective_addition_volume_ul * per_well_factor
+            total_component_volume_ul_per_well += addition_volume_ul_per_well
+            mastermix_concentration_label = (
+                f"{_format_number(mastermix_target_concentration)} {mastermix_target_unit}"
+            )
+
+            component_values[column_name] = _component_cell_value(
+                mastermix_concentration_label=mastermix_concentration_label,
+                addition_volume_ul_per_well=addition_volume_ul_per_well,
+            )
+
+        diluent_column_name = _component_column_name(program_name, "Diluent")
+        if diluent_column_name not in seen_columns:
+            ordered_component_columns.append(diluent_column_name)
+            seen_columns.add(diluent_column_name)
+
+        diluent_volume_ul_per_well = max(
+            mastermix_dispense_ul_per_well - total_component_volume_ul_per_well,
+            0.0,
+        )
+        component_values[diluent_column_name] = _component_cell_value(
+            mastermix_concentration_label="Diluent",
+            addition_volume_ul_per_well=diluent_volume_ul_per_well,
+        )
+
+        component_value_map[program_name] = component_values
+
+    return component_value_map, ordered_component_columns
+
+
+def build_imeta_dataframe(
+    config: dict,
+    seeded_layout_df: pd.DataFrame,
+    dye_program_summary_df: pd.DataFrame | None = None,
+    dye_recipe_df: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    include_plate_number = int(config.get("num_plates", 1)) > 1
+
+    if seeded_layout_df.empty:
+        base_columns = [
+            "software",
+            "software_version",
+            "plate_id",
+            "well",
+            "seeding_density_cells_per_well",
+            "cell_suspension_dispense_ul_per_well",
+            "cell_suspension_concentration",
+            "seeding_date",
+            "dye_program",
+            "dye_mastermix_dispense_ul_per_well",
+        ]
+        if include_plate_number:
+            base_columns.insert(4, "plate_number")
+        return pd.DataFrame(columns=base_columns)
+
+    project = config.get("project", {})
+    user_plate_id = _clean_text(project.get("plate_id") or project.get("run_name"))
+    seeding_date = _clean_text(project.get("seeding_date"))
+
+    max_column = int(pd.to_numeric(seeded_layout_df["column"], errors="coerce").max())
+    pad_width = max(2, len(str(max_column)))
+
+    program_summary_map = _build_program_summary_map(dye_program_summary_df)
+    component_value_map, ordered_component_columns = _build_component_value_map(
+        dye_recipe_df=dye_recipe_df,
+        program_summary_map=program_summary_map,
+    )
+
+    base_columns = [
+        "software",
+        "software_version",
+        "plate_id",
+        "well",
+        "seeding_density_cells_per_well",
+        "cell_suspension_dispense_ul_per_well",
+        "cell_suspension_concentration",
+        "seeding_date",
+        "dye_program",
+        "dye_mastermix_dispense_ul_per_well",
+    ]
+    if include_plate_number:
+        base_columns.insert(4, "plate_number")
+
+    rows: list[dict[str, object]] = []
+    sorted_seeded = seeded_layout_df.sort_values(["plate_id", "row", "column"]).reset_index(drop=True)
+
+    for _, seeded_row in sorted_seeded.iterrows():
+        row_label = _clean_text(seeded_row.get("row"))
+        column_index = int(seeded_row.get("column", 0))
+        dye_program_raw = seeded_row.get("dye_program")
+        has_dye_program = _has_text(dye_program_raw)
+        dye_program = _clean_text(dye_program_raw, default="NONE") if has_dye_program else "NONE"
+        program_summary = program_summary_map.get(dye_program, {})
+        cell_suspension_concentration = _to_float(
+            seeded_row.get("required_cell_suspension_conc_cells_per_ml"),
+            0.0,
+        )
+
+        row: dict[str, object] = {
+            "software": "iCELL",
+            "software_version": __version__,
+            "plate_id": user_plate_id,
+            "well": _format_well(row_label, column_index, pad_width),
+            "seeding_density_cells_per_well": int(float(seeded_row.get("cells_per_well", 0))),
+            "cell_suspension_dispense_ul_per_well": _format_number(
+                _to_float(seeded_row.get("cell_suspension_dispense_ul_per_well"), 0.0)
+            ),
+            "cell_suspension_concentration": (
+                f"{int(round(cell_suspension_concentration))} cells/mL"
+            ),
+            "seeding_date": seeding_date,
+            "dye_program": dye_program,
+            "dye_mastermix_dispense_ul_per_well": _format_number(
+                float(program_summary.get("mastermix_dispense_ul_per_well", 0.0))
+            )
+            if has_dye_program
+            else "0",
+        }
+
+        if include_plate_number:
+            row["plate_number"] = int(seeded_row.get("plate_id", 1))
+
+        for component_column in ordered_component_columns:
+            row[component_column] = ""
+
+        if has_dye_program:
+            for component_column, component_value in component_value_map.get(dye_program, {}).items():
+                row[component_column] = component_value
+
+        rows.append(row)
+
+    return pd.DataFrame(rows, columns=base_columns + ordered_component_columns)
+
+
+__all__ = ["build_imeta_dataframe"]

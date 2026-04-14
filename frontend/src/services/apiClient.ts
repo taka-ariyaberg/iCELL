@@ -33,12 +33,13 @@ api.interceptors.response.use(
 
 export interface ConfigInput {
   project_name: string;
-  run_name: string;
+  plate_id: string;
   plate_type: string;
   mode: string;
   stock_cell_concentration: number;
   overage_fraction: number;
   num_plates: number;
+  seeding_date?: string;
   final_well_volume_ul?: number;
   dead_volume_cells_ul?: number;
   dead_volume_dye_ul?: number;
@@ -69,6 +70,9 @@ export interface CalculationResult {
   instructions: string;
   seeding_summary: Record<string, unknown>[];
   dye_summary?: Record<string, unknown>[];
+  formatted_seeding_summary?: Record<string, unknown>[];
+  formatted_dye_summary?: Record<string, unknown>[];
+  imeta_rows?: Record<string, unknown>[];
   error?: string;
 }
 

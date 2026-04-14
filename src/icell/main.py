@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -25,6 +24,12 @@ from icell.processing.validation import (
     validate_meta_dye_df,
 )
 from icell.reporting.export import export_run_outputs
+from icell.reporting.formatted_exports import (
+    build_export_file_base,
+    build_formatted_dye_summary_dataframe,
+    build_formatted_seeding_summary_dataframe,
+)
+from icell.reporting.imeta import build_imeta_dataframe
 from icell.reporting.instructions import build_all_instructions
 from icell.reporting.run_log import build_run_log_text, write_run_log
 
@@ -50,6 +55,9 @@ def run_icell(config_path: str | None = None) -> dict:
     meta_dye_df = None
     dye_program_summary_df = pd.DataFrame()
     dye_recipe_df = pd.DataFrame()
+    imeta_df = pd.DataFrame()
+    formatted_seeding_summary_df = pd.DataFrame()
+    formatted_dye_summary_df = pd.DataFrame()
 
     if bool(config["dye"]["enabled"]):
         dye_layout_path = _resolve(config["paths"]["dye_layout_csv"])
@@ -89,6 +97,22 @@ def run_icell(config_path: str | None = None) -> dict:
             dead_volume_dye_ul=config["dead_volume"]["dye_ul"],
         )
 
+    imeta_df = build_imeta_dataframe(
+        config=config,
+        seeded_layout_df=seeded_df,
+        dye_program_summary_df=dye_program_summary_df,
+        dye_recipe_df=dye_recipe_df,
+    )
+    formatted_seeding_summary_df = build_formatted_seeding_summary_dataframe(
+        config=config,
+        seeding_summary_df=seeding_summary_df,
+    )
+    formatted_dye_summary_df = build_formatted_dye_summary_dataframe(
+        config=config,
+        dye_program_summary_df=dye_program_summary_df,
+        dye_recipe_df=dye_recipe_df,
+    )
+
     instructions_text = build_all_instructions(
         config=config,
         merged_layout_df=merged_df,
@@ -98,20 +122,21 @@ def run_icell(config_path: str | None = None) -> dict:
     )
 
     written_files = export_run_outputs(
+        config=config,
         merged_layout_df=merged_df,
         seeded_layout_df=seeded_df,
-        seeding_summary_df=seeding_summary_df,
+        formatted_seeding_summary_df=formatted_seeding_summary_df,
         output_tables_dir=_resolve(config["paths"]["output_tables_dir"]),
-        run_name=config["project"]["run_name"],
-        dye_program_summary_df=dye_program_summary_df,
+        formatted_dye_program_summary_df=formatted_dye_summary_df,
         dye_recipe_df=dye_recipe_df,
+        imeta_df=imeta_df,
         instructions_text=instructions_text,
         output_instructions_dir=_resolve(config["paths"]["output_instructions_dir"]),
     )
 
     log_output_path = (
         _resolve(config["paths"]["output_logs_dir"])
-        / f"{config['project']['run_name']}_{datetime.now().strftime('%Y-%m-%d')}__log.txt"
+        / f"{build_export_file_base(config)}__run_log.txt"
     )
 
     log_text = build_run_log_text(
@@ -135,6 +160,9 @@ def run_icell(config_path: str | None = None) -> dict:
         "seeding_summary_df": seeding_summary_df,
         "dye_program_summary_df": dye_program_summary_df,
         "dye_recipe_df": dye_recipe_df,
+        "imeta_df": imeta_df,
+        "formatted_seeding_summary_df": formatted_seeding_summary_df,
+        "formatted_dye_summary_df": formatted_dye_summary_df,
         "instructions_text": instructions_text,
         "written_files": written_files,
     }

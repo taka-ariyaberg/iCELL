@@ -242,6 +242,9 @@ const App: React.FC = () => {
             instructions={results.instructions}
             seedingSummary={results.seeding_summary}
             dyeSummary={results.dye_summary}
+            formattedSeedingSummary={results.formatted_seeding_summary}
+            formattedDyeSummary={results.formatted_dye_summary}
+            imetaRows={results.imeta_rows}
             plateType={config?.plate_type?.replace('_well', '')}
             numPlates={config?.num_plates ?? 1}
             mode={config?.mode}

@@ -150,6 +150,15 @@ def load_config(path: str | Path | None = None) -> dict[str, Any]:
     if missing_top:
         raise KeyError(f"Missing required config section(s): {missing_top}")
 
+    config.setdefault("project", {})
+    project = config["project"]
+    plate_id = project.get("plate_id") or project.get("run_name")
+    if not plate_id:
+        raise KeyError("config.project must include either 'plate_id' or legacy 'run_name'")
+    project["plate_id"] = str(plate_id)
+    project["run_name"] = str(project.get("run_name") or plate_id)
+    project.setdefault("seeding_date", "")
+
     # Load plate type definition from separate file
     config = load_plate_type(config, config_path.parent)
 

@@ -14,6 +14,7 @@ interface PlateVisualizationProps {
   dyePrograms?: Record<string, string>; // well -> dye program mapping
   designMode?: 'cells' | 'dyes';
   readOnly?: boolean; // Disable all interactions
+  hideLegend?: boolean;
   onGroupSelect?: (well: string, isShiftClick: boolean) => void; // Callback for well selection in read-only viewer mode
   // Viewer mode callbacks (full interaction but state managed externally, not in store)
   onExternalToggle?: (well: string) => void;
@@ -104,6 +105,7 @@ export const PlateVisualization: React.FC<PlateVisualizationProps> = ({
   dyePrograms = {},
   designMode = 'cells',
   readOnly = false,
+  hideLegend = false,
   onGroupSelect,
   onExternalToggle,
   onExternalRangeSelect,
@@ -464,7 +466,7 @@ export const PlateVisualization: React.FC<PlateVisualizationProps> = ({
       )}
 
       {/* Legend */}
-      {(() => {
+      {!hideLegend && (() => {
         if (readOnly && onGroupSelect) {
           return (
             <div className="plate-legend">

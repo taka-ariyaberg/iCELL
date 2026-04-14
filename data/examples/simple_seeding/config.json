@@ -1,6 +1,7 @@
 {
   "project": {
     "name": "iCELL",
+    "plate_id": "simple_cell_seeding_example",
     "run_name": "simple_cell_seeding_example"
   },
   "mode": "no_dye",
@@ -44,8 +45,9 @@
     "min_dye_handling_volume_ul": 1.0
   },
   "paths": {
-    "cell_layout_csv": "data/input/cell_layout.csv",
-    "dye_layout_csv": "data/input/dye_layout.csv",
+    "input_dir": "data/input",
+    "cell_layout_csv": "cell_layout.csv",
+    "dye_layout_csv": "dye_layout.csv",
     "output_tables_dir": "data/output/tables",
     "output_instructions_dir": "data/output/instructions",
     "output_logs_dir": "data/output/logs"

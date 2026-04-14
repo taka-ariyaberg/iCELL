@@ -32,8 +32,8 @@ To stop either server, return to its terminal and press `Ctrl+C`.
 
 ## Current Frontend Pages
 
-- `DesignPage.tsx` for interactive plate design and run configuration
-- `ResultsPage.tsx` for processed results and export review
+- `DesignPage.tsx` for interactive plate design, `Plate ID`, and seeding-date setup
+- `ResultsPage.tsx` for processed results, export review, and the protocol navigator
 
 ## Current Upload Flow
 
@@ -49,6 +49,12 @@ Top-level views. Keep page files focused on orchestration, layout, and high-leve
 ### `src/components`
 
 Reusable pieces used by pages. Shared presentation and interaction logic belongs here.
+
+Important current components:
+
+- `PlateVisualization.tsx` for the shared plate grid used across design and results views
+- `ProtocolSection.tsx` for the results-page protocol navigator and instruction cards
+- `ResultsDisplay.tsx` for seeding and dye summary viewers plus CSV downloads
 
 ### `src/store`
 
@@ -73,6 +79,7 @@ Styling files for pages and shared components.
 - Route all backend requests through `src/services/apiClient.ts`
 - Preserve the existing notebook and config workflow when changing shared behavior
 - Keep undo/redo changes atomic in the store
+- Keep result-page toggles, legends, and plate layouts visually consistent with the shared plate-viewer patterns
 
 ## Common Changes
 
@@ -130,7 +137,7 @@ Fallback: `http://localhost:8000/api`
 2. **Use Zustand hooks** - never prop-drill through 3+ levels
 3. **Separate concerns** - UI logic separate from business logic
 4. **Comment complex logic** - especially in utils and store
-5. **Test exports** - verify CSV/PNG generation works
+5. **Test exports** - verify `seeding_summary.csv`, `dye_program_summary.csv`, `iMETA.csv`, and instruction downloads still work
 6. **Mobile-first CSS** - use media queries for desktop
 
 ## Git Workflow (Optional)
