@@ -35,6 +35,13 @@ def _format_number(value: float, digits: int = 6) -> str:
     return text or "0"
 
 
+def _format_cell_concentration_value(value: object, default: str = "") -> str:
+    concentration = _to_float(value, 0.0)
+    if concentration <= 0:
+        return default
+    return str(int(round(concentration)))
+
+
 def _normalize_header_text(value: str) -> str:
     text = re.sub(r"\s+", " ", value.strip())
     return text.replace("\n", " ").replace("\r", " ") or "unnamed"
@@ -171,22 +178,30 @@ def build_imeta_dataframe(
     dye_recipe_df: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     include_plate_number = int(config.get("num_plates", 1)) > 1
+    initial_concentration_column = "initial_cell_suspension_concentration_cells/mL"
+    per_well_concentration_column = "cell_suspension_concentration_cells/mL"
+    initial_cell_suspension_concentration = _format_cell_concentration_value(
+        config.get("seeding", {}).get("stock_cell_concentration_cells_per_ml"),
+    )
+
+    base_columns = [
+        "software",
+        "software_version",
+        "seeding_date",
+        "plate_id",
+        "well",
+        "group",
+        "seeding_density_cells_per_well",
+        initial_concentration_column,
+        per_well_concentration_column,
+        "cell_suspension_dispense_ul_per_well",
+        "dye_program",
+        "dye_mastermix_dispense_ul_per_well",
+    ]
+    if include_plate_number:
+        base_columns.insert(4, "plate_number")
 
     if seeded_layout_df.empty:
-        base_columns = [
-            "software",
-            "software_version",
-            "plate_id",
-            "well",
-            "seeding_density_cells_per_well",
-            "cell_suspension_dispense_ul_per_well",
-            "cell_suspension_concentration",
-            "seeding_date",
-            "dye_program",
-            "dye_mastermix_dispense_ul_per_well",
-        ]
-        if include_plate_number:
-            base_columns.insert(4, "plate_number")
         return pd.DataFrame(columns=base_columns)
 
     project = config.get("project", {})
@@ -202,21 +217,6 @@ def build_imeta_dataframe(
         program_summary_map=program_summary_map,
     )
 
-    base_columns = [
-        "software",
-        "software_version",
-        "plate_id",
-        "well",
-        "seeding_density_cells_per_well",
-        "cell_suspension_dispense_ul_per_well",
-        "cell_suspension_concentration",
-        "seeding_date",
-        "dye_program",
-        "dye_mastermix_dispense_ul_per_well",
-    ]
-    if include_plate_number:
-        base_columns.insert(4, "plate_number")
-
     rows: list[dict[str, object]] = []
     sorted_seeded = seeded_layout_df.sort_values(["plate_id", "row", "column"]).reset_index(drop=True)
 
@@ -227,24 +227,22 @@ def build_imeta_dataframe(
         has_dye_program = _has_text(dye_program_raw)
         dye_program = _clean_text(dye_program_raw, default="NONE") if has_dye_program else "NONE"
         program_summary = program_summary_map.get(dye_program, {})
-        cell_suspension_concentration = _to_float(
-            seeded_row.get("required_cell_suspension_conc_cells_per_ml"),
-            0.0,
-        )
 
         row: dict[str, object] = {
             "software": "iCELL",
             "software_version": __version__,
+            "seeding_date": seeding_date,
             "plate_id": user_plate_id,
             "well": _format_well(row_label, column_index, pad_width),
+            "group": _clean_text(seeded_row.get("group")),
             "seeding_density_cells_per_well": int(float(seeded_row.get("cells_per_well", 0))),
+            initial_concentration_column: initial_cell_suspension_concentration,
+            per_well_concentration_column: _format_cell_concentration_value(
+                seeded_row.get("required_cell_suspension_conc_cells_per_ml")
+            ),
             "cell_suspension_dispense_ul_per_well": _format_number(
                 _to_float(seeded_row.get("cell_suspension_dispense_ul_per_well"), 0.0)
             ),
-            "cell_suspension_concentration": (
-                f"{int(round(cell_suspension_concentration))} cells/mL"
-            ),
-            "seeding_date": seeding_date,
             "dye_program": dye_program,
             "dye_mastermix_dispense_ul_per_well": _format_number(
                 float(program_summary.get("mastermix_dispense_ul_per_well", 0.0))

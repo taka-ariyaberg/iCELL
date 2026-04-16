@@ -61,6 +61,7 @@ export interface DyeProgramInput {
 
 export interface PlateLayoutInput {
   well_positions: Record<string, number>;
+  well_groups?: Record<string, string>;
   dye_programs?: Record<string, string>;
   meta_dye_programs?: DyeProgramInput[];
 }

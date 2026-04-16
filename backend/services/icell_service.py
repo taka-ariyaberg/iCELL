@@ -269,6 +269,9 @@ def run_icell_calculation(config_input: SeededConfigInput, plate_layout: PlateLa
             temp_meta_dye_file.write_text(meta_dye_csv)
             config_dict["dye"]["meta_dye_csv"] = "temp_meta_dye.csv"
 
+        if plate_layout.well_groups:
+            config_dict["well_groups"] = dict(plate_layout.well_groups)
+
         config_dict["paths"]["cell_layout_csv"] = "temp_cell_layout.csv"
         
         # Save config and run iCELL

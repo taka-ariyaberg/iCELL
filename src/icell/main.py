@@ -9,6 +9,7 @@ from icell.io.readers import read_meta_dye_csv
 from icell.paths import PROJECT_ROOT, ensure_output_dirs
 from icell.processing.dye_mastermix import build_all_dye_recipes
 from icell.processing.layout_parser import (
+    apply_well_groups,
     get_seeded_wells,
     load_cell_layout_csv,
     load_dye_layout_csv,
@@ -71,6 +72,7 @@ def run_icell(config_path: str | None = None) -> dict:
         validate_dye_programs_match(dye_df, meta_dye_df)
 
     merged_df = merge_cell_and_dye_layout(cell_df=cell_df, dye_df=dye_df, num_plates=config["num_plates"])
+    merged_df = apply_well_groups(merged_df, config.get("well_groups"))
 
     seeded_df = get_seeded_wells(merged_df)
     seeded_df = add_seeding_calculations(

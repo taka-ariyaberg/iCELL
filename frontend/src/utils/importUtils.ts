@@ -127,6 +127,9 @@ export async function prepareImportSessionData(formData: FormData): Promise<Impo
   const configJson = JSON.parse(configText) as Record<string, any>;
   const cellMatrix = parseMatrixCsv(cellLayoutText);
   const dyeMatrix = dyeLayoutText ? parseMatrixCsv(dyeLayoutText) : null;
+  const uploadedWellGroups = typeof configJson.well_groups === 'object' && configJson.well_groups
+    ? configJson.well_groups as Record<string, unknown>
+    : {};
 
   const wells: Record<string, string> = {};
   const groupsData: Record<string, string[]> = {};
@@ -136,7 +139,10 @@ export async function prepareImportSessionData(formData: FormData): Promise<Impo
     if (!trimmed) return;
     const numericValue = Number(trimmed);
     if (!Number.isFinite(numericValue) || numericValue <= 0) return;
-    const groupName = `${numericValue.toLocaleString()} cells/well`;
+    const explicitGroupName = typeof uploadedWellGroups[well] === 'string'
+      ? String(uploadedWellGroups[well]).trim()
+      : '';
+    const groupName = explicitGroupName || `${numericValue.toLocaleString()} cells/well`;
     wells[well] = groupName;
     if (!groupsData[groupName]) groupsData[groupName] = [];
     groupsData[groupName].push(well);

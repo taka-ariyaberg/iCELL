@@ -131,6 +131,47 @@ def get_seeded_wells(df: pd.DataFrame) -> pd.DataFrame:
     return df.loc[df["seed"] == 1].copy()
 
 
+def apply_well_groups(
+    df: pd.DataFrame,
+    well_groups: dict[str, object] | None,
+) -> pd.DataFrame:
+    if df.empty or not well_groups:
+        return df
+
+    normalized_groups: dict[str, str] = {}
+    for well, group_name in well_groups.items():
+        well_name = str(well).strip()
+        if not well_name:
+            continue
+
+        if pd.isna(group_name):
+            continue
+
+        group_text = str(group_name).strip()
+        if group_text:
+            normalized_groups[well_name] = group_text
+
+    if not normalized_groups:
+        return df
+
+    grouped_df = df.copy()
+    exact_matches = grouped_df["well"].astype(str).map(normalized_groups)
+    base_wells = grouped_df["well"].astype(str).str.replace(r"^P\d+-", "", regex=True)
+    fallback_matches = base_wells.map(normalized_groups)
+    resolved_groups = exact_matches.combine_first(fallback_matches)
+
+    if "group" in grouped_df.columns:
+        existing_groups = grouped_df["group"]
+        has_existing_value = existing_groups.notna() & (
+            existing_groups.astype(str).str.strip() != ""
+        )
+        grouped_df.loc[~has_existing_value, "group"] = resolved_groups.loc[~has_existing_value]
+    else:
+        grouped_df["group"] = resolved_groups
+
+    return grouped_df
+
+
 def merge_cell_and_dye_layout(
     cell_df: pd.DataFrame,
     dye_df: pd.DataFrame | None,

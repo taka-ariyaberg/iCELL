@@ -154,10 +154,82 @@
   gap: 8px;
 }
 
+.number-input-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.number-input-field {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+}
+
+.number-input-field::-webkit-outer-spin-button,
+.number-input-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.number-input-field[type=number] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.number-input-steppers {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  width: 2.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  pointer-events: none;
+}
+
+.number-input-step {
+  flex: 1 1 50%;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(180deg, rgba(0, 184, 255, 0.18) 0%, rgba(0, 184, 255, 0.08) 100%);
+  color: var(--icell-accent);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.number-input-step:first-child {
+  border-top-right-radius: calc(var(--icell-radius-control) - 1px);
+}
+
+.number-input-step:last-child {
+  border-bottom-right-radius: calc(var(--icell-radius-control) - 1px);
+}
+
+.number-input-step:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(0, 184, 255, 0.34) 0%, rgba(0, 184, 255, 0.16) 100%);
+  color: #ffffff;
+}
+
+.number-input-step:disabled {
+  cursor: not-allowed;
+  background: rgba(58, 72, 87, 0.7);
+  color: rgba(160, 170, 184, 0.65);
+}
+
 .input-group input,
 .input-group select {
   flex: 1;
-  padding: 8px 10px;
+  min-height: 44px;
+  padding: 10px 12px;
   font-size: 13px;
   background-color: var(--icell-bg);
   border: 1px solid var(--icell-border);
@@ -425,6 +497,7 @@
   background-color: var(--icell-surface);
   border: 1px solid var(--icell-border-strong);
   border-radius: var(--icell-radius-control);
+  min-height: 44px;
   padding: 10px 12px;
   font-size: 13px;
   color: #ffffff;
@@ -596,7 +669,8 @@
 
 .form-group input {
   width: 100%;
-  padding: 8px 10px;
+  min-height: 44px;
+  padding: 10px 12px;
   background-color: #0f1419;
   border: 1px solid var(--icell-border);
   border-radius: 6px;

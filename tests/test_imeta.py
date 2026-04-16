@@ -51,6 +51,7 @@ class IMetaBuilderTests(unittest.TestCase):
                     "well": "P1-A1",
                     "row": "A",
                     "column": 1,
+                    "group": "Control",
                     "cells_per_well": 1000,
                     "dye_program": "Program_A",
                     "cell_suspension_dispense_ul_per_well": 20.0,
@@ -61,6 +62,7 @@ class IMetaBuilderTests(unittest.TestCase):
                     "well": "P1-A2",
                     "row": "A",
                     "column": 2,
+                    "group": "Treatment",
                     "cells_per_well": 1000,
                     "dye_program": pd.NA,
                     "cell_suspension_dispense_ul_per_well": 40.0,
@@ -128,12 +130,14 @@ class IMetaBuilderTests(unittest.TestCase):
             [
                 "software",
                 "software_version",
+                "seeding_date",
                 "plate_id",
                 "well",
+                "group",
                 "seeding_density_cells_per_well",
+                "initial_cell_suspension_concentration_cells/mL",
+                "cell_suspension_concentration_cells/mL",
                 "cell_suspension_dispense_ul_per_well",
-                "cell_suspension_concentration",
-                "seeding_date",
                 "dye_program",
                 "dye_mastermix_dispense_ul_per_well",
                 "Program_A_Hoechst 33342",
@@ -150,10 +154,15 @@ class IMetaBuilderTests(unittest.TestCase):
         self.assertEqual(dyed_row["plate_id"], "PLATE-42")
         self.assertEqual(dyed_row["seeding_date"], "2026-04-14")
         self.assertEqual(dyed_row["well"], "A01")
+        self.assertEqual(dyed_row["group"], "Control")
         self.assertEqual(dyed_row["dye_program"], "Program_A")
         self.assertEqual(dyed_row["seeding_density_cells_per_well"], 1000)
+        self.assertEqual(
+            dyed_row["initial_cell_suspension_concentration_cells/mL"],
+            "5000000",
+        )
         self.assertEqual(dyed_row["cell_suspension_dispense_ul_per_well"], "20")
-        self.assertEqual(dyed_row["cell_suspension_concentration"], "50000 cells/mL")
+        self.assertEqual(dyed_row["cell_suspension_concentration_cells/mL"], "50000")
         self.assertEqual(dyed_row["dye_mastermix_dispense_ul_per_well"], "20")
         self.assertEqual(
             dyed_row["Program_A_Hoechst 33342"],
@@ -175,6 +184,7 @@ class IMetaBuilderTests(unittest.TestCase):
         self.assertAlmostEqual(total_dye_mastermix, 20.0, places=6)
 
         self.assertEqual(undyed_row["well"], "A02")
+        self.assertEqual(undyed_row["group"], "Treatment")
         self.assertEqual(undyed_row["dye_program"], "NONE")
         self.assertEqual(undyed_row["dye_mastermix_dispense_ul_per_well"], "0")
         self.assertEqual(undyed_row["Program_A_Hoechst 33342"], "")
@@ -207,13 +217,15 @@ class IMetaBuilderTests(unittest.TestCase):
             [
                 "software",
                 "software_version",
-                "plate_id",
-                "well",
-                "plate_number",
-                "seeding_density_cells_per_well",
-                "cell_suspension_dispense_ul_per_well",
-                "cell_suspension_concentration",
                 "seeding_date",
+                "plate_id",
+                "plate_number",
+                "well",
+                "group",
+                "seeding_density_cells_per_well",
+                "initial_cell_suspension_concentration_cells/mL",
+                "cell_suspension_concentration_cells/mL",
+                "cell_suspension_dispense_ul_per_well",
                 "dye_program",
                 "dye_mastermix_dispense_ul_per_well",
             ],
@@ -221,6 +233,7 @@ class IMetaBuilderTests(unittest.TestCase):
         self.assertEqual(imeta_df.iloc[0]["plate_id"], "PLATE-MULTI")
         self.assertEqual(imeta_df.iloc[0]["well"], "B10")
         self.assertEqual(imeta_df.iloc[0]["plate_number"], 2)
+        self.assertEqual(imeta_df.iloc[0]["group"], "")
 
 
 if __name__ == "__main__":

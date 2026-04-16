@@ -111,7 +111,7 @@ If neither is provided, the frontend defaults to `http://localhost:8000/api`.
 A: Prefer wiring shared backend outputs through the results page. Frontend-only downloads should use `utils/csvExport.ts` or `utils/exportUtils.ts` and be attached in the owning page or component.
 
 **Q: What is `iMETA.csv`?**
-A: It is the per-well metadata export. It is separate from `meta_dye.csv`, which remains an input file for dye recipe definitions.
+A: It is the per-well metadata export. It is separate from `meta_dye.csv`, which remains an input file for dye recipe definitions, and it now includes user group labels plus both stock and per-well cell suspension concentrations.
 
 **Q: Can I modify the Python code?**
 A: Yes, when the change belongs to calculation rules, validation, or shared workflow behavior. Keep those changes in the Python engine rather than duplicating them in React.

@@ -107,7 +107,7 @@ Exported artifacts use a shared base name:
 - `ProjectName__PlateID__YYYY-MM-DD__iMETA.csv`
 - `ProjectName__PlateID__YYYY-MM-DD__instructions.txt`
 
-`iMETA.csv` is the per-well metadata export. It includes Plate ID, seeding date, cell suspension concentration, dye program assignment, and per-component mastermix additions in a single wide table.
+`iMETA.csv` is the per-well metadata export. It includes Plate ID, well, user-defined group name, seeding date, initial stock cell suspension concentration, per-well cell suspension concentration, dye program assignment, and per-component mastermix additions in a single wide table.
 
 ---
 

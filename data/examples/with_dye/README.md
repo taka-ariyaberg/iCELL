@@ -35,7 +35,7 @@ The notebook will generate:
 - **Seeding summary table** - cell suspension volumes per concentration group
 - **Dye mastermix summary table** - dye volumes per dye program
 - **Cell and dye preparation instructions** - complete mixing steps
-- **iMETA.csv** - per-well metadata export with Plate ID, seeding date, cell suspension concentration, and dye-component additions
+- **iMETA.csv** - per-well metadata export with Plate ID, well/group info, stock and per-well cell suspension concentrations, and dye-component additions
 - **Run log** - detailed trace of the calculation
 
 Artifacts use the shared naming format:

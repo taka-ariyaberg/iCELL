@@ -67,6 +67,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
         run_name: configData.plate_id,
         seeding_date: configData.seeding_date ?? '',
       },
+      well_groups: wells,
       mode: configData.mode,
       plate_type: configData.plate_type,
       num_plates: configData.num_plates,

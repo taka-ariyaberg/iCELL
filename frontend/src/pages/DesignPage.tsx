@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { NumberInput } from '../components/NumberInput';
 import { PlateVisualization, generateDistinctColors, generateDyeColor } from '../components/PlateVisualization';
 import { usePlateStore } from '../store/plateStore';
 import { ConfigInput, DyeProgramInput } from '../services/apiClient';
@@ -379,7 +380,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   // ── inline style tokens ─────────────────────────────────────────────────────
   const S = {
     label: { fontSize: '10px', color: '#888', marginBottom: '3px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' } as React.CSSProperties,
-    input: { padding: '6px 10px', background: '#1a1f2e', border: '1px solid #3a4857', borderRadius: '4px', color: '#fff', fontSize: '13px' } as React.CSSProperties,
+    input: { minHeight: '44px', padding: '10px 12px', background: '#1a1f2e', border: '1px solid #3a4857', borderRadius: '4px', color: '#fff', fontSize: '13px' } as React.CSSProperties,
     sep: { width: '1px', height: '36px', background: '#2a3847', alignSelf: 'center' } as React.CSSProperties,
   };
 
@@ -465,23 +466,23 @@ export const DesignPage: React.FC<DesignPageProps> = ({
               <>
                 <div>
                   <div style={S.label}>Rows</div>
-                  <input type="number" min={1} max={32} value={customRows}
+                  <NumberInput min={1} max={32} value={customRows}
                     onChange={e => setCustomRows(parseInt(e.target.value) || 1)} disabled={isLoading}
-                    onFocus={e => e.target.select()} style={{ ...S.input, width: '54px' }} />
+                    onFocus={e => e.target.select()} style={{ ...S.input, width: '78px' }} />
                 </div>
                 <div>
                   <div style={S.label}>Cols</div>
-                  <input type="number" min={1} max={48} value={customCols}
+                  <NumberInput min={1} max={48} value={customCols}
                     onChange={e => setCustomCols(parseInt(e.target.value) || 1)} disabled={isLoading}
-                    onFocus={e => e.target.select()} style={{ ...S.input, width: '54px' }} />
+                    onFocus={e => e.target.select()} style={{ ...S.input, width: '78px' }} />
                 </div>
               </>
             )}
             <div>
               <div style={S.label}># Plates</div>
-              <input type="number" min={1} value={numPlates}
+              <NumberInput min={1} value={numPlates}
                 onChange={e => setNumPlates(parseInt(e.target.value) || 1)} disabled={isLoading}
-                onFocus={e => e.target.select()} style={{ ...S.input, width: '60px' }} />
+                onFocus={e => e.target.select()} style={{ ...S.input, width: '84px' }} />
             </div>
           </div>
 
@@ -833,16 +834,16 @@ export const DesignPage: React.FC<DesignPageProps> = ({
           <div className="params-row">
             <div className="form-group">
               <label htmlFor="stock_cell_conc">Stock Cell Concentration (cells/mL)</label>
-              <input
-                id="stock_cell_conc" type="number" value={stockCellConc}
+              <NumberInput
+                id="stock_cell_conc" value={stockCellConc}
                 onChange={e => setStockCellConc(parseInt(e.target.value))} disabled={isLoading}
                 onFocus={e => e.target.select()}
               />
             </div>
             <div className="form-group">
               <label htmlFor="overage_pct">Overage (%)</label>
-              <input
-                id="overage_pct" type="number" step="5" min="0" max="200" value={overagePct}
+              <NumberInput
+                id="overage_pct" step="5" min="0" max="200" value={overagePct}
                 onChange={e => setOveragePct(parseInt(e.target.value))} disabled={isLoading}
                 onFocus={e => e.target.select()}
               />
@@ -850,8 +851,8 @@ export const DesignPage: React.FC<DesignPageProps> = ({
             </div>
             <div className="form-group">
               <label htmlFor="final_well_vol">Final Well Volume (µL)</label>
-              <input
-                id="final_well_vol" type="number" min="10" max="200" step="5" value={finalWellVolume}
+              <NumberInput
+                id="final_well_vol" min="10" max="200" step="5" value={finalWellVolume}
                 onChange={e => setFinalWellVolume(parseInt(e.target.value))} disabled={isLoading}
                 onFocus={e => e.target.select()}
               />
@@ -863,8 +864,8 @@ export const DesignPage: React.FC<DesignPageProps> = ({
             </div>
             <div className="form-group">
               <label htmlFor="dead_vol_cells">Dead Volume – Cell Suspension (µL)</label>
-              <input
-                id="dead_vol_cells" type="number" value={deadVolumeCells}
+              <NumberInput
+                id="dead_vol_cells" value={deadVolumeCells}
                 onChange={e => setDeadVolumeCells(parseInt(e.target.value))} disabled={isLoading}
                 onFocus={e => e.target.select()}
               />
@@ -872,8 +873,8 @@ export const DesignPage: React.FC<DesignPageProps> = ({
             {mode === 'dye' && (
               <div className="form-group">
                 <label htmlFor="dead_vol_dye">Dead Volume – Dye (µL)</label>
-                <input
-                  id="dead_vol_dye" type="number" value={deadVolumeDye}
+                <NumberInput
+                  id="dead_vol_dye" value={deadVolumeDye}
                   onChange={e => setDeadVolumeDye(parseInt(e.target.value))} disabled={isLoading}
                   onFocus={e => e.target.select()}
                 />
@@ -911,8 +912,8 @@ export const DesignPage: React.FC<DesignPageProps> = ({
               </div>
               <div className="form-group">
                 <label htmlFor="density-input">Seeding Density (cells per well)</label>
-                <input
-                  id="density-input" type="number" value={densityInput}
+                <NumberInput
+                  id="density-input" value={densityInput}
                   onChange={e => setDensityInput(parseInt(e.target.value) || 0)}
                   onFocus={e => e.target.select()}
                   onKeyDown={e => e.key === 'Enter' && handleAssignGroup()}
@@ -1067,7 +1068,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                       />
                       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                         <label style={{ fontSize: '11px', color: '#a0aab8', whiteSpace: 'nowrap' }}>Stock:</label>
-                        <input type="number" placeholder="conc." value={modalNewDye.stockConcentration || ''}
+                        <NumberInput placeholder="conc." value={modalNewDye.stockConcentration || ''}
                           onChange={e => setModalNewDye({ ...modalNewDye, stockConcentration: parseFloat(e.target.value) || 0 })}
                           onFocus={e => e.target.select()}
                           style={{ flex: 1, padding: '8px', background: '#1a1f2e', border: `1px solid ${modalNewDye.stockConcentration > 0 ? '#00b8ff' : '#3a4857'}`, borderRadius: '4px', color: '#fff', fontSize: '12px' }}
@@ -1076,7 +1077,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                       </div>
                       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                         <label style={{ fontSize: '11px', color: '#a0aab8', whiteSpace: 'nowrap' }}>Final:</label>
-                        <input type="number" placeholder="conc." value={modalNewDye.finalConcentration || ''}
+                        <NumberInput placeholder="conc." value={modalNewDye.finalConcentration || ''}
                           onChange={e => setModalNewDye({ ...modalNewDye, finalConcentration: parseFloat(e.target.value) || 0 })}
                           onFocus={e => e.target.select()}
                           style={{ flex: 1, padding: '8px', background: '#1a1f2e', border: `1px solid ${modalNewDye.finalConcentration > 0 ? '#00b8ff' : '#3a4857'}`, borderRadius: '4px', color: '#fff', fontSize: '12px' }}
@@ -1162,7 +1163,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                   />
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <label style={{ fontSize: '11px', color: '#a0aab8', whiteSpace: 'nowrap' }}>Stock:</label>
-                    <input type="number" placeholder="conc." value={modalNewDye.stockConcentration || ''}
+                    <NumberInput placeholder="conc." value={modalNewDye.stockConcentration || ''}
                       onChange={e => setModalNewDye({ ...modalNewDye, stockConcentration: parseFloat(e.target.value) || 0 })}
                       onFocus={e => e.target.select()}
                       style={{ flex: 1, padding: '8px', background: '#1a1f2e', border: `1px solid ${modalNewDye.stockConcentration > 0 ? '#00b8ff' : '#3a4857'}`, borderRadius: '4px', color: '#fff', fontSize: '12px' }}
@@ -1171,7 +1172,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                   </div>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <label style={{ fontSize: '11px', color: '#a0aab8', whiteSpace: 'nowrap' }}>Final:</label>
-                    <input type="number" placeholder="conc." value={modalNewDye.finalConcentration || ''}
+                    <NumberInput placeholder="conc." value={modalNewDye.finalConcentration || ''}
                       onChange={e => setModalNewDye({ ...modalNewDye, finalConcentration: parseFloat(e.target.value) || 0 })}
                       onFocus={e => e.target.select()}
                       style={{ flex: 1, padding: '8px', background: '#1a1f2e', border: `1px solid ${modalNewDye.finalConcentration > 0 ? '#00b8ff' : '#3a4857'}`, borderRadius: '4px', color: '#fff', fontSize: '12px' }}

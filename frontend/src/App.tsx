@@ -83,6 +83,7 @@ const App: React.FC = () => {
 
       const plateLayout: PlateLayoutInput = {
         well_positions: numericWells,
+        well_groups: wells,
         dye_programs: receivedConfig.mode === 'dye' ? wellDyePrograms : undefined,
         meta_dye_programs: receivedConfig.mode === 'dye' ? metaDyePrograms : undefined,
       };

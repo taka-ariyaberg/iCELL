@@ -38,6 +38,7 @@ class DyeProgramInput(BaseModel):
 class PlateLayoutInput(BaseModel):
     """Plate layout data from frontend."""
     well_positions: Dict[str, int] = Field(..., description="Well positions and cell counts e.g. A1: 500")
+    well_groups: Optional[Dict[str, str]] = Field(None, description="Optional well to group-name mapping e.g. A1: Control")
     dye_programs: Optional[Dict[str, str]] = Field(None, description="Optional dye programs per well e.g. B2: CP_A")
     meta_dye_programs: Optional[List[DyeProgramInput]] = Field(None, description="Full dye program definitions (concentrations, units) from the Configuration UI")
 
