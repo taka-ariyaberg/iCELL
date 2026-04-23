@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 import pandas as pd
 
-from icell.reporting.formatted_exports import build_export_file_base
+from icell.reporting.file_names import build_export_filename
 
 
 def ensure_parent_dir(path: str | Path) -> Path:
@@ -34,17 +35,16 @@ def export_run_outputs(
     imeta_df: pd.DataFrame | None = None,
     instructions_text: str | None = None,
     output_instructions_dir: str | Path | None = None,
+    exported_at: datetime | None = None,
 ) -> dict[str, str]:
     output_tables_dir = Path(output_tables_dir)
     output_tables_dir.mkdir(parents=True, exist_ok=True)
 
-    filename_base = build_export_file_base(config)
-
     written: dict[str, str] = {}
 
-    merged_path = output_tables_dir / f"{filename_base}__merged_layout.csv"
-    seeded_path = output_tables_dir / f"{filename_base}__seeded_layout.csv"
-    seeding_summary_path = output_tables_dir / f"{filename_base}__seeding_summary.csv"
+    merged_path = output_tables_dir / build_export_filename(config, "merged_layout", "csv", exported_at)
+    seeded_path = output_tables_dir / build_export_filename(config, "seeded_layout", "csv", exported_at)
+    seeding_summary_path = output_tables_dir / build_export_filename(config, "seeding_summary", "csv", exported_at)
 
     export_dataframe(merged_layout_df, merged_path, index=False)
     export_dataframe(seeded_layout_df, seeded_path, index=False)
@@ -58,24 +58,28 @@ def export_run_outputs(
         formatted_dye_program_summary_df is not None
         and not formatted_dye_program_summary_df.empty
     ):
-        dye_program_summary_path = output_tables_dir / f"{filename_base}__dye_program_summary.csv"
+        dye_program_summary_path = output_tables_dir / build_export_filename(
+            config, "dye_program_summary", "csv", exported_at
+        )
         export_dataframe(formatted_dye_program_summary_df, dye_program_summary_path, index=False)
         written["dye_program_summary_csv"] = str(dye_program_summary_path)
 
     if dye_recipe_df is not None and not dye_recipe_df.empty:
-        dye_recipe_path = output_tables_dir / f"{filename_base}__dye_recipe.csv"
+        dye_recipe_path = output_tables_dir / build_export_filename(config, "dye_recipe", "csv", exported_at)
         export_dataframe(dye_recipe_df, dye_recipe_path, index=False)
         written["dye_recipe_csv"] = str(dye_recipe_path)
 
     if imeta_df is not None and not imeta_df.empty:
-        imeta_path = output_tables_dir / f"{filename_base}__iMETA.csv"
+        imeta_path = output_tables_dir / build_export_filename(config, "iMETA", "csv", exported_at)
         export_dataframe(imeta_df, imeta_path, index=False)
         written["imeta_csv"] = str(imeta_path)
 
     if instructions_text is not None and output_instructions_dir is not None:
         output_instructions_dir = Path(output_instructions_dir)
         output_instructions_dir.mkdir(parents=True, exist_ok=True)
-        instructions_path = output_instructions_dir / f"{filename_base}__instructions.txt"
+        instructions_path = output_instructions_dir / build_export_filename(
+            config, "instructions", "txt", exported_at
+        )
         export_text(instructions_text, instructions_path)
         written["instructions_txt"] = str(instructions_path)
 

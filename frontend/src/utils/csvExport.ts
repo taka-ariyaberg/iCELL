@@ -35,20 +35,3 @@ export function serializeRecordsToCsv(rows: Record<string, unknown>[]): string {
 
   return `${lines.join('\n')}\n`;
 }
-
-function sanitizeFilePart(value: string, fallback: string): string {
-  const trimmed = value.trim();
-  if (!trimmed) return fallback;
-  return trimmed
-    .replace(/\s+/g, '_')
-    .replace(/[^A-Za-z0-9._-]+/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^[._]+|[._]+$/g, '') || fallback;
-}
-
-export function buildExportBaseName(projectName?: string, plateId?: string, date?: string): string {
-  const exportDate = date || new Date().toISOString().split('T')[0];
-  const safeProject = sanitizeFilePart(projectName || 'iCELL', 'iCELL');
-  const safePlateId = sanitizeFilePart(plateId || 'plate', 'plate');
-  return `${safeProject}__${safePlateId}__${exportDate}`;
-}

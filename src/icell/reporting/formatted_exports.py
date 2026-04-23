@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime
 import re
 
 import pandas as pd
 
 from icell import __version__
+from icell.reporting.file_names import build_export_file_base
 
 
 def _is_missing(value: object) -> bool:
@@ -38,14 +38,6 @@ def _normalize_header_text(value: str) -> str:
     return text.replace("\n", " ").replace("\r", " ") or "unnamed"
 
 
-def _filename_safe(value: object, default: str) -> str:
-    text = _clean_text(value, default=default)
-    text = re.sub(r"\s+", "_", text)
-    text = re.sub(r"[^A-Za-z0-9._-]+", "_", text)
-    text = re.sub(r"_+", "_", text).strip("._")
-    return text or default
-
-
 def _component_column_name(dye_program: str, component_name: str) -> str:
     return f"{_normalize_header_text(dye_program)}_{_normalize_header_text(component_name)}"
 
@@ -58,17 +50,6 @@ def _summary_component_value(
         f"{mastermix_concentration_label} in mastermix; "
         f"{_format_number(total_addition_volume_ul)} uL total"
     )
-
-
-def build_export_file_base(config: dict, exported_at: datetime | None = None) -> str:
-    project = config.get("project", {})
-    when = exported_at or datetime.now()
-    project_name = _filename_safe(project.get("name"), default="iCELL")
-    plate_id = _filename_safe(
-        project.get("plate_id") or project.get("run_name"),
-        default="plate",
-    )
-    return f"{project_name}__{plate_id}__{when.strftime('%Y-%m-%d')}"
 
 
 def build_formatted_seeding_summary_dataframe(

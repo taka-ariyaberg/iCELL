@@ -11,15 +11,15 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+from icell.reporting.file_names import build_export_file_base, build_export_filename
 from icell.reporting.formatted_exports import (
-    build_export_file_base,
     build_formatted_dye_summary_dataframe,
     build_formatted_seeding_summary_dataframe,
 )
 
 
 class FormattedExportTests(unittest.TestCase):
-    def test_build_export_file_base_uses_project_plate_and_date(self) -> None:
+    def test_build_export_file_base_uses_project_and_plate(self) -> None:
         config = {
             "project": {
                 "name": "My Project",
@@ -27,9 +27,29 @@ class FormattedExportTests(unittest.TestCase):
             }
         }
 
-        base = build_export_file_base(config, exported_at=datetime(2026, 4, 14))
+        base = build_export_file_base(config)
 
-        self.assertEqual(base, "My_Project__Plate_01_A__2026-04-14")
+        self.assertEqual(base, "My_Project_Plate_01_A")
+
+    def test_build_export_filename_uses_standardized_prefix_artifact_and_timestamp(self) -> None:
+        config = {
+            "project": {
+                "name": "My Project",
+                "plate_id": "Plate 01/A",
+            }
+        }
+
+        filename = build_export_filename(
+            config,
+            artifact="seeding_summary",
+            extension="csv",
+            exported_at=datetime(2026, 4, 14, 9, 8, 7),
+        )
+
+        self.assertEqual(
+            filename,
+            "iCELL_My_Project_Plate_01_A_seeding_summary_2026-04-14-09-08-07.csv",
+        )
 
     def test_build_formatted_seeding_summary_dataframe(self) -> None:
         config = {

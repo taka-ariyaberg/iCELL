@@ -6,6 +6,7 @@ import {
 } from './PlateVisualization';
 import { ViewModeSwitch } from './ViewModeSwitch';
 import { downloadFile } from '../utils/exportUtils';
+import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
 import {
   mergeProtocolDetails,
   normalizeProtocolInstructions,
@@ -77,7 +78,7 @@ const buildUniqueLabels = (labels: string[]): string[] => {
 
 export const ProtocolSection: React.FC<ProtocolSectionProps> = ({
   instructions,
-  exportBaseName = 'iCELL__plate__date',
+  exportBaseName = 'iCELL_plate',
   onDownloadIMeta = null,
   hasIMetaDownload = false,
   seedingSummary,
@@ -360,7 +361,11 @@ export const ProtocolSection: React.FC<ProtocolSectionProps> = ({
   ), [dyePlatePrograms, wells]);
 
   const handleDownloadInstructions = () => {
-    downloadFile(instructions, `${exportBaseName}__instructions.txt`, 'text/plain');
+    downloadFile(
+      instructions,
+      buildDownloadFilenameFromBase(exportBaseName, 'instructions', 'txt'),
+      'text/plain',
+    );
   };
 
   const handleCellWellSelect = (well: string) => {

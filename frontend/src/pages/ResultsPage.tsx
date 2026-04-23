@@ -3,7 +3,8 @@ import { ResultsDisplay } from '../components/ResultsDisplay';
 import { usePlateStore } from '../store/plateStore';
 import { ConfigInput } from '../services/apiClient';
 import { generateCellLayout, generateDyeLayout, generateMetaDye, downloadFile } from '../utils/exportUtils';
-import { buildExportBaseName, serializeRecordsToCsv } from '../utils/csvExport';
+import { serializeRecordsToCsv } from '../utils/csvExport';
+import { buildDownloadBaseName, buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
 import '../styles/ResultsPage.css';
 
 interface ResultsPageProps {
@@ -53,7 +54,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
   const uploadedCellLayoutFile = sessionStorage.getItem('lastUploadedCellLayoutFile');
   const uploadedDyeLayoutFile = sessionStorage.getItem('lastUploadedDyeLayoutFile');
   const uploadedMetaDyeFile = sessionStorage.getItem('lastUploadedMetaDyeFile');
-  const exportBaseName = buildExportBaseName(
+  const exportBaseName = buildDownloadBaseName(
     configData?.project_name,
     configData?.plate_id,
   );
@@ -122,7 +123,11 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
     const config = uploadedConfigFile
       ? uploadedConfigFile
       : JSON.stringify(buildReimportConfig(), null, 2);
-    downloadFile(config, `${exportBaseName}__config.json`, 'application/json');
+    downloadFile(
+      config,
+      buildDownloadFilenameFromBase(exportBaseName, 'config', 'json'),
+      'application/json',
+    );
   };
 
   const handleDownloadCellLayout = () => {
@@ -131,7 +136,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
       wells,
       groups: storeGroups,
     });
-    downloadFile(csv, `${exportBaseName}__cell_layout.csv`, 'text/csv');
+    downloadFile(csv, buildDownloadFilenameFromBase(exportBaseName, 'cell_layout', 'csv'), 'text/csv');
   };
 
   const handleDownloadDyeLayout = () => {
@@ -140,20 +145,20 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
       wells,
       dyePrograms,
     });
-    downloadFile(csv, `${exportBaseName}__dye_layout.csv`, 'text/csv');
+    downloadFile(csv, buildDownloadFilenameFromBase(exportBaseName, 'dye_layout', 'csv'), 'text/csv');
   };
 
   const handleDownloadMetaDye = () => {
     const storedPrograms = sessionStorage.getItem('dyePrograms');
     const programs = storedPrograms ? JSON.parse(storedPrograms) : [];
     const csv = uploadedMetaDyeFile || generateMetaDye(programs);
-    downloadFile(csv, `${exportBaseName}__meta_dye.csv`, 'text/csv');
+    downloadFile(csv, buildDownloadFilenameFromBase(exportBaseName, 'meta_dye', 'csv'), 'text/csv');
   };
 
   const handleDownloadIMeta = () => {
     if (imetaRows.length === 0) return;
     const csv = serializeRecordsToCsv(imetaRows);
-    downloadFile(csv, `${exportBaseName}__iMETA.csv`, 'text/csv');
+    downloadFile(csv, buildDownloadFilenameFromBase(exportBaseName, 'iMETA', 'csv'), 'text/csv');
   };
 
   return (

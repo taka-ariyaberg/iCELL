@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -25,8 +26,8 @@ from icell.processing.validation import (
     validate_meta_dye_df,
 )
 from icell.reporting.export import export_run_outputs
+from icell.reporting.file_names import build_export_filename
 from icell.reporting.formatted_exports import (
-    build_export_file_base,
     build_formatted_dye_summary_dataframe,
     build_formatted_seeding_summary_dataframe,
 )
@@ -44,6 +45,7 @@ def _resolve(path_str: str) -> Path:
 
 def run_icell(config_path: str | None = None) -> dict:
     config = load_config(config_path)
+    exported_at = datetime.now()
     validate_config(config)
     validate_dye_file_if_needed(config)
     ensure_output_dirs()
@@ -134,11 +136,12 @@ def run_icell(config_path: str | None = None) -> dict:
         imeta_df=imeta_df,
         instructions_text=instructions_text,
         output_instructions_dir=_resolve(config["paths"]["output_instructions_dir"]),
+        exported_at=exported_at,
     )
 
     log_output_path = (
         _resolve(config["paths"]["output_logs_dir"])
-        / f"{build_export_file_base(config)}__run_log.txt"
+        / build_export_filename(config, "run_log", "txt", exported_at)
     )
 
     log_text = build_run_log_text(

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
 import '../styles/CSVUploader.css';
 
 type UploadFileKey = 'config' | 'cell_layout' | 'dye_layout' | 'meta_dye';
@@ -174,7 +175,9 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
     const content = generator();
     const mimeType = spec.type === 'json' ? 'application/json' : 'text/csv';
-    const filename = spec.type === 'json' ? 'config.json' : `${key}.csv`;
+    const artifact = spec.type === 'json' ? 'config_template' : `${key}_template`;
+    const extension = spec.type === 'json' ? 'json' : 'csv';
+    const filename = buildDownloadFilenameFromBase('template', artifact, extension);
 
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);

@@ -9,6 +9,7 @@ import {
   generateLayoutPNG, generateDyePNG,
   downloadFile,
 } from '../utils/exportUtils';
+import { buildDownloadFilename } from '../utils/downloadFilenames';
 import '../styles/DesignerPage.css';
 
 export const SAVED_PROGRAMS_KEY = 'iCELL_savedDyePrograms_v2';
@@ -357,22 +358,46 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   };
 
   // ── download helpers ────────────────────────────────────────────────────────
-  const ts = () => new Date().toISOString().split('T')[0];
-
-  const handleDownloadLayoutCSV = () => downloadFile(generateCellLayout({ plateType: effectivePlateType, wells, groups }), `cell_layout_${ts()}.csv`, 'text/csv');
-  const handleDownloadLayoutSVG = () => downloadFile(generateLayoutSVG({ plateType: effectivePlateType, wells, groups }), `plate_layout_${ts()}.svg`, 'image/svg+xml');
-  const handleDownloadDyeCSV = () => downloadFile(generateDyeLayout({ plateType: effectivePlateType, wells, dyePrograms }), `dye_layout_${ts()}.csv`, 'text/csv');
-  const handleDownloadDyeSVG = () => downloadFile(generateDyeSVG({ plateType: effectivePlateType, wells, groups, dyePrograms }), `dye_assignment_${ts()}.svg`, 'image/svg+xml');
+  const handleDownloadLayoutCSV = () => downloadFile(
+    generateCellLayout({ plateType: effectivePlateType, wells, groups }),
+    buildDownloadFilename('cell_layout', 'csv', projectName, plateId),
+    'text/csv',
+  );
+  const handleDownloadLayoutSVG = () => downloadFile(
+    generateLayoutSVG({ plateType: effectivePlateType, wells, groups }),
+    buildDownloadFilename('plate_layout', 'svg', projectName, plateId),
+    'image/svg+xml',
+  );
+  const handleDownloadDyeCSV = () => downloadFile(
+    generateDyeLayout({ plateType: effectivePlateType, wells, dyePrograms }),
+    buildDownloadFilename('dye_layout', 'csv', projectName, plateId),
+    'text/csv',
+  );
+  const handleDownloadDyeSVG = () => downloadFile(
+    generateDyeSVG({ plateType: effectivePlateType, wells, groups, dyePrograms }),
+    buildDownloadFilename('dye_assignment', 'svg', projectName, plateId),
+    'image/svg+xml',
+  );
 
   const handleDownloadLayoutPNG = async () => {
     setDownloadingPNG('layout');
-    try { await generateLayoutPNG({ plateType: effectivePlateType, wells, groups }, `plate_layout_${ts()}.png`); }
+    try {
+      await generateLayoutPNG(
+        { plateType: effectivePlateType, wells, groups },
+        buildDownloadFilename('plate_layout', 'png', projectName, plateId),
+      );
+    }
     catch { alert('Failed to generate PNG.'); }
     finally { setDownloadingPNG(null); }
   };
   const handleDownloadDyePNG = async () => {
     setDownloadingPNG('dye');
-    try { await generateDyePNG({ plateType: effectivePlateType, wells, groups, dyePrograms }, `dye_assignment_${ts()}.png`); }
+    try {
+      await generateDyePNG(
+        { plateType: effectivePlateType, wells, groups, dyePrograms },
+        buildDownloadFilename('dye_assignment', 'png', projectName, plateId),
+      );
+    }
     catch { alert('Failed to generate PNG.'); }
     finally { setDownloadingPNG(null); }
   };

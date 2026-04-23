@@ -4,6 +4,7 @@ import { ProtocolSection } from './ProtocolSection';
 import { ViewModeSwitch } from './ViewModeSwitch';
 import { downloadFile } from '../utils/exportUtils';
 import { serializeRecordsToCsv } from '../utils/csvExport';
+import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
 import '../styles/ResultsDisplay.css';
 
 interface ResultsDisplayProps {
@@ -64,7 +65,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   dyeSummary,
   formattedSeedingSummary = [],
   formattedDyeSummary = [],
-  exportBaseName = 'iCELL__plate__date',
+  exportBaseName = 'iCELL_plate',
   onDownloadIMeta = null,
   hasIMetaDownload = false,
   plateType = '96',
@@ -456,7 +457,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 <button
                   onClick={() => downloadTable(
                     formattedSeedingSummary.length > 0 ? formattedSeedingSummary : seedingSummary,
-                    `${exportBaseName}__seeding_summary.csv`
+                    buildDownloadFilenameFromBase(exportBaseName, 'seeding_summary', 'csv')
                   )}
                   className="download-btn secondary"
                 >
@@ -634,7 +635,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
               <button
                 onClick={() => downloadTable(
                   formattedDyeSummary.length > 0 ? formattedDyeSummary : dyeSummary,
-                  `${exportBaseName}__dye_program_summary.csv`
+                  buildDownloadFilenameFromBase(exportBaseName, 'dye_program_summary', 'csv')
                 )}
                 className="download-btn secondary"
               >
