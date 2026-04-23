@@ -18,6 +18,8 @@ const EMPTY_UPLOAD_FILES: UploadFilesState = {
   dye_layout: null,
   meta_dye: null,
 };
+const API_UNAVAILABLE_MESSAGE =
+  'Backend API is not available. Start iCELL with: bash scripts/start.sh';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
@@ -35,7 +37,7 @@ const App: React.FC = () => {
       const available = await healthCheck();
       setApiAvailable(available);
       if (!available) {
-        setError('Backend API is not available. Make sure to run: uvicorn backend.app:app --reload');
+        setError(API_UNAVAILABLE_MESSAGE);
       }
     };
 
@@ -164,7 +166,7 @@ const App: React.FC = () => {
     return (
       <div className="app">
         <div className="error-banner">
-          ⚠️ Backend API is not available. Please run the backend server first.
+          ⚠️ {API_UNAVAILABLE_MESSAGE}
         </div>
       </div>
     );

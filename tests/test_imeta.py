@@ -135,8 +135,8 @@ class IMetaBuilderTests(unittest.TestCase):
                 "well",
                 "group",
                 "seeding_density_cells_per_well",
-                "initial_cell_suspension_concentration_cells/mL",
-                "cell_suspension_concentration_cells/mL",
+                "stock_cell_suspension_concentration_cells/mL",
+                "working_cell_suspension_concentration_cells/mL",
                 "cell_suspension_dispense_ul_per_well",
                 "dye_program",
                 "dye_mastermix_dispense_ul_per_well",
@@ -158,11 +158,14 @@ class IMetaBuilderTests(unittest.TestCase):
         self.assertEqual(dyed_row["dye_program"], "Program_A")
         self.assertEqual(dyed_row["seeding_density_cells_per_well"], 1000)
         self.assertEqual(
-            dyed_row["initial_cell_suspension_concentration_cells/mL"],
+            dyed_row["stock_cell_suspension_concentration_cells/mL"],
             "5000000",
         )
         self.assertEqual(dyed_row["cell_suspension_dispense_ul_per_well"], "20")
-        self.assertEqual(dyed_row["cell_suspension_concentration_cells/mL"], "50000")
+        self.assertEqual(
+            dyed_row["working_cell_suspension_concentration_cells/mL"],
+            "50000",
+        )
         self.assertEqual(dyed_row["dye_mastermix_dispense_ul_per_well"], "20")
         self.assertEqual(
             dyed_row["Program_A_Hoechst 33342"],
@@ -223,8 +226,8 @@ class IMetaBuilderTests(unittest.TestCase):
                 "well",
                 "group",
                 "seeding_density_cells_per_well",
-                "initial_cell_suspension_concentration_cells/mL",
-                "cell_suspension_concentration_cells/mL",
+                "stock_cell_suspension_concentration_cells/mL",
+                "working_cell_suspension_concentration_cells/mL",
                 "cell_suspension_dispense_ul_per_well",
                 "dye_program",
                 "dye_mastermix_dispense_ul_per_well",

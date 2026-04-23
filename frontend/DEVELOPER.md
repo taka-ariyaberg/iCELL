@@ -2,33 +2,19 @@
 
 ## Prerequisites
 
-- Node.js 18+
-- Python 3.11+
-- A working backend Python environment, either Conda or a local virtual environment
+- Docker with Compose support
 
 ## Local Development
 
-Replace `/path/to/iCELL_V2` below with the actual location of your local repo.
+Bootstrap the repo with the top-level [README.md](../README.md) first. That file is the canonical setup guide for the supported Docker workflow.
 
-Start the backend:
-
-```bash
-cd /path/to/iCELL_V2
-source .venv/bin/activate  # or: conda activate iCELL
-./scripts/start_backend.sh
-```
-
-Start the frontend:
+Once the repo is bootstrapped locally, the usual frontend development loop is:
 
 ```bash
-cd /path/to/iCELL_V2/frontend
-npm install
-../scripts/start_frontend.sh
+bash scripts/start.sh
 ```
 
-The frontend runs on the URL Vite prints in the terminal. Depending on your local config, this may be `http://localhost:3000` or `http://localhost:5173`.
-
-To stop either server, return to its terminal and press `Ctrl+C`.
+Run that command from the repo root. It builds the app image, starts the backend-plus-frontend container, and starts the notebook container.
 
 ## Current Frontend Pages
 
@@ -113,8 +99,10 @@ curl http://localhost:8000/api/health
 Useful targets:
 
 - `http://localhost:8000/docs`
+- `docker compose ps`
+- `docker compose logs -f app`
+- `docker compose run --rm app python -m unittest discover -s tests`
 - browser devtools
-- TypeScript check with `npx tsc --noEmit`
 
 ## Environment
 
@@ -124,12 +112,10 @@ Supported variables:
 - `VITE_API_BASE_URL`
 
 Fallback: `http://localhost:8000/api`
-- Clear Vite cache: `rm -rf frontend/.vite`
-- Update deps: `npm update`
 
-### TypeScript errors
-- Run: `npx tsc --noEmit` to see all errors
-- Most are solved by proper typing in component imports
+### Frontend build failures
+- Rebuild the app image with `docker compose build app`
+- The frontend production build runs inside the Docker image build, so TypeScript and bundling failures surface there
 
 ## Best Practices
 
@@ -158,7 +144,5 @@ git push origin feature/my-feature
 - [Vite Documentation](https://vitejs.dev)
 
 ## Questions?
-
-Check UI_DESIGN_RULES.md for the current frontend visual and interaction rules.
 
 Check ORGANIZATION.md for architecture overview and component responsibilities.

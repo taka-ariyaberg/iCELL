@@ -1,0 +1,53 @@
+services:
+  app:
+    image: icell:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn backend.app:app --host 0.0.0.0 --port 8000
+    environment:
+      PYTHONPATH: /workspace/src
+      ICELL_RESOURCE_ROOT: /workspace
+      ICELL_RUNTIME_ROOT: /workspace
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config:/workspace/config
+      - ./data:/workspace/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request
+          urllib.request.urlopen("http://127.0.0.1:8000/api/health", timeout=3).read()
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  notebook:
+    image: icell:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - jupyter
+      - lab
+      - --ip=0.0.0.0
+      - --port=8888
+      - --no-browser
+      - --allow-root
+      - --ServerApp.root_dir=/workspace
+      - --ServerApp.token=icell
+    environment:
+      PYTHONPATH: /workspace/src
+      ICELL_RESOURCE_ROOT: /workspace
+      ICELL_RUNTIME_ROOT: /workspace
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config:/workspace/config
+      - ./data:/workspace/data
+      - ./notebooks:/workspace/notebooks

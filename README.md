@@ -18,78 +18,70 @@ iCELL/
 │   ├── api/routes.py       API endpoints
 │   ├── api/schemas.py      Request/response models
 │   └── services/           Bridges API to the engine
-├── config/                 config.json, schema, plate type definitions
+├── config/                 config template, schema, plate type definitions
 ├── data/
 │   ├── examples/           Reference inputs for common run scenarios
 │   ├── input/              Working inputs for notebook/API runs
 │   └── output/             Generated tables, instructions, and logs (gitignored)
+├── docker-compose.yml      Portable app + notebook runtime
+├── Dockerfile              Multi-stage image for the web app and JupyterLab
 ├── frontend/               React + TypeScript UI
 ├── notebooks/run.ipynb     Notebook entry point
-├── scripts/start.sh        Single-script launcher for the web app
+├── scripts/start.sh        Canonical Docker launcher
 ├── src/icell/              Core calculation engine
-├── environment.yml         Conda environment spec
 └── pyproject.toml          Python package metadata
 ```
 
----
+## Setup
 
-## Web App — First-Time Setup
+The supported setup is Docker only.
 
-> Do this once after cloning.
+Requirements:
 
-**1. Python environment** — pick one:
+- A working `docker` installation
+- `docker compose` available on the command line
 
-```bash
-# Option A: virtual environment
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r backend/requirements.txt
-
-# Option B: Conda
-conda env create -f environment.yml
-conda activate iCELL
-pip install -r backend/requirements.txt
-```
-
-**2. Frontend dependencies:**
+Start iCELL from the repo root:
 
 ```bash
-cd frontend
-npm install
-cd ..
+bash scripts/start.sh
 ```
 
-**3. Launch:**
+That command builds the image, starts both containers, waits for the app to respond, and opens the web app in your browser automatically.
+
+Open:
+
+- Web app: `http://localhost:8000`
+- JupyterLab: `http://localhost:8888/lab?token=icell`
+
+To start without opening the browser:
 
 ```bash
-./scripts/start.sh
+bash scripts/start.sh --no-open
 ```
 
-Backend → `http://localhost:8000` · Frontend → `http://localhost:3000`
-
----
-
-## Web App — Returning Users
+To stop iCELL:
 
 ```bash
-./scripts/start.sh
+bash scripts/start.sh stop
 ```
 
-Press `Ctrl+C` to stop both services. To stop from a separate terminal:
+The Docker runtime mounts [config](config), [data](data), and [notebooks](notebooks) from your clone, so inputs, outputs, and notebook edits stay on the host machine.
+
+Manual Docker commands, if you want them:
 
 ```bash
-./scripts/start.sh stop
+docker compose up -d --build
+docker compose down
 ```
-
-Logs: `/tmp/icell_backend.log`, `/tmp/icell_frontend.log`
-
----
 
 ## Notebook Workflow
 
-1. Edit [config/config.json](config/config.json)
-2. Place input CSVs in [data/input](data/input)
-3. Run [notebooks/run.ipynb](notebooks/run.ipynb)
+1. Copy [config/config.template.json](config/config.template.json) to `config/config.json`
+2. Edit `config/config.json` for your run
+3. Create `data/input/` if it does not already exist, then place your input CSVs there
+4. Start iCELL with `bash scripts/start.sh`
+5. Open [notebooks/run.ipynb](notebooks/run.ipynb) in JupyterLab
 
 **Inputs:** `config/config.json`, `config/schema.json`, `data/input/cell_layout.csv`, `data/input/dye_layout.csv`, `data/input/meta_dye.csv`
 
@@ -117,11 +109,10 @@ Exported artifacts use a shared base name:
 - API layer is in [backend](backend); UI logic is in [frontend](frontend).
 - The design workflow now uses `Plate ID` as the primary project identifier. Legacy `run_name` is still accepted for backward compatibility.
 - The results page includes an interactive protocol navigator plus direct downloads for instructions and `iMETA.csv`.
-- Run inputs, generated outputs, and environment files are gitignored.
+- Run inputs and generated outputs are gitignored.
 
 ## Additional Documentation
 
-- [QUICKSTART.md](QUICKSTART.md)
-- [frontend/README.md](frontend/README.md)
-- [frontend/DEVELOPER.md](frontend/DEVELOPER.md)
-- [frontend/ORGANIZATION.md](frontend/ORGANIZATION.md)
+- [frontend/README.md](frontend/README.md) for frontend architecture notes
+- [frontend/DEVELOPER.md](frontend/DEVELOPER.md) for frontend development conventions
+- [frontend/ORGANIZATION.md](frontend/ORGANIZATION.md) for frontend structure

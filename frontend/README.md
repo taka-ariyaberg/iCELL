@@ -8,29 +8,18 @@ This documentation reflects the current frontend structure in the final iCELL 1.
 
 ## Documentation
 
+- [../README.md](../README.md) for the canonical setup and runtime instructions
 - [ORGANIZATION.md](./ORGANIZATION.md) for structure and responsibilities
 - [DEVELOPER.md](./DEVELOPER.md) for day-to-day development
 - [.env.example](.env.example) for local environment configuration
 
-## Local Start
+## Setup
 
-Replace `/path/to/iCELL_V2` below with the actual location of your local repo.
+Use the top-level [README.md](../README.md) as the only supported setup guide.
 
-```bash
-# backend
-cd /path/to/iCELL_V2
-source .venv/bin/activate  # or: conda activate iCELL
-./scripts/start_backend.sh
-
-# frontend
-cd /path/to/iCELL_V2/frontend
-npm install
-../scripts/start_frontend.sh
-```
-
-Vite starts on the URL it prints in the terminal. Depending on your local config, this may be `http://localhost:3000` or `http://localhost:5173`.
-
-To stop either server, return to its terminal and press `Ctrl+C`.
+- iCELL is run through Docker only
+- `bash scripts/start.sh` is the canonical repo entrypoint
+- This frontend document intentionally avoids duplicating startup commands so the repo has one source of truth
 
 ## Current Frontend Structure
 
@@ -117,7 +106,7 @@ A: It is the per-well metadata export. It is separate from `meta_dye.csv`, which
 A: Yes, when the change belongs to calculation rules, validation, or shared workflow behavior. Keep those changes in the Python engine rather than duplicating them in React.
 
 **Q: How do I debug CORS errors?**
-A: Check the backend CORS configuration in `backend/app.py` and confirm the frontend is running on the origin Vite printed.
+A: In the supported Docker setup the frontend is served by FastAPI at `http://localhost:8000`. If you see CORS errors, first confirm you are using the supported containerized runtime.
 
 **Q: Why Zustand instead of Redux?**
 A: Simpler, smaller bundle, less boilerplate for this use case.
@@ -128,6 +117,6 @@ A: Configuration in backend, UI updates in PlateVisualization.tsx and store.
 ## Support
 
 - **Architecture questions** → See ORGANIZATION.md
-- **Setup problems** → See DEVELOPER.md Troubleshooting
+- **Setup problems** → See ../README.md
 - **Feature ideas** → Check current pages/components first
 - **Backend integration** → Check apiClient.ts patterns

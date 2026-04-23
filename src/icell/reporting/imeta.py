@@ -5,6 +5,13 @@ import re
 import pandas as pd
 from icell import __version__
 
+STOCK_CELL_SUSPENSION_CONCENTRATION_COLUMN = (
+    "stock_cell_suspension_concentration_cells/mL"
+)
+WORKING_CELL_SUSPENSION_CONCENTRATION_COLUMN = (
+    "working_cell_suspension_concentration_cells/mL"
+)
+
 
 def _is_missing(value: object) -> bool:
     try:
@@ -178,8 +185,8 @@ def build_imeta_dataframe(
     dye_recipe_df: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     include_plate_number = int(config.get("num_plates", 1)) > 1
-    initial_concentration_column = "initial_cell_suspension_concentration_cells/mL"
-    per_well_concentration_column = "cell_suspension_concentration_cells/mL"
+    initial_concentration_column = STOCK_CELL_SUSPENSION_CONCENTRATION_COLUMN
+    per_well_concentration_column = WORKING_CELL_SUSPENSION_CONCENTRATION_COLUMN
     initial_cell_suspension_concentration = _format_cell_concentration_value(
         config.get("seeding", {}).get("stock_cell_concentration_cells_per_ml"),
     )
