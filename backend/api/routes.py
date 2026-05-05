@@ -1,18 +1,20 @@
 """API routes for iCELL calculations."""
 
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from typing import Optional
+from __future__ import annotations
+
 import json
 import math
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
+from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from .schemas import RunRequest, CalculationResult, HealthResponse
 from ..services.icell_service import run_icell_calculation
 
 
-def clean_values(obj):
+def clean_values(obj: Any) -> Any:
     """Recursively clean NaN and inf values from objects for JSON serialization."""
     if isinstance(obj, dict):
         return {k: clean_values(v) for k, v in obj.items()}
@@ -133,13 +135,13 @@ def _normalize_uploaded_config(
 
 
 @router.get("/health", response_model=HealthResponse)
-async def health_check():
+async def health_check() -> dict[str, str]:
     """Health check endpoint."""
     return {"status": "ok"}
 
 
 @router.post("/run", response_model=CalculationResult)
-async def run_calculation(request: RunRequest):
+async def run_calculation(request: RunRequest) -> dict[str, Any]:
     """
     Run iCELL calculation with provided configuration and plate layout.
     
@@ -178,9 +180,9 @@ async def run_calculation(request: RunRequest):
 async def upload_csv_files(
     config_file: UploadFile = File(..., description="config.json"),
     cell_layout: UploadFile = File(..., description="cell_layout.csv"),
-    dye_layout: Optional[UploadFile] = File(None, description="dye_layout.csv (optional)"),
-    meta_dye: Optional[UploadFile] = File(None, description="meta_dye.csv (optional)")
-):
+    dye_layout: UploadFile | None = File(None, description="dye_layout.csv (optional)"),
+    meta_dye: UploadFile | None = File(None, description="meta_dye.csv (optional)")
+) -> dict[str, Any]:
     """
     Upload configuration and CSV files and run iCELL.
     

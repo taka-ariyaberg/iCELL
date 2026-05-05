@@ -1,41 +1,16 @@
 from __future__ import annotations
 
-import re
-
 import pandas as pd
 
 from icell import __version__
+from icell.reporting._format_utils import (
+    _clean_text,
+    _format_number,
+    _is_missing,
+    _normalize_header_text,
+    _to_float,
+)
 from icell.reporting.file_names import build_export_file_base
-
-
-def _is_missing(value: object) -> bool:
-    try:
-        return bool(pd.isna(value))
-    except TypeError:
-        return False
-
-
-def _clean_text(value: object, default: str = "") -> str:
-    if _is_missing(value):
-        return default
-    text = str(value).strip()
-    return text if text else default
-
-
-def _to_float(value: object, default: float = 0.0) -> float:
-    if _is_missing(value):
-        return default
-    return float(value)
-
-
-def _format_number(value: float, digits: int = 6) -> str:
-    text = f"{float(value):.{digits}f}".rstrip("0").rstrip(".")
-    return text or "0"
-
-
-def _normalize_header_text(value: str) -> str:
-    text = re.sub(r"\s+", " ", value.strip())
-    return text.replace("\n", " ").replace("\r", " ") or "unnamed"
 
 
 def _component_column_name(dye_program: str, component_name: str) -> str:

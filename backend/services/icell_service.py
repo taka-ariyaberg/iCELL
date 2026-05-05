@@ -1,10 +1,11 @@
 """Wrapper service for iCELL calculations."""
 
+from __future__ import annotations
+
+import json
 import os
 import sys
-import json
 from pathlib import Path
-from typing import Dict, Optional
 
 import pandas as pd
 
@@ -59,7 +60,7 @@ def _ensure_custom_plate_type(plate_type: str) -> str:
         return plate_type
 
 
-def create_temp_config(config_input: SeededConfigInput) -> Dict:
+def create_temp_config(config_input: SeededConfigInput) -> dict:
     """Convert frontend config input to iCELL config format."""
     
     # Map standard plate types and pass through others (including custom format like "6,9")
@@ -183,7 +184,7 @@ def create_cell_layout_csv(plate_layout: PlateLayoutInput) -> str:
     return df.to_csv(index=False)
 
 
-def create_dye_layout_csv(plate_layout: PlateLayoutInput) -> Optional[str]:
+def create_dye_layout_csv(plate_layout: PlateLayoutInput) -> str | None:
     """Convert frontend dye layout to CSV format."""
     
     if not plate_layout.dye_programs:
@@ -229,7 +230,7 @@ def create_meta_dye_csv(programs: list) -> str:
     return df.to_csv(index=False)
 
 
-def run_icell_calculation(config_input: SeededConfigInput, plate_layout: PlateLayoutInput) -> Dict:
+def run_icell_calculation(config_input: SeededConfigInput, plate_layout: PlateLayoutInput) -> dict:
     """
     Run iCELL calculation with provided configuration and plate layout.
     

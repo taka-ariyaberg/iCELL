@@ -1,9 +1,15 @@
 from __future__ import annotations
 
-import re
-
 import pandas as pd
+
 from icell import __version__
+from icell.reporting._format_utils import (
+    _clean_text,
+    _format_number,
+    _is_missing,
+    _normalize_header_text,
+    _to_float,
+)
 
 STOCK_CELL_SUSPENSION_CONCENTRATION_COLUMN = (
     "stock_cell_suspension_concentration_cells/mL"
@@ -13,33 +19,8 @@ WORKING_CELL_SUSPENSION_CONCENTRATION_COLUMN = (
 )
 
 
-def _is_missing(value: object) -> bool:
-    try:
-        return bool(pd.isna(value))
-    except TypeError:
-        return False
-
-
 def _has_text(value: object) -> bool:
     return not _is_missing(value) and str(value).strip() != ""
-
-
-def _clean_text(value: object, default: str = "") -> str:
-    if _is_missing(value):
-        return default
-    text = str(value).strip()
-    return text if text else default
-
-
-def _to_float(value: object, default: float = 0.0) -> float:
-    if _is_missing(value):
-        return default
-    return float(value)
-
-
-def _format_number(value: float, digits: int = 6) -> str:
-    text = f"{float(value):.{digits}f}".rstrip("0").rstrip(".")
-    return text or "0"
 
 
 def _format_cell_concentration_value(value: object, default: str = "") -> str:
@@ -47,11 +28,6 @@ def _format_cell_concentration_value(value: object, default: str = "") -> str:
     if concentration <= 0:
         return default
     return str(int(round(concentration)))
-
-
-def _normalize_header_text(value: str) -> str:
-    text = re.sub(r"\s+", " ", value.strip())
-    return text.replace("\n", " ").replace("\r", " ") or "unnamed"
 
 
 def _format_well(row_label: str, column_index: int, pad_width: int) -> str:
