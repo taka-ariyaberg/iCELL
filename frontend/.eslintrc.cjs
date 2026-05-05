@@ -30,5 +30,12 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     'react-refresh/only-export-components': 'off',
     'react-hooks/exhaustive-deps': 'off',
+    // File-size guard. Warn at 500 lines (skip blanks + comments); files
+    // currently over the threshold are listed in the audit and drained by
+    // Phase 7. When that allowlist is empty, flip 'warn' → 'error'.
+    'max-lines': [
+      'warn',
+      { max: 500, skipBlankLines: true, skipComments: true },
+    ],
   },
 };

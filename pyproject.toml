@@ -18,3 +18,54 @@ dev = [
     "jupyterlab",
     "ipykernel",
 ]
+
+# ---------------------------------------------------------------------------
+# Tooling configuration
+# ---------------------------------------------------------------------------
+# Ruff: combined linter + formatter. Rule selection is intentionally
+# narrow at Phase 1 (start permissive, tighten later). Phase 3 widens
+# the selection once backend types and dedup have landed.
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+    "data",
+    "frontend",
+    "notebooks",
+    "build",
+    ".venv",
+]
+
+[tool.ruff.lint]
+# E/W = pycodestyle, F = pyflakes, I = isort, B = bugbear, UP = pyupgrade
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = [
+    "E501",  # line-length handled by formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011"]  # tests use plain `assert`
+
+# Mypy: strict on the engine (already mostly typed), permissive on the
+# backend (Phase 3 cleans up `Dict`/`List`/`Optional` legacy patterns
+# and adds missing return types). Re-tighten in Phase 3.
+[tool.mypy]
+python_version = "3.11"
+files = ["src/icell"]
+ignore_missing_imports = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["backend.*"]
+ignore_errors = true  # Phase 3 fixes; revisit then.
+
+# Pytest: discover tests/, run with verbose-on-failure formatting.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra"
