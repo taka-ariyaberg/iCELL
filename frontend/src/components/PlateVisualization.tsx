@@ -22,12 +22,7 @@ interface PlateVisualizationProps {
   onExternalRangeDeselect?: (start: string, end: string) => void;
 }
 
-const GROUP_COLOR_PALETTE = [
-  '#00d9ff', '#ff6b9d', '#ffd700',
-  '#00ff88', '#ff8c42', '#00b8ff',
-  '#ff66cc', '#66ff66', '#ffaa33',
-  '#33aaff', '#ff3366', '#aaff33'
-];
+import { GROUP_COLOR_PALETTE } from '../styles/tokens';
 
 function hashName(name: string): number {
   let hash = 0;

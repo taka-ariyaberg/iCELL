@@ -2,6 +2,8 @@
  * Utility functions for exporting plate layouts and dye assignments
  */
 
+import { GROUP_COLOR_PALETTE } from '../styles/tokens';
+
 export interface PlateExportData {
   plateType: string;
   wells: Record<string, string>;
@@ -56,12 +58,7 @@ function generateDyeColor(name: string): string {
  * Uses the same collision-avoidance strategy as the UI for active groups.
  */
 function generateColors(items: string[]): Record<string, string> {
-  const colors = [
-    '#00d9ff', '#ff6b9d', '#ffd700',
-    '#00ff88', '#ff8c42', '#00b8ff',
-    '#ff66cc', '#66ff66', '#ffaa33',
-    '#33aaff', '#ff3366', '#aaff33'
-  ];
+  const colors = GROUP_COLOR_PALETTE;
 
   const usedIndices = new Set<number>();
   const colorMap: Record<string, string> = {};

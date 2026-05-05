@@ -2,6 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { PlateVisualization, generateDistinctColors } from './PlateVisualization';
 import { ProtocolSection } from './ProtocolSection';
 import { ViewModeSwitch } from './ViewModeSwitch';
+import {
+  DetailCardHeader,
+  MetricRow,
+  PlateNavigationChip,
+} from './primitives';
 import { downloadFile } from '../utils/exportUtils';
 import { serializeRecordsToCsv } from '../utils/csvExport';
 import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
@@ -349,16 +354,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   <div className="plate-column">
                     <div className="plate-viewer-container">
                       <div className="plate-header-info">
-                        {numPlates > 1 && (
-                          <div className="plate-nav">
-                            <div className="plate-nav-chip">
-                              <span className="plate-nav-eyebrow">Viewing</span>
-                              <span className="plate-nav-value">Plate {currentPlate}</span>
-                              <span className="plate-nav-divider">/</span>
-                              <span className="plate-nav-total">{numPlates}</span>
-                            </div>
-                          </div>
-                        )}
+                        <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
                         {selectedWells.size > 0 ? (
                           <div className="selected-info">
                             <span className="info-label">Selected:</span>
@@ -402,48 +398,21 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                         <div className="details-cards-container">
                           {detailsByGroup.map((detail) => (
                             <div key={detail.detailKey} className="detail-card" style={{ borderColor: groupColorMap[detail.groupName] }}>
-                              <div className="detail-card-header" style={{ borderBottomColor: `${groupColorMap[detail.groupName]}44` }}>
-                                <div className="detail-card-title-block">
-                                  <h4 className="detail-card-title" style={{ color: groupColorMap[detail.groupName] }}>{detail.groupName}</h4>
-                                  <div className="detail-card-subtitle">{detail.dispensePerWell.toFixed(1)} µL cell suspension / well</div>
-                                </div>
-                                <span className="detail-card-badge" style={{ background: `${groupColorMap[detail.groupName]}22`, color: groupColorMap[detail.groupName], borderColor: `${groupColorMap[detail.groupName]}66` }}>
-                                  {numPlates > 1
-                                    ? `${detail.count} selected / ${Number(detail.row.n_wells)} total wells`
-                                    : `${detail.count} wells`}
-                                </span>
-                              </div>
+                              <DetailCardHeader
+                                color={groupColorMap[detail.groupName]}
+                                title={detail.groupName}
+                                subtitle={`${detail.dispensePerWell.toFixed(1)} µL cell suspension / well`}
+                                badge={numPlates > 1
+                                  ? `${detail.count} selected / ${Number(detail.row.n_wells)} total wells`
+                                  : `${detail.count} wells`}
+                              />
                               <div className="detail-card-metrics">
-                                <div className="metric">
-                                  <span className="metric-label">Cells / Well</span>
-                                  <span className="metric-value">{Number(detail.row.cells_per_well).toLocaleString()}</span>
-                                  <span className="metric-unit">cells</span>
-                                </div>
-                                <div className="metric">
-                                  <span className="metric-label">Cell Suspension Volume / Well</span>
-                                  <span className="metric-value">{detail.dispensePerWell.toFixed(1)}</span>
-                                  <span className="metric-unit">µL</span>
-                                </div>
-                                <div className="metric">
-                                  <span className="metric-label">Volume for Selected Wells</span>
-                                  <span className="metric-value">{detail.selectedNeededVolume.toFixed(1)}</span>
-                                  <span className="metric-unit">µL</span>
-                                </div>
-                                <div className="metric">
-                                  <span className="metric-label">Total Needed Volume{allPlatesSuffix}</span>
-                                  <span className="metric-value">{detail.totalNeededVolume.toFixed(1)}</span>
-                                  <span className="metric-unit">µL</span>
-                                </div>
-                                <div className="metric">
-                                  <span className="metric-label">Remaining Cell Suspension Volume{allPlatesSuffix}</span>
-                                  <span className="metric-value">{detail.remainingPreparedVolume.toFixed(1)}</span>
-                                  <span className="metric-unit">µL</span>
-                                </div>
-                                <div className="metric">
-                                  <span className="metric-label">Total Prepared Volume{allPlatesSuffix}</span>
-                                  <span className="metric-value">{detail.totalPreparedVolume.toFixed(1)}</span>
-                                  <span className="metric-unit">µL</span>
-                                </div>
+                                <MetricRow label="Cells / Well" value={Number(detail.row.cells_per_well).toLocaleString()} unit="cells" />
+                                <MetricRow label="Cell Suspension Volume / Well" value={detail.dispensePerWell.toFixed(1)} unit="µL" />
+                                <MetricRow label="Volume for Selected Wells" value={detail.selectedNeededVolume.toFixed(1)} unit="µL" />
+                                <MetricRow label={`Total Needed Volume${allPlatesSuffix}`} value={detail.totalNeededVolume.toFixed(1)} unit="µL" />
+                                <MetricRow label={`Remaining Cell Suspension Volume${allPlatesSuffix}`} value={detail.remainingPreparedVolume.toFixed(1)} unit="µL" />
+                                <MetricRow label={`Total Prepared Volume${allPlatesSuffix}`} value={detail.totalPreparedVolume.toFixed(1)} unit="µL" />
                               </div>
                             </div>
                           ))}
@@ -537,16 +506,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 <div className="plate-column">
                   <div className="plate-viewer-container">
                     <div className="plate-header-info">
-                      {numPlates > 1 && (
-                        <div className="plate-nav">
-                          <div className="plate-nav-chip">
-                            <span className="plate-nav-eyebrow">Viewing</span>
-                            <span className="plate-nav-value">Plate {currentPlate}</span>
-                            <span className="plate-nav-divider">/</span>
-                            <span className="plate-nav-total">{numPlates}</span>
-                          </div>
-                        </div>
-                      )}
+                      <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
                       {selectedWells.size > 0 ? (
                         <div className="selected-info">
                           <span className="info-label">Selected:</span>
@@ -589,39 +549,18 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                       <div className="details-cards-container">
                         {dyeDetails.map(({ prog, row, count, dispensePerWell, totalNeededVolume, totalPreparedVolume, selectedNeededVolume, remainingPreparedVolume }) => (
                           <div key={prog} className="detail-card" style={{ borderColor: dyeProgramColorMap[prog] }}>
-                            <div className="detail-card-header" style={{ borderBottomColor: `${dyeProgramColorMap[prog]}44` }}>
-                              <div className="detail-card-title-block">
-                                <h4 className="detail-card-title" style={{ color: dyeProgramColorMap[prog] }}>{prog}</h4>
-                                <div className="detail-card-subtitle">{dispensePerWell.toFixed(1)} µL dye mastermix / well</div>
-                              </div>
-                              <span className="detail-card-badge" style={{ background: `${dyeProgramColorMap[prog]}22`, color: dyeProgramColorMap[prog], borderColor: `${dyeProgramColorMap[prog]}66` }}>{count} selected / {Number(row.n_wells)} total wells</span>
-                            </div>
+                            <DetailCardHeader
+                              color={dyeProgramColorMap[prog]}
+                              title={prog}
+                              subtitle={`${dispensePerWell.toFixed(1)} µL dye mastermix / well`}
+                              badge={`${count} selected / ${Number(row.n_wells)} total wells`}
+                            />
                             <div className="detail-card-metrics">
-                              <div className="metric">
-                                <span className="metric-label">Mastermix / Well</span>
-                                <span className="metric-value">{dispensePerWell.toFixed(1)}</span>
-                                <span className="metric-unit">µL</span>
-                              </div>
-                              <div className="metric">
-                                <span className="metric-label">Volume for Selected Wells</span>
-                                <span className="metric-value">{selectedNeededVolume.toFixed(1)}</span>
-                                <span className="metric-unit">µL</span>
-                              </div>
-                              <div className="metric">
-                                <span className="metric-label">Total Needed Volume{allPlatesSuffix}</span>
-                                <span className="metric-value">{totalNeededVolume.toFixed(1)}</span>
-                                <span className="metric-unit">µL</span>
-                              </div>
-                              <div className="metric">
-                                <span className="metric-label">Remaining Dye Mastermix Volume{allPlatesSuffix}</span>
-                                <span className="metric-value">{remainingPreparedVolume.toFixed(1)}</span>
-                                <span className="metric-unit">µL</span>
-                              </div>
-                              <div className="metric">
-                                <span className="metric-label">Total Prepared Volume{allPlatesSuffix}</span>
-                                <span className="metric-value">{totalPreparedVolume.toFixed(1)}</span>
-                                <span className="metric-unit">µL</span>
-                              </div>
+                              <MetricRow label="Mastermix / Well" value={dispensePerWell.toFixed(1)} unit="µL" />
+                              <MetricRow label="Volume for Selected Wells" value={selectedNeededVolume.toFixed(1)} unit="µL" />
+                              <MetricRow label={`Total Needed Volume${allPlatesSuffix}`} value={totalNeededVolume.toFixed(1)} unit="µL" />
+                              <MetricRow label={`Remaining Dye Mastermix Volume${allPlatesSuffix}`} value={remainingPreparedVolume.toFixed(1)} unit="µL" />
+                              <MetricRow label={`Total Prepared Volume${allPlatesSuffix}`} value={totalPreparedVolume.toFixed(1)} unit="µL" />
                             </div>
                           </div>
                         ))}
