@@ -127,6 +127,11 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [groupNameInput, setGroupNameInput] = useState('');
   const [densityInput, setDensityInput] = useState(500);
+  // Edit Group modal state (modal block added in Task 6)
+  const [editingGroup, setEditingGroup] = useState<string | null>(null);
+  const [showConfirmProcess, setShowConfirmProcess] = useState(false);
+  const [editGroupName, setEditGroupName] = useState('');
+  const [editGroupDensity, setEditGroupDensity] = useState(500);
   const [selectedExistingGroup, setSelectedExistingGroup] = useState<string | null>(null);
   const [designMode, setDesignMode] = useState<'cells' | 'dyes'>('cells');
   const [dyeProgramInput, setDyeProgramInput] = useState('');
@@ -153,6 +158,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
     clearWells,
     setPlateType: storeSetPlateType, clearSelection, selectAll,
     assignWellsToGroup, assignDyePrograms,
+    renameGroup, updateGroupDensity,
   } = usePlateStore();
 
   // Load saved programs; seed defaults if nothing stored yet
@@ -614,9 +620,29 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                   <label>Defined Groups</label>
                   <div className="group-list">
                     {Object.entries(groups).sort(([a], [b]) => a.localeCompare(b)).map(([name, def]) => (
-                      <div key={name} className="group-item">
+                      <div key={name} className="group-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span className="group-label" style={{ backgroundColor: `${groupColors[name]}33`, color: groupColors[name] }}>{name}</span>
-                        <span className="group-density">{groupCounts[name] || 0} wells • {def.density} cells/well</span>
+                        <span className="group-density" style={{ flex: 1 }}>{groupCounts[name] || 0} wells • {def.density} cells/well</span>
+                        <button
+                          className="dye-edit-btn"
+                          onClick={() => {
+                            setEditingGroup(name);
+                            setEditGroupName(name);
+                            setEditGroupDensity(def.density);
+                          }}
+                          style={{
+                            background: 'rgba(0,184,255,0.12)',
+                            border: '1px solid rgba(0,184,255,0.35)',
+                            borderRadius: '3px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            padding: '2px 6px',
+                            lineHeight: 1,
+                            color: '#00b8ff',
+                            fontWeight: 600,
+                          }}
+                          title="Edit group"
+                        >Edit</button>
                       </div>
                     ))}
                   </div>
@@ -909,7 +935,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
         </div>
         <div className="params-footer">
           <button
-            onClick={handleProcess}
+            onClick={() => setShowConfirmProcess(true)}
             disabled={isLoading || !hasWells}
             className="process-btn"
           >
@@ -975,6 +1001,152 @@ export const DesignPage: React.FC<DesignPageProps> = ({
           </div>
         </div>
       )}
+
+      {/* ── Edit Group Modal ─────────────────────────────────────────────────── */}
+      {editingGroup !== null && (() => {
+        const oldName = editingGroup;
+        const trimmed = editGroupName.trim();
+        const collision = trimmed.length > 0 && trimmed !== oldName && Object.prototype.hasOwnProperty.call(groups, trimmed);
+        const empty = trimmed.length === 0;
+        const nameChanged = trimmed !== oldName;
+        const densityChanged = editGroupDensity !== groups[oldName]?.density;
+        const canSave = !collision && !empty && (nameChanged || densityChanged);
+
+        const handleEditSave = () => {
+          try {
+            const effectiveName = nameChanged ? trimmed : oldName;
+            if (nameChanged) renameGroup(oldName, trimmed);
+            if (densityChanged) updateGroupDensity(effectiveName, editGroupDensity);
+            setEditingGroup(null);
+          } catch (err) {
+            console.error('[DesignPage] Edit Group save failed', err);
+          }
+        };
+
+        return (
+          <div className="modal-overlay" onClick={() => setEditingGroup(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>Edit Group: {oldName}</h3>
+              <div className="modal-form">
+                <div className="form-group">
+                  <label htmlFor="edit-group-name">Group Name</label>
+                  <input
+                    id="edit-group-name"
+                    type="text"
+                    value={editGroupName}
+                    onChange={(e) => setEditGroupName(e.target.value)}
+                    autoFocus
+                    onFocus={(e) => e.target.select()}
+                  />
+                  {collision && (
+                    <div style={{ color: '#ff6b6b', fontSize: '12px', marginTop: '4px' }}>
+                      A group named "{trimmed}" already exists.
+                    </div>
+                  )}
+                  {empty && (
+                    <div style={{ color: '#ff6b6b', fontSize: '12px', marginTop: '4px' }}>
+                      Name cannot be empty.
+                    </div>
+                  )}
+                </div>
+                <div className="form-group">
+                  <label htmlFor="edit-group-density">Cells per Well</label>
+                  <NumberInput
+                    id="edit-group-density"
+                    value={editGroupDensity}
+                    onChange={(e) => setEditGroupDensity(parseInt(e.target.value) || 0)}
+                    onFocus={(e) => e.target.select()}
+                  />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button onClick={() => setEditingGroup(null)} className="modal-cancel-btn">Cancel</button>
+                <button onClick={handleEditSave} disabled={!canSave} className="modal-confirm-btn">Save</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── Confirm Process Modal ────────────────────────────────────────────── */}
+      {showConfirmProcess && (() => {
+        const groupRows = Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
+        const dyeRows = savedPrograms
+          .map((prog) => ({
+            name: prog.name,
+            wells: Object.values(dyePrograms).filter((p) => p === prog.name).length,
+          }))
+          .filter((row) => row.wells > 0);
+
+        const onCancel = () => setShowConfirmProcess(false);
+        const onConfirm = () => {
+          setShowConfirmProcess(false);
+          handleProcess();
+        };
+
+        return (
+          <div className="modal-overlay" onClick={onCancel}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>Confirm Process</h3>
+              <div className="modal-form">
+                <div style={{ fontSize: '12px', color: '#9aa6b4', marginBottom: '12px' }}>
+                  {projectName} · {plateId} · {plateType} · mode: {mode === 'dye' ? 'cells + dye' : 'cells only'}
+                </div>
+                <div style={{ marginBottom: '12px' }}>
+                  <div style={{ fontWeight: 600, marginBottom: '6px' }}>Groups</div>
+                  {groupRows.length === 0 ? (
+                    <div style={{ color: '#5a6677', fontSize: '12px' }}>(none)</div>
+                  ) : (
+                    <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ color: '#5a6677' }}>
+                          <th style={{ textAlign: 'left' }}>Name</th>
+                          <th style={{ textAlign: 'right' }}>cells/well</th>
+                          <th style={{ textAlign: 'right' }}>wells</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {groupRows.map(([name, def]) => (
+                          <tr key={name}>
+                            <td>{name}</td>
+                            <td style={{ textAlign: 'right' }}>{def.density}</td>
+                            <td style={{ textAlign: 'right' }}>{groupCounts[name] || 0}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+                {dyeRows.length > 0 && (
+                  <div>
+                    <div style={{ fontWeight: 600, marginBottom: '6px' }}>Dye Programmes</div>
+                    <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ color: '#5a6677' }}>
+                          <th style={{ textAlign: 'left' }}>Name</th>
+                          <th style={{ textAlign: 'right' }}>wells</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dyeRows.map((row) => (
+                          <tr key={row.name}>
+                            <td>{row.name}</td>
+                            <td style={{ textAlign: 'right' }}>{row.wells}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+              <div className="modal-actions">
+                <button onClick={onCancel} className="modal-cancel-btn">Cancel</button>
+                <button onClick={onConfirm} className="modal-confirm-btn">Confirm &amp; Process</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Dye Assignment Modal ─────────────────────────────────────────────── */}
       {showDyeModal && selectedWells.size > 0 && (() => {

@@ -11,6 +11,13 @@ interface Snapshot {
   dyePrograms: Record<string, string>;
 }
 
+export class GroupNameCollisionError extends Error {
+  constructor(collidingName: string) {
+    super(`A group named "${collidingName}" already exists`);
+    this.name = 'GroupNameCollisionError';
+  }
+}
+
 export interface PlateState {
   plateType: string; // '96', '384', '1536', or custom 'rows,cols'
   wells: Record<string, string>; // { "A1": "Group 1", "A2": "Group 2", ... }
@@ -43,6 +50,10 @@ export interface PlateState {
   getActiveGroups: () => string[]; // Get groups that have wells assigned
   /** Atomic: assign wells to a group in one undo step, restoring previous selection on undo */
   assignWellsToGroup: (groupName: string, density: number, wellsToAssign: Record<string, string>) => void;
+  /** Atomic rename: re-keys the group, updates GroupDefinition.name, rewrites referencing wells. */
+  renameGroup: (oldName: string, newName: string) => void;
+  /** Update the density of an existing group. No-op + console.error if the group is missing. */
+  updateGroupDensity: (name: string, density: number) => void;
 
   setDyeProgram: (well: string, program: string) => void;
   setMultipleDyePrograms: (programs: Record<string, string>) => void;
@@ -67,6 +78,27 @@ function pushHistory(state: PlateState): Pick<PlateState, 'history' | 'future'> 
   };
 }
 
+/**
+ * Defensive guard: every value in `wells` must be a key in `groups`.
+ *
+ * The pre-existing `App.tsx:64` fallback (`groups[g]?.density || 500`) intentionally
+ * substitutes 500 when a group is missing — that is a designed safety net for a default
+ * cell density. This guard exists so the safety net is never silently triggered by a bug.
+ * Violations log only; they do not throw or block the UI.
+ */
+export function assertGroupsWellsInvariant(state: Pick<PlateState, 'wells' | 'groups'>): void {
+  const groupKeys = new Set(Object.keys(state.groups));
+  const orphans: Array<{ well: string; missingGroup: string }> = [];
+  for (const [well, groupName] of Object.entries(state.wells)) {
+    if (!groupKeys.has(groupName)) {
+      orphans.push({ well, missingGroup: groupName });
+    }
+  }
+  if (orphans.length > 0) {
+    console.error('[plateStore] invariant violated: orphan well→group references', orphans);
+  }
+}
+
 export const usePlateStore = create<PlateState>((set, get) => ({
   plateType: '96',
   wells: {},
@@ -77,35 +109,49 @@ export const usePlateStore = create<PlateState>((set, get) => ({
   future: [],
 
   setPlateType: (type) =>
-    set((state) => ({
-      ...pushHistory(state),
-      plateType: type,
-      wells: {},
-      selectedWells: new Set(),
-      groups: {},
-      dyePrograms: {},
-    })),
+    set((state) => {
+      assertGroupsWellsInvariant({ groups: {}, wells: {} });
+      return {
+        ...pushHistory(state),
+        plateType: type,
+        wells: {},
+        selectedWells: new Set(),
+        groups: {},
+        dyePrograms: {},
+      };
+    }),
   
   setWellGroup: (well, group) =>
-    set((state) => ({
-      ...pushHistory(state),
-      wells: { ...state.wells, [well]: group },
-    })),
+    set((state) => {
+      const nextWells = { ...state.wells, [well]: group };
+      assertGroupsWellsInvariant({ groups: state.groups, wells: nextWells });
+      return {
+        ...pushHistory(state),
+        wells: nextWells,
+      };
+    }),
   
   setMultipleWells: (wells) =>
-    set((state) => ({
-      ...pushHistory(state),
-      wells: { ...state.wells, ...wells },
-    })),
+    set((state) => {
+      const nextWells = { ...state.wells, ...wells };
+      assertGroupsWellsInvariant({ groups: state.groups, wells: nextWells });
+      return {
+        ...pushHistory(state),
+        wells: nextWells,
+      };
+    }),
   
   clearWells: () =>
-    set((state) => ({
-      ...pushHistory(state),
-      wells: {},
-      selectedWells: new Set(),
-      groups: {},
-      dyePrograms: {},
-    })),
+    set((state) => {
+      assertGroupsWellsInvariant({ groups: {}, wells: {} });
+      return {
+        ...pushHistory(state),
+        wells: {},
+        selectedWells: new Set(),
+        groups: {},
+        dyePrograms: {},
+      };
+    }),
 
   /**
    * Helper: Remove empty groups and renumber remaining groups
@@ -114,9 +160,10 @@ export const usePlateStore = create<PlateState>((set, get) => ({
     set((state) => {
       const assignedGroups = new Set(Object.values(state.wells));
       const cleanedGroups = { ...state.groups };
-      Object.keys(cleanedGroups).forEach(groupName => {
+      Object.keys(cleanedGroups).forEach((groupName) => {
         if (!assignedGroups.has(groupName)) delete cleanedGroups[groupName];
       });
+      assertGroupsWellsInvariant({ groups: cleanedGroups, wells: state.wells });
       return { ...pushHistory(state), groups: cleanedGroups };
     }),
   
@@ -134,6 +181,7 @@ export const usePlateStore = create<PlateState>((set, get) => ({
         const remainingWells = Object.values(newWells).filter(g => g === wellGroup);
         const cleanedGroups = { ...state.groups };
         if (remainingWells.length === 0) delete cleanedGroups[wellGroup];
+        assertGroupsWellsInvariant({ groups: cleanedGroups, wells: newWells });
         return {
           ...pushHistory(state),
           wells: newWells,
@@ -194,6 +242,7 @@ export const usePlateStore = create<PlateState>((set, get) => ({
         }
       });
       
+      assertGroupsWellsInvariant({ groups: cleanedGroups, wells: newWells });
       return {
         ...pushHistory(state),
         selectedWells: newSelection,
@@ -202,7 +251,7 @@ export const usePlateStore = create<PlateState>((set, get) => ({
         groups: cleanedGroups,
       };
     }),
-  
+
   selectAll: () =>
     set((state) => {
       const allWells = getWellRange(
@@ -260,6 +309,7 @@ export const usePlateStore = create<PlateState>((set, get) => ({
           if (remaining.length === 0) delete cleanedGroups[wellGroup];
         }
       });
+      assertGroupsWellsInvariant({ groups: cleanedGroups, wells: newWells });
       return { selectedWells: newSelection, wells: newWells, dyePrograms: newDyePrograms, groups: cleanedGroups };
     }),
 
@@ -288,19 +338,85 @@ export const usePlateStore = create<PlateState>((set, get) => ({
     }),
   
   createOrUpdateGroup: (groupName, density) =>
-    set((state) => ({
-      ...pushHistory(state),
-      groups: { ...state.groups, [groupName]: { name: groupName, density } },
-    })),
+    set((state) => {
+      const nextGroups = { ...state.groups, [groupName]: { name: groupName, density } };
+      assertGroupsWellsInvariant({ groups: nextGroups, wells: state.wells });
+      return {
+        ...pushHistory(state),
+        groups: nextGroups,
+      };
+    }),
 
   assignWellsToGroup: (groupName, density, wellsToAssign) =>
-    set((state) => ({
-      ...pushHistory(state),
-      groups: { ...state.groups, [groupName]: { name: groupName, density } },
-      wells: { ...state.wells, ...wellsToAssign },
-      selectedWells: new Set(),
-    })),
-  
+    set((state) => {
+      const nextGroups = { ...state.groups, [groupName]: { name: groupName, density } };
+      const nextWells = { ...state.wells, ...wellsToAssign };
+      assertGroupsWellsInvariant({ groups: nextGroups, wells: nextWells });
+      return {
+        ...pushHistory(state),
+        groups: nextGroups,
+        wells: nextWells,
+        selectedWells: new Set(),
+      };
+    }),
+
+  renameGroup: (oldName, newName) => {
+    if (newName === oldName) return;
+    const trimmed = newName.trim();
+    if (!trimmed) {
+      throw new Error('Group name cannot be empty');
+    }
+    const state = get();
+    if (!state.groups[oldName]) {
+      console.error('[plateStore] renameGroup: source group not found', oldName);
+      return;
+    }
+    if (state.groups[trimmed] && trimmed !== oldName) {
+      throw new GroupNameCollisionError(trimmed);
+    }
+    set((s) => {
+      const nextGroups: Record<string, GroupDefinition> = {};
+      for (const [key, def] of Object.entries(s.groups)) {
+        if (key === oldName) {
+          nextGroups[trimmed] = { ...def, name: trimmed };
+        } else {
+          nextGroups[key] = def;
+        }
+      }
+      const nextWells: Record<string, string> = {};
+      for (const [well, group] of Object.entries(s.wells)) {
+        nextWells[well] = group === oldName ? trimmed : group;
+      }
+      const next = {
+        ...pushHistory(s),
+        groups: nextGroups,
+        wells: nextWells,
+      };
+      assertGroupsWellsInvariant({ groups: nextGroups, wells: nextWells });
+      return next;
+    });
+  },
+
+  updateGroupDensity: (name, density) => {
+    const state = get();
+    if (!state.groups[name]) {
+      console.error('[plateStore] updateGroupDensity: group not found', name);
+      return;
+    }
+    set((s) => {
+      const nextGroups = {
+        ...s.groups,
+        [name]: { ...s.groups[name], density },
+      };
+      const next = {
+        ...pushHistory(s),
+        groups: nextGroups,
+      };
+      assertGroupsWellsInvariant({ groups: nextGroups, wells: s.wells });
+      return next;
+    });
+  },
+
   getActiveGroups: () => {
     const state = get();
     const assignedGroups = new Set(Object.values(state.wells));
