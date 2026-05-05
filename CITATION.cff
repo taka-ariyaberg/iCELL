@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use iCELL in your research, please cite it as below."
+title: "iCELL: Cell seeding and dye preparation planning toolkit"
+type: software
+version: "1.0.0"
+date-released: "2026-05-06"
+license: MIT
+repository-code: "https://github.com/taka-ariyaberg/iCELL"
+url: "https://github.com/taka-ariyaberg/iCELL"
+authors:
+  - family-names: Ariyaberg
+    given-names: Taka
+    email: taka.ariyaberg@uu.se
+    affiliation: "Uppsala University"
+abstract: >-
+  iCELL is a full-stack toolkit (Python engine, FastAPI backend, React
+  frontend, JupyterLab notebook) for planning cell seeding and dye
+  preparation on multi-well plates. Given seeding parameters and
+  per-well layouts, it computes per-well volumes, total mastermix
+  recipes, and machine-readable dispense instructions. Output CSVs
+  feed downstream tools such as iMETA.
+keywords:
+  - cell-biology
+  - lab-automation
+  - plate-seeding
+  - dye-preparation
+  - microscopy

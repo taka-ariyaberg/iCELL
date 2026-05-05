@@ -1,13 +1,44 @@
 # iCELL
 
-Cell seeding and dye preparation planning toolkit. MIT licensed — see [LICENSE](LICENSE).
+[![CI](https://github.com/taka-ariyaberg/iCELL/actions/workflows/ci.yml/badge.svg)](https://github.com/taka-ariyaberg/iCELL/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](.python-version)
+[![Node 20](https://img.shields.io/badge/node-20-blue.svg)](.nvmrc)
 
-Two interfaces, one engine ([src/icell](src/icell)):
+**iCELL** is a planning toolkit for cell seeding and dye preparation on multi-well plates. Given seeding parameters and per-well layouts, it computes per-well dispense volumes, total mastermix recipes, and machine-readable instructions — replacing error-prone manual spreadsheets in the wet-lab planning step.
+
+It exposes the same engine through two surfaces so different users get the right ergonomics:
 
 | Interface | When to use |
 |---|---|
-| Notebook + config | File-driven, reproducible runs with the shared export pipeline |
-| Web app (React + FastAPI) | Interactive plate design in the browser with the same calculations and exports |
+| Notebook + config | File-driven, reproducible runs. Edit a config + three CSVs, run a notebook cell, get the outputs. |
+| Web app (React + FastAPI) | Interactive plate design in the browser with the same calculations and exports. |
+
+iCELL output (`iCELL_..._cell_seeding.csv`, `iCELL_..._iMETA.csv`) feeds downstream tools — notably **iMETA** — without a manual reformat step.
+
+## Why this exists
+
+Planning a multi-well seeding run by hand means juggling cells/well, dye programs, dead volumes, overage, and instrument minimums across hundreds of wells. A 1 µL spreadsheet error becomes a wasted plate. iCELL takes the same parameters, applies them consistently, and produces the dispense plan, the human-readable protocol, and the metadata export needed for downstream analysis — all from one source of truth.
+
+## Quickstart
+
+```bash
+git clone https://github.com/taka-ariyaberg/iCELL.git
+cd iCELL
+bash scripts/start.sh
+```
+
+That builds the Docker images, starts the FastAPI app + JupyterLab, and opens the web UI.
+
+- Web app: `http://localhost:8000`
+- API docs (auto-generated): `http://localhost:8000/docs`
+- JupyterLab: `http://localhost:8888/lab?token=icell`
+
+For full setup details, see [Setup](#setup) below.
+
+## Status
+
+The current release is `1.0.0`. The project is actively developed at Uppsala University. See the [CHANGELOG](CHANGELOG.md) for what's new and the [project quality roadmap](#additional-documentation) for what's next.
 
 ## Repository Layout
 
@@ -121,9 +152,23 @@ Quick reference:
 - **Node:** 20 (Docker image `node:20.18.0-slim`). Deps in [`frontend/package.json`](frontend/package.json); lock in [`frontend/package-lock.json`](frontend/package-lock.json).
 - **Pinned interpreters:** [`.python-version`](.python-version), [`.nvmrc`](.nvmrc).
 
+## Citing iCELL
+
+If you use iCELL in your research, please cite it. Citation metadata lives in [`CITATION.cff`](CITATION.cff) (GitHub displays a "Cite this repository" button on the repo page that uses it).
+
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, conventions, testing, and PR guidance. By participating you agree to the project's [Code of Conduct](CODE_OF_CONDUCT.md). Security issues — see [SECURITY.md](SECURITY.md) (do not file public issues for those).
+
 ## Additional Documentation
 
+- [docs/architecture.md](docs/architecture.md) — how the engine, backend, frontend, and notebook fit together
+- [docs/examples.md](docs/examples.md) — end-to-end worked examples (simple seeding and dye program)
 - [docs/dependencies.md](docs/dependencies.md) — every dependency, version, and purpose
-- [frontend/README.md](frontend/README.md) for frontend architecture notes
-- [frontend/DEVELOPER.md](frontend/DEVELOPER.md) for frontend development conventions
-- [frontend/ORGANIZATION.md](frontend/ORGANIZATION.md) for frontend structure
+- [data/templates/](data/templates) — empty CSV templates for the three input files
+- [config/README.md](config/README.md) — config directory and `config.json` schema
+- [config/plate_type/README.md](config/plate_type/README.md) — defining new plate types
+- [frontend/README.md](frontend/README.md) — frontend architecture notes
+- [frontend/DEVELOPER.md](frontend/DEVELOPER.md) — frontend development conventions
+- [frontend/ORGANIZATION.md](frontend/ORGANIZATION.md) — frontend structure
+- [CHANGELOG.md](CHANGELOG.md) — release notes
