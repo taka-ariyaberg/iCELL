@@ -11,7 +11,7 @@ COPY frontend/ ./
 RUN npm run build
 
 
-FROM python:3.11.10-slim-bookworm
+FROM python:3.14.0-slim-bookworm
 
 # Whether to install JupyterLab + ipykernel. Default true to preserve
 # existing behavior (both `app` and `notebook` services run from this
