@@ -186,7 +186,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
         localStorage.setItem(SAVED_PROGRAMS_KEY, JSON.stringify(programs));
       }
       setSavedPrograms(programs);
-      setSavedProgramNames(programs.map((p: any) => p.name || p).filter(Boolean));
+      setSavedProgramNames(programs.map(p => p.name).filter(Boolean));
     } catch { /* ignore */ }
   }, []);
 

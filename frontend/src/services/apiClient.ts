@@ -66,14 +66,56 @@ export interface PlateLayoutInput {
   meta_dye_programs?: DyeProgramInput[];
 }
 
+/** One row of the engine's per-group seeding summary. The engine
+ * may emit additional columns over time (the index signature below
+ * preserves forward compatibility); the named fields are the ones
+ * the UI relies on today and should not silently disappear. */
+export interface SeedingRow {
+  wells?: string;
+  cells_per_well?: number;
+  n_wells?: number;
+  cell_suspension_dispense_ul_per_well?: number;
+  total_cell_suspension_volume_ul?: number;
+  remaining_cell_suspension_volume_ul?: number;
+  total_prepared_cell_suspension_volume_ul?: number;
+  // Engine may emit additional columns; tolerate them.
+  [key: string]: unknown;
+}
+
+/** One row of the engine's per-dye-program summary. */
+export interface DyeRow {
+  dye_program?: string;
+  n_wells?: number;
+  dye_mastermix_dispense_ul_per_well?: number;
+  total_mastermix_volume_ul?: number;
+  remaining_mastermix_volume_ul?: number;
+  total_prepared_mastermix_volume_ul?: number;
+  [key: string]: unknown;
+}
+
+/** One row of the iMETA per-well metadata export. The exact column
+ * set depends on the run (dye program columns are dynamic), so we
+ * type the well identity fields and accept the rest. */
+export interface IMetaRow {
+  plate_id?: string;
+  well?: string;
+  row?: string;
+  column?: number;
+  group?: string;
+  [key: string]: unknown;
+}
+
+/** Formatted-for-display variants of summary rows (string-typed cells). */
+export type FormattedSummaryRow = Record<string, string | number | null>;
+
 export interface CalculationResult {
   status: string;
   instructions: string;
-  seeding_summary: Record<string, unknown>[];
-  dye_summary?: Record<string, unknown>[];
-  formatted_seeding_summary?: Record<string, unknown>[];
-  formatted_dye_summary?: Record<string, unknown>[];
-  imeta_rows?: Record<string, unknown>[];
+  seeding_summary: SeedingRow[];
+  dye_summary?: DyeRow[];
+  formatted_seeding_summary?: FormattedSummaryRow[];
+  formatted_dye_summary?: FormattedSummaryRow[];
+  imeta_rows?: IMetaRow[];
   error?: string;
 }
 
