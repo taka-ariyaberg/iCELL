@@ -111,8 +111,19 @@ Exported artifacts use a shared base name:
 - The results page includes an interactive protocol navigator plus direct downloads for instructions and `iMETA.csv`.
 - Run inputs and generated outputs are gitignored.
 
+## Dependencies
+
+Every runtime dependency — Python interpreter, Node interpreter, Docker base images, every package — is documented in [docs/dependencies.md](docs/dependencies.md). That file is the single source of truth for what we depend on, which version, and why. Update it in the same commit whenever a dependency changes.
+
+Quick reference:
+
+- **Python:** 3.11 (Docker image `python:3.11.10-slim-bookworm`). Production deps in [`backend/requirements.txt`](backend/requirements.txt); transitive lock in [`backend/requirements.lock`](backend/requirements.lock).
+- **Node:** 20 (Docker image `node:20.18.0-slim`). Deps in [`frontend/package.json`](frontend/package.json); lock in [`frontend/package-lock.json`](frontend/package-lock.json).
+- **Pinned interpreters:** [`.python-version`](.python-version), [`.nvmrc`](.nvmrc).
+
 ## Additional Documentation
 
+- [docs/dependencies.md](docs/dependencies.md) — every dependency, version, and purpose
 - [frontend/README.md](frontend/README.md) for frontend architecture notes
 - [frontend/DEVELOPER.md](frontend/DEVELOPER.md) for frontend development conventions
 - [frontend/ORGANIZATION.md](frontend/ORGANIZATION.md) for frontend structure
