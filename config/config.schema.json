@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/taka-ariyaberg/iCELL/config/config.schema.json",
+  "title": "iCELL run configuration",
+  "description": "Schema for config.json — the per-run configuration consumed by the iCELL engine (notebook and API). Generated from config/config.template.json. Update this file in lockstep with the engine's config loader (src/icell/config/loader.py).",
+  "type": "object",
+  "required": [
+    "project",
+    "mode",
+    "plate_type",
+    "num_plates",
+    "dead_volume",
+    "seeding_modes",
+    "seeding",
+    "dye",
+    "paths"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["name", "plate_id"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "plate_id": { "type": "string", "minLength": 1 },
+        "run_name": {
+          "type": "string",
+          "description": "Deprecated alias for plate_id; still accepted for backward compatibility."
+        }
+      }
+    },
+    "mode": {
+      "enum": ["no_dye", "dye"],
+      "description": "Selects which entry under seeding_modes is active for this run."
+    },
+    "plate_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stem of a plate-type definition file in config/plate_type/ (e.g. \"384_well\")."
+    },
+    "num_plates": { "type": "integer", "minimum": 1 },
+    "dead_volume": {
+      "type": "object",
+      "required": ["cell_suspension_ul", "dye_ul"],
+      "additionalProperties": false,
+      "properties": {
+        "cell_suspension_ul": { "type": "number", "minimum": 0 },
+        "dye_ul": { "type": "number", "minimum": 0 }
+      }
+    },
+    "seeding_modes": {
+      "type": "object",
+      "required": ["no_dye", "dye"],
+      "additionalProperties": false,
+      "properties": {
+        "no_dye": { "$ref": "#/$defs/seedingModeBlock" },
+        "dye": { "$ref": "#/$defs/seedingModeBlock" }
+      }
+    },
+    "seeding": {
+      "type": "object",
+      "required": [
+        "final_well_volume_ul",
+        "cell_suspension_dispense_ul",
+        "stock_cell_concentration_cells_per_ml",
+        "min_cell_handling_volume_ul",
+        "overage_fraction"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "final_well_volume_ul": { "type": "number", "exclusiveMinimum": 0 },
+        "cell_suspension_dispense_ul": { "type": "number", "exclusiveMinimum": 0 },
+        "media_dispense_ul": { "type": "number", "minimum": 0 },
+        "stock_cell_concentration_cells_per_ml": { "type": "number", "exclusiveMinimum": 0 },
+        "min_cell_handling_volume_ul": { "type": "number", "minimum": 0 },
+        "overage_fraction": { "type": "number", "minimum": 0 }
+      }
+    },
+    "dye": {
+      "type": "object",
+      "required": ["enabled", "meta_dye_csv", "mastermix_dispense_ul_per_well", "min_dye_handling_volume_ul"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "meta_dye_csv": { "type": "string" },
+        "mastermix_dispense_ul_per_well": { "type": "number", "minimum": 0 },
+        "min_dye_handling_volume_ul": { "type": "number", "minimum": 0 }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "required": [
+        "input_dir",
+        "cell_layout_csv",
+        "dye_layout_csv",
+        "output_tables_dir",
+        "output_instructions_dir",
+        "output_logs_dir"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "input_dir": { "type": "string" },
+        "cell_layout_csv": { "type": "string" },
+        "dye_layout_csv": { "type": "string" },
+        "output_tables_dir": { "type": "string" },
+        "output_instructions_dir": { "type": "string" },
+        "output_logs_dir": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "seedingModeBlock": {
+      "type": "object",
+      "required": [
+        "final_well_volume_ul",
+        "cell_suspension_dispense_ul",
+        "dye_mastermix_dispense_ul_per_well"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "final_well_volume_ul": { "type": "number", "exclusiveMinimum": 0 },
+        "cell_suspension_dispense_ul": { "type": "number", "minimum": 0 },
+        "media_dispense_ul": { "type": "number", "minimum": 0 },
+        "dye_mastermix_dispense_ul_per_well": { "type": "number", "minimum": 0 },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}
