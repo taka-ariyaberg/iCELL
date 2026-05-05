@@ -2,7 +2,7 @@
 # The pyproject.toml `dependencies` block declares the loose range
 # (`pandas>=2.0,<3`); this file pins the exact install for reproducibility.
 fastapi==0.104.1
-uvicorn==0.24.0
+uvicorn==0.46.0
 python-multipart==0.0.6
 numpy==1.26.4
 pandas==2.0
