@@ -8,7 +8,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-    "pandas>=2.0",
+    # Loose range for library consumers. backend/requirements.txt pins the
+    # exact install version for reproducible deployment.
+    "pandas>=2.0,<3",
 ]
 
 [project.optional-dependencies]

@@ -196,7 +196,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
 
   useEffect(() => {
     storeSetPlateType(normalizedPlateType);
-  }, [normalizedPlateType]); // eslint-disable-line
+  }, [normalizedPlateType]);
 
   useEffect(() => {
     if (!isActive || seedingDateTouched) return;

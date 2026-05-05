@@ -1,4 +1,6 @@
-FROM node:20-slim AS frontend-build
+# Pinned to specific patch versions so rebuilds are deterministic.
+# Bump these intentionally; do not relax to floating tags.
+FROM node:20.18.0-slim AS frontend-build
 
 WORKDIR /build/frontend
 
@@ -9,7 +11,14 @@ COPY frontend/ ./
 RUN npm run build
 
 
-FROM python:3.11-slim
+FROM python:3.11.10-slim-bookworm
+
+# Whether to install JupyterLab + ipykernel. Default true to preserve
+# existing behavior (both `app` and `notebook` services run from this
+# image and the notebook service needs jupyter). Override with
+# `--build-arg INSTALL_NOTEBOOK_DEPS=false` to produce a slimmer
+# production image when only the FastAPI app is needed.
+ARG INSTALL_NOTEBOOK_DEPS=true
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -22,7 +31,10 @@ WORKDIR /workspace
 
 COPY backend/requirements.txt /tmp/backend-requirements.txt
 RUN pip install --upgrade pip \
-    && pip install -r /tmp/backend-requirements.txt "jupyterlab>=4,<5" "ipykernel>=6,<7"
+    && pip install -r /tmp/backend-requirements.txt \
+    && if [ "$INSTALL_NOTEBOOK_DEPS" = "true" ]; then \
+         pip install "jupyterlab>=4,<5" "ipykernel>=6,<7"; \
+       fi
 
 COPY README.md pyproject.toml /workspace/
 COPY backend /workspace/backend

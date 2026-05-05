@@ -3,7 +3,6 @@
 .env.*
 !.env.example
 !frontend/.env.example
-.python-version
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
