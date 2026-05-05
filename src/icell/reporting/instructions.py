@@ -27,7 +27,7 @@ def build_cell_prep_instructions(
     lines.append("=" * 32)
 
     for i, row in seeding_summary_df.reset_index(drop=True).iterrows():
-        target_conc = float(row["required_cell_suspension_conc_cells_per_ml"])
+        target_concentration = float(row["required_cell_suspension_conc_cells_per_ml"])
         total_volume_ul = float(row["total_cell_suspension_volume_ul"])
         cell_suspension_dispense_ul = float(row["cell_suspension_dispense_ul_per_well"])
         n_wells = int(row["n_wells"])
@@ -35,7 +35,7 @@ def build_cell_prep_instructions(
         cells_per_well = float(row["cells_per_well"])
 
         direct_stock_volume_ul = (
-            target_conc * total_volume_ul / float(stock_cell_concentration_cells_per_ml)
+            target_concentration * total_volume_ul / float(stock_cell_concentration_cells_per_ml)
         )
         direct_media_volume_ul = total_volume_ul - direct_stock_volume_ul
         needs_intermediate = direct_stock_volume_ul < float(min_cell_handling_volume_ul)
@@ -46,7 +46,7 @@ def build_cell_prep_instructions(
         lines.append(
             f"   Dispense per well: {_fmt_ul(cell_suspension_dispense_ul)} cell suspension"
         )
-        lines.append(f"   Target cell suspension concentration: {_fmt_cells_ml(target_conc)}")
+        lines.append(f"   Target cell suspension concentration: {_fmt_cells_ml(target_concentration)}")
         lines.append(f"   Total cell suspension needed (with overage): {_fmt_ul(total_volume_ul)}")
 
         if not needs_intermediate:
@@ -61,14 +61,14 @@ def build_cell_prep_instructions(
             required_intermediate_final_volume_ul = (
                 float(min_cell_handling_volume_ul)
                 * float(stock_cell_concentration_cells_per_ml)
-                / target_conc
+                / target_concentration
             )
             intermediate_final_volume_ul = max(
                 float(preferred_intermediate_final_volume_ul),
                 float(int(required_intermediate_final_volume_ul + 0.999999)),
             )
             intermediate_stock_volume_ul = (
-                target_conc
+                target_concentration
                 * intermediate_final_volume_ul
                 / float(stock_cell_concentration_cells_per_ml)
             )
@@ -81,7 +81,7 @@ def build_cell_prep_instructions(
                 f"stock cell suspension volume is below {_fmt_ul(min_cell_handling_volume_ul)}."
             )
             lines.append(
-                f"   First prepare an intermediate cell suspension at {_fmt_cells_ml(target_conc)}:"
+                f"   First prepare an intermediate cell suspension at {_fmt_cells_ml(target_concentration)}:"
             )
             lines.append(
                 f"   Mix {_fmt_ul(intermediate_stock_volume_ul)} of stock cell suspension "
@@ -158,12 +158,12 @@ def build_dye_prep_instructions(
             stock_conc = float(dye_row["stock_concentration"])
             stock_unit = str(dye_row["stock_concentration_unit"])
             final_unit = str(dye_row["final_concentration_unit"])
-            mastermix_target_conc = float(dye_row["mastermix_target_concentration"])
+            mastermix_target_concentration = float(dye_row["mastermix_target_concentration"])
             stock_volume_ul = float(dye_row["dye_stock_volume_ul"])
             needs_intermediate = bool(dye_row["needs_intermediate"])
 
             lines.append(
-                f"   - {dye_name}: mastermix target concentration {mastermix_target_conc:g} {final_unit}"
+                f"   - {dye_name}: mastermix target concentration {mastermix_target_concentration:g} {final_unit}"
             )
 
             if not needs_intermediate:
