@@ -93,3 +93,7 @@ table tr:hover {
   background-color: #141920;
 }
 
+.unit {
+  text-transform: none;
+}
+

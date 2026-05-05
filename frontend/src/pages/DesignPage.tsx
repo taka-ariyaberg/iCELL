@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { NumberInput } from '../components/NumberInput';
+import { Unit } from '../components/Unit';
 import { PlateVisualization, generateDistinctColors, generateDyeColor } from '../components/PlateVisualization';
 import { usePlateStore } from '../store/plateStore';
 import { ConfigInput, DyeProgramInput } from '../services/apiClient';
@@ -901,7 +902,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
               <small>Extra volume to account for waste</small>
             </div>
             <div className="form-group">
-              <label htmlFor="final_well_vol">Final Well Volume (µL)</label>
+              <label htmlFor="final_well_vol">Final Well Volume <Unit>(µL)</Unit></label>
               <NumberInput
                 id="final_well_vol" min="10" max="200" step="5" value={finalWellVolume}
                 onChange={e => setFinalWellVolume(parseInt(e.target.value))} disabled={isLoading}
@@ -914,7 +915,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
               </small>
             </div>
             <div className="form-group">
-              <label htmlFor="dead_vol_cells">Dead Volume – Cell Suspension (µL)</label>
+              <label htmlFor="dead_vol_cells">Dead Volume – Cell Suspension <Unit>(µL)</Unit></label>
               <NumberInput
                 id="dead_vol_cells" value={deadVolumeCells}
                 onChange={e => setDeadVolumeCells(parseInt(e.target.value))} disabled={isLoading}
@@ -923,7 +924,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
             </div>
             {mode === 'dye' && (
               <div className="form-group">
-                <label htmlFor="dead_vol_dye">Dead Volume – Dye (µL)</label>
+                <label htmlFor="dead_vol_dye">Dead Volume – Dye <Unit>(µL)</Unit></label>
                 <NumberInput
                   id="dead_vol_dye" value={deadVolumeDye}
                   onChange={e => setDeadVolumeDye(parseInt(e.target.value))} disabled={isLoading}
