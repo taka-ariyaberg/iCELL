@@ -18,7 +18,7 @@ iCELL is a full-stack web application (and Jupyter notebook) for planning cell s
 ---
 
 ## Session Start
-Read `~/claude-workspace/Nexus_OV/iCELL_OV/Current.md`. That's it. Auto-memory loads MEMORY.md automatically; do not re-read Home.md or Sessions logs unless something forces it.
+Read `~/claude-workspace/Nexus_OV/iCELL_OV/iCELL_Current.md`. That's it. Auto-memory loads MEMORY.md automatically; do not re-read iCELL_Home.md or Sessions logs unless something forces it.
 
 ## Session End
 Run `/end-session`. It updates `Current.md`, appends a 5-line note to `Sessions/`, and writes ADRs/Learnings only when warranted.
