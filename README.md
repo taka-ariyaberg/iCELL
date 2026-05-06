@@ -40,6 +40,10 @@ For full setup details, see [Setup](#setup) below.
 
 The current release is `1.0.0`. The project is actively developed at Uppsala University. See the [CHANGELOG](CHANGELOG.md) for what's new and the [project quality roadmap](#additional-documentation) for what's next.
 
+## Disclaimer
+
+iCELL is research software developed at Uppsala University. It is provided **as is**, without warranty of any kind, express or implied — including but not limited to merchantability, fitness for a particular purpose, and noninfringement. Outputs are computed from the inputs you provide; **always verify dispense volumes, recipes, and instructions before applying them to irreplaceable samples or in regulated workflows**. iCELL is **not** validated for clinical, diagnostic, or therapeutic use. See [LICENSE](LICENSE) for the legal terms.
+
 ## Repository Layout
 
 For the full directory map and the rules for "where does X go?", see [docs/repo-structure.md](docs/repo-structure.md). Quick overview:
@@ -76,7 +80,8 @@ iCELL/
 │       └── utils/          Pure-function utilities
 │           └── export/         File-export pipeline (CSV/SVG/PNG/download)
 ├── notebooks/run.ipynb     Notebook entry point
-├── scripts/start.sh        Canonical Docker launcher
+├── scripts/start.sh        Start the stack (auto-builds on first run)
+├── scripts/stop.sh         Stop the stack
 ├── src/icell/              Core calculation engine
 └── pyproject.toml          Python package metadata
 ```
@@ -96,23 +101,22 @@ Start iCELL from the repo root:
 bash scripts/start.sh
 ```
 
-That command builds the image, starts both containers, waits for the app to respond, and opens the web app in your browser automatically.
+The first time you run it the script builds the Docker image (one-time, ~1–2 minutes), starts both containers, waits for the app to respond, and opens the web app in your browser. **Subsequent runs reuse the cached image** and skip the build, so they're much faster. Run with `--build` after pulling code changes you want reflected in the running app:
+
+```bash
+bash scripts/start.sh --build      # force a rebuild
+bash scripts/start.sh --no-open    # start without opening a browser
+```
 
 Open:
 
 - Web app: `http://localhost:8000`
 - JupyterLab: `http://localhost:8888/lab?token=icell`
 
-To start without opening the browser:
-
-```bash
-bash scripts/start.sh --no-open
-```
-
 To stop iCELL:
 
 ```bash
-bash scripts/start.sh stop
+bash scripts/stop.sh
 ```
 
 The Docker runtime mounts [config](config), [data](data), and [notebooks](notebooks) from your clone, so inputs, outputs, and notebook edits stay on the host machine.
@@ -187,7 +191,5 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for developmen
 - [data/templates/](data/templates) — empty CSV templates for the three input files
 - [config/README.md](config/README.md) — config directory and `config.json` schema
 - [config/plate_type/README.md](config/plate_type/README.md) — defining new plate types
-- [frontend/README.md](frontend/README.md) — frontend architecture notes
-- [frontend/DEVELOPER.md](frontend/DEVELOPER.md) — frontend development conventions
-- [frontend/ORGANIZATION.md](frontend/ORGANIZATION.md) — frontend structure
+- [frontend/README.md](frontend/README.md) — frontend-specific config (env variables, principles)
 - [CHANGELOG.md](CHANGELOG.md) — release notes
