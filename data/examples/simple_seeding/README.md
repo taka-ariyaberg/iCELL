@@ -25,6 +25,6 @@ The notebook will generate:
 - **iMETA.csv** - per-well metadata export for downstream use
 - **Run log** - detailed trace of the calculation
 
-Artifacts use the shared naming format:
+Artifacts use the shared naming format `iCELL_<base>_<artifact>_<timestamp>.<ext>`, where `<base>` is built from `project.name` + `project.plate_id`. Example:
 
-- `ProjectName__PlateID__YYYY-MM-DD__artifact`
+- `iCELL_MyProject_Plate1_seeding_summary_2026-05-06-10-30-45.csv`

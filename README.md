@@ -38,7 +38,7 @@ For full setup details, see [Setup](#setup) below.
 
 ## Status
 
-The current release is `1.0.0`. The project is actively developed at Uppsala University. See the [CHANGELOG](CHANGELOG.md) for what's new and the [project quality roadmap](#additional-documentation) for what's next.
+The current release is `1.0.0`. The project is actively developed at Uppsala University. See the [CHANGELOG](CHANGELOG.md) for what's new.
 
 ## Disclaimer
 
@@ -145,12 +145,12 @@ docker compose down
 - `instructions/` — human-readable preparation steps and downloadable protocol text
 - `logs/` — calculation logs for traceability
 
-Exported artifacts use a shared base name:
+Exported artifacts follow the format `iCELL_<base>_<artifact>_<timestamp>.<ext>`, where `<base>` is built from `project.name` and `project.plate_id`:
 
-- `ProjectName__PlateID__YYYY-MM-DD__seeding_summary.csv`
-- `ProjectName__PlateID__YYYY-MM-DD__dye_program_summary.csv`
-- `ProjectName__PlateID__YYYY-MM-DD__iMETA.csv`
-- `ProjectName__PlateID__YYYY-MM-DD__instructions.txt`
+- `iCELL_ProjectName_PlateID_seeding_summary_2026-05-06-10-30-45.csv`
+- `iCELL_ProjectName_PlateID_dye_program_summary_2026-05-06-10-30-45.csv`
+- `iCELL_ProjectName_PlateID_iMETA_2026-05-06-10-30-45.csv`
+- `iCELL_ProjectName_PlateID_instructions_2026-05-06-10-30-45.txt`
 
 `iMETA.csv` is the per-well metadata export. It includes Plate ID, well, user-defined group name, seeding date, initial stock cell suspension concentration, per-well cell suspension concentration, dye program assignment, and per-component mastermix additions in a single wide table.
 

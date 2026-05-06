@@ -26,14 +26,14 @@ A high-level map of how iCELL's pieces fit together. Read this first if you're c
    └──────────────────────────┘                          └─────────────────────────┘
               ▲                                                       ▲
               │                                                       │
-   ┌──────────────────────────┐                          ┌─────────────────────────┐
-   │   config/config.json     │                          │   frontend/  (React)    │
-   │   data/input/*.csv       │                          │                         │
-   └──────────────────────────┘                          │   pages/DesignPage.tsx  │
-                                                         │   pages/ResultsPage.tsx │
-                                                         │   services/apiClient.ts │
-                                                         │   store/plateStore.ts   │
-                                                         └─────────────────────────┘
+   ┌──────────────────────────┐                          ┌──────────────────────────────┐
+   │   config/config.json     │                          │   frontend/  (React)         │
+   │   data/input/*.csv       │                          │                              │
+   └──────────────────────────┘                          │   pages/design/DesignPage    │
+                                                         │   pages/results/ResultsPage  │
+                                                         │   services/apiClient.ts      │
+                                                         │   store/plateStore.ts        │
+                                                         └──────────────────────────────┘
                                                                      ▲
                                                                      │
                                                             user's browser
@@ -52,12 +52,12 @@ A high-level map of how iCELL's pieces fit together. Read this first if you're c
 
 ## Request flow — Web UI
 
-1. User edits the plate in `DesignPage.tsx`. State lives in `frontend/src/store/plateStore.ts` (Zustand).
+1. User edits the plate in `frontend/src/pages/design/DesignPage.tsx`. State lives in `frontend/src/store/plateStore.ts` (Zustand).
 2. Clicking **Process** calls `apiClient.runCalculation(...)` (`frontend/src/services/apiClient.ts`).
 3. The request hits `POST /api/run` (`backend/api/routes.py`). Pydantic models (`backend/api/schemas.py`) validate the payload.
 4. The route calls `backend/services/icell_service.py` which translates the schema-shaped input into the config dict shape the engine expects, writes temporary CSVs, and calls `run_icell()` from `src/icell/main.py`.
 5. The engine produces the seeding summary, dye summary, iMETA rows, formatted summary, and instructions. The service serializes them into JSON-safe records and returns them.
-6. The frontend receives the response, stores it, and renders `ResultsPage.tsx` and `ProtocolSection.tsx`.
+6. The frontend receives the response, stores it, and renders `pages/results/ResultsPage.tsx` plus the `components/protocol/ProtocolSection.tsx` navigator.
 
 ## Request flow — Notebook
 
@@ -87,7 +87,7 @@ data/output/
     └── iCELL_<...>_run.log
 ```
 
-Filenames use a shared base produced by `src/icell/file_names.py`. The `iCELL_..._iMETA.csv` and `iCELL_..._cell_seeding.csv` files are public contracts consumed by **iMETA** downstream — do not change those names without a coordinated migration.
+Filenames use the format `iCELL_<base>_<artifact>_<timestamp>.<ext>`, built by `src/icell/reporting/file_names.py`. The `iCELL_..._iMETA.csv` and `iCELL_..._cell_seeding.csv` files are public contracts consumed by **iMETA** downstream — do not change those names without a coordinated migration.
 
 ## Configuration
 

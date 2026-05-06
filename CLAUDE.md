@@ -43,9 +43,10 @@ Default models otherwise. Trust the skills — don't add a routing table here.
 Docker only (no host Python/Node required):
 
 ```bash
-bash scripts/start.sh          # build, start, open browser
-bash scripts/start.sh --no-open
-bash scripts/start.sh stop
+bash scripts/start.sh           # auto-builds first run, then reuses cache
+bash scripts/start.sh --build   # force rebuild after code changes
+bash scripts/start.sh --no-open # start without opening a browser
+bash scripts/stop.sh            # stop containers
 ```
 
 - Web app: `http://localhost:8000`
@@ -69,7 +70,8 @@ docker compose down
 | `backend/services/icell_service.py` | Bridge between API and engine |
 | `frontend/src/` | React + TypeScript UI |
 | `config/config.template.json` | Config template for notebook runs |
-| `scripts/start.sh` | Canonical launcher |
+| `scripts/start.sh` | Start the stack (auto-builds on first run, `--build` to force) |
+| `scripts/stop.sh` | Stop the stack |
 
 ---
 

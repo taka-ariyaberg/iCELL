@@ -11,9 +11,14 @@ These definitions are shared by:
 
 ## Available Plate Types
 
-- **384_well.json** - 384-well plate (16 rows × 24 columns)
-- **96_well.json** - 96-well plate (8 rows × 12 columns)
-- **6_well.json** - 6-well plate (2 rows × 3 columns)
+- **6_well.json** — 6-well plate (2 rows × 3 columns)
+- **12_well.json** — 12-well plate (3 rows × 4 columns)
+- **24_well.json** — 24-well plate (4 rows × 6 columns)
+- **48_well.json** — 48-well plate (6 rows × 8 columns)
+- **96_well.json** — 96-well plate (8 rows × 12 columns)
+- **384_well.json** — 384-well plate (16 rows × 24 columns)
+- **1536_well.json** — 1536-well plate (32 rows × 48 columns)
+- **custom_5x24.json** — example custom plate (5 rows × 24 columns)
 
 ## File Format
 
