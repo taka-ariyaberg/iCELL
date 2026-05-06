@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { usePlateStore } from '../store/plateStore';
+import { PlateLegend } from './PlateLegend';
 import '../styles/PlateVisualization.css';
 
 interface PlateVisualizationProps {
@@ -461,137 +462,21 @@ export const PlateVisualization: React.FC<PlateVisualizationProps> = ({
       )}
 
       {/* Legend */}
-      {!hideLegend && (() => {
-        if (readOnly && onGroupSelect) {
-          return (
-            <div className="plate-legend">
-              <div className="legend-section">
-                <h4>Interactions</h4>
-                <p className="legend-text">
-                  • Click: Toggle well<br/>
-                  • Shift+Click: Add to selection
-                </p>
-              </div>
-            </div>
-          );
-        }
-
-        // Normal design mode legend
-        return (
-          <div className="plate-legend">
-            {designMode === 'cells' ? (
-              <>
-                <div className="legend-section">
-                  <h4>Groups</h4>
-                  <div className="legend-items">
-                    {definedGroupNames.map((group) => {
-                      const wellCount = Object.values(wells).filter(g => g === group).length;
-                      return (
-                        <div key={group} className="legend-item">
-                          <div style={{ backgroundColor: groupColors[group], borderRadius: '4px', width: '24px', height: '20px' }}></div>
-                          <span>{group}</span>
-                          <span style={{ color: '#5a6677', fontSize: '11px', marginLeft: '2px' }}>({wellCount}w)</span>
-                        </div>
-                      );
-                    })}
-                    {(() => {
-                      const totalWells = rows * cols;
-                      const assignedCount = Object.keys(wells).length;
-                      const unassignedCount = totalWells - assignedCount;
-                      if (unassignedCount <= 0) return null;
-                      return (
-                        <div className="legend-item">
-                          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '4px', width: '24px', height: '20px' }}></div>
-                          <span>Unassigned</span>
-                          <span style={{ color: '#5a6677', fontSize: '11px', marginLeft: '2px' }}>({unassignedCount}w)</span>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="legend-section">
-                  <h4>Groups & Dye Programs</h4>
-                  <div className="legend-items">
-                    {definedGroupNames.length === 0 ? (
-                      <p style={{ color: '#888', margin: '8px 0', fontSize: '12px' }}>No groups defined</p>
-                    ) : (
-                      definedGroupNames.map((group) => {
-                        const wellsInGroup = Object.entries(wells).filter(([_, g]) => g === group);
-                        const dyesForGroup = new Set(wellsInGroup.map(([well, _]) => dyePrograms[well]).filter(d => d));
-                        const unassignedDye = wellsInGroup.filter(([well]) => !dyePrograms[well]).length;
-
-                        return (
-                          <div key={group} style={{ marginBottom: '6px', fontSize: '11px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                              <div style={{ backgroundColor: groupColors[group], borderRadius: '3px', width: '14px', height: '14px' }}></div>
-                              <strong>{group}</strong>
-                              <span style={{ color: '#666' }}>({wellsInGroup.length}w)</span>
-                            </div>
-                            <div style={{ marginLeft: '20px', paddingTop: '2px', borderLeft: '1px solid #3a4857', paddingLeft: '6px' }}>
-                              {Array.from(dyesForGroup).map(dye => {
-                                const dyeWellCount = wellsInGroup.filter(([well]) => dyePrograms[well] === dye).length;
-                                return (
-                                  <div key={dye} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#ccc', marginBottom: '2px' }}>
-                                    <div style={{ backgroundColor: dyeProgramColors[dye], borderRadius: '2px', width: '10px', height: '8px', flexShrink: 0 }}></div>
-                                    <span>{dye}</span>
-                                    <span style={{ color: '#5a6677' }}>({dyeWellCount}w)</span>
-                                  </div>
-                                );
-                              })}
-                              {unassignedDye > 0 && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#5a6677', marginBottom: '2px' }}>
-                                  <div style={{ backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: '2px', width: '10px', height: '8px', flexShrink: 0 }}></div>
-                                  <span>No dye</span>
-                                  <span>({unassignedDye}w)</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
-                    {(() => {
-                      const totalWells = rows * cols;
-                      const assignedToGroupCount = Object.keys(wells).length;
-                      const emptyWells = totalWells - assignedToGroupCount;
-                      if (emptyWells <= 0) return null;
-                      return (
-                        <div style={{ marginBottom: '6px', fontSize: '11px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <div style={{ backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '3px', width: '14px', height: '14px' }}></div>
-                            <strong style={{ color: '#5a6677' }}>Empty (no cells)</strong>
-                            <span style={{ color: '#5a6677' }}>({emptyWells}w)</span>
-                          </div>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              </>
-            )}
-            <div className="legend-section">
-              <h4>Interactions</h4>
-              <p className="legend-text">
-                {designMode === 'dyes' && !isViewerMode
-                  ? <>• Click: Select (unassigned) / Deassign (assigned)<br/></>  
-                  : <>• Click: Toggle well<br/></>}
-                • Shift+Drag: Select region<br/>
-                • Opt/Alt+Drag: Deselect region<br/>
-                • ⌘/Ctrl+A: Select all wells<br/>
-                • ⌘/Ctrl+D: Deselect all wells<br/>
-                {!isViewerMode && <>• ⌘/Ctrl+Z: Undo<br/></>}
-                {!isViewerMode && <>• ⌘/Ctrl+Shift+Z: Redo<br/></>}
-                {!isViewerMode && <>• ⌘/Ctrl+G: Assign group<br/></>}
-                {!isViewerMode && <>• ⌘/Ctrl+P: Assign dye program<br/></>}
-                • ⌘/Ctrl+M: Toggle cells / dyes {isViewerMode ? 'view' : 'mode'}
-              </p>
-            </div>
-          </div>
-        );
-      })()}
+      {!hideLegend && (
+        <PlateLegend
+          rows={rows}
+          cols={cols}
+          wells={wells}
+          dyePrograms={dyePrograms}
+          groups={groups}
+          groupColors={groupColors}
+          dyeProgramColors={dyeProgramColors}
+          designMode={designMode}
+          isViewerMode={isViewerMode}
+          readOnly={readOnly}
+          onGroupSelect={onGroupSelect}
+        />
+      )}
     </div>
   );
 };

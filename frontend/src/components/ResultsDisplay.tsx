@@ -10,6 +10,12 @@ import {
 import { downloadFile } from '../utils/exportUtils';
 import { serializeRecordsToCsv } from '../utils/csvExport';
 import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
+import { getWellRange } from '../utils/wellRange';
+import {
+  buildCellWellHoverDetails,
+  buildDyeWellHoverDetails,
+  extractValueLabels,
+} from '../utils/wellHoverDetails';
 import '../styles/ResultsDisplay.css';
 
 interface ResultsDisplayProps {
@@ -27,41 +33,6 @@ interface ResultsDisplayProps {
   wells?: Record<string, string>;
   groups?: Record<string, Set<string>>;
   dyePrograms?: Record<string, string>;
-}
-
-// Compute a rectangular range of wells between two well IDs for any plate type
-function getWellRange(start: string, end: string, plateType: string): Set<string> {
-  const plateMeta: Record<string, { rows: number; cols: number }> = {
-    '6': { rows: 2, cols: 3 }, '12': { rows: 3, cols: 4 },
-    '24': { rows: 4, cols: 6 }, '48': { rows: 6, cols: 8 },
-    '96': { rows: 8, cols: 12 }, '384': { rows: 16, cols: 24 },
-  };
-  let meta = plateMeta[plateType];
-  if (!meta && plateType.includes(',')) {
-    const [r, c] = plateType.split(',').map(Number);
-    meta = { rows: r, cols: c };
-  }
-  if (!meta) meta = { rows: 8, cols: 12 };
-
-  const startRow = start.charCodeAt(0) - 65;
-  const startCol = parseInt(start.slice(1)) - 1;
-  const endRow = end.charCodeAt(0) - 65;
-  const endCol = parseInt(end.slice(1)) - 1;
-
-  const minRow = Math.min(startRow, endRow);
-  const maxRow = Math.max(startRow, endRow);
-  const minCol = Math.min(startCol, endCol);
-  const maxCol = Math.max(startCol, endCol);
-
-  const result = new Set<string>();
-  for (let r = minRow; r <= maxRow; r++) {
-    for (let c = minCol; c <= maxCol; c++) {
-      if (r < meta.rows && c < meta.cols) {
-        result.add(`${String.fromCharCode(65 + r)}${c + 1}`);
-      }
-    }
-  }
-  return result;
 }
 
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
@@ -90,76 +61,10 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     return generateDistinctColors(programNames);
   }, [dyePrograms]);
 
-  const stripPlatePrefix = (well: string) => well.replace(/^P\d+-/, '');
-  const currentPlatePrefix = `P${currentPlate}-`;
-
-  const buildCellWellHoverDetails = () => {
-    const hoverDetails: Record<string, string[]> = {};
-
-    seedingSummary.forEach(row => {
-      const rawWells = String(row.wells ?? '').split(',').map(w => w.trim()).filter(Boolean);
-      const dispensePerWell = Number(row.cell_suspension_dispense_ul_per_well);
-
-      rawWells.forEach(rawWell => {
-        if (numPlates > 1 && !rawWell.startsWith(currentPlatePrefix)) {
-          return;
-        }
-
-        const well = stripPlatePrefix(rawWell);
-        const groupName = wells[well] ?? `${Number(row.cells_per_well).toLocaleString()} cells/well`;
-        hoverDetails[well] = [
-          well,
-          groupName,
-          `Dispense: ${dispensePerWell.toFixed(1)} µL cell suspension`,
-        ];
-      });
-    });
-
-    return hoverDetails;
-  };
-
-  const buildDyeWellHoverDetails = () => {
-    const hoverDetails: Record<string, string[]> = {};
-    const dyeDispenseByProgram = new Map<string, number>();
-
-    (dyeSummary ?? []).forEach(row => {
-      const program = String(row.dye_program ?? '');
-      if (!program) return;
-      dyeDispenseByProgram.set(program, Number(row.mastermix_dispense_ul_per_well));
-    });
-
-    Object.entries(wells).forEach(([well, groupName]) => {
-      const dyeProgram = dyePrograms[well];
-      const lines = [well, groupName];
-      if (dyeProgram) {
-        lines.push(dyeProgram);
-        const dispense = dyeDispenseByProgram.get(dyeProgram);
-        if (dispense !== undefined) {
-          lines.push(`Dispense: ${dispense.toFixed(1)} µL dye mastermix`);
-        }
-      } else {
-        lines.push('No dye');
-      }
-      hoverDetails[well] = lines;
-    });
-
-    return hoverDetails;
-  };
-
-  const cellWellHoverDetails = buildCellWellHoverDetails();
-  const dyeWellHoverDetails = buildDyeWellHoverDetails();
-  const cellWellValueLabels = Object.fromEntries(
-    Object.entries(cellWellHoverDetails).map(([well, lines]) => {
-      const dispenseLine = lines.find(line => line.startsWith('Dispense: '));
-      return [well, dispenseLine ? dispenseLine.replace('Dispense: ', '').replace(' cell suspension', '') : ''];
-    })
-  );
-  const dyeWellValueLabels = Object.fromEntries(
-    Object.entries(dyeWellHoverDetails).map(([well, lines]) => {
-      const dispenseLine = lines.find(line => line.startsWith('Dispense: '));
-      return [well, dispenseLine ? dispenseLine.replace('Dispense: ', '').replace(' dye mastermix', '') : ''];
-    })
-  );
+  const cellWellHoverDetails = buildCellWellHoverDetails({ seedingSummary, wells, numPlates, currentPlate });
+  const dyeWellHoverDetails = buildDyeWellHoverDetails({ wells, dyePrograms, dyeSummary });
+  const cellWellValueLabels = extractValueLabels(cellWellHoverDetails, ' cell suspension');
+  const dyeWellValueLabels = extractValueLabels(dyeWellHoverDetails, ' dye mastermix');
 
   const toggleSummaryMode = () => {
     setSummaryMode((prev) => prev === 'cells' ? 'dyes' : 'cells');
@@ -245,7 +150,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
       .map(row => {
         const rawWells = String(row.wells ?? '').split(',').map(w => w.trim()).filter(Boolean);
         const rowWellsList = numPlates <= 1
-          ? rawWells.map(stripPlatePrefix)
+          ? rawWells.map(w => w.replace(/^P\d+-/, ''))
           : rawWells; // keep prefixes for per-plate counting
         const count = numPlates <= 1
           ? Array.from(selectedWells).filter(w => rowWellsList.includes(w)).length
