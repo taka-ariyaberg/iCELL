@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DesignPage } from './pages/DesignPage';
-import { ResultsPage } from './pages/ResultsPage';
+import { DesignPage } from './pages/design/DesignPage';
+import { ResultsPage } from './pages/results/ResultsPage';
 import { CSVUploader } from './components/CSVUploader';
 import { usePlateStore } from './store/plateStore';
 import { runCalculation, uploadCSVFiles, ConfigInput, PlateLayoutInput, DyeProgramInput, CalculationResult, healthCheck } from './services/apiClient';

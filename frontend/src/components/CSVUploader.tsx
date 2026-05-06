@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
+import { buildDownloadFilenameFromBase } from '../utils/export/downloadFilenames';
 import '../styles/CSVUploader.css';
 
 type UploadFileKey = 'config' | 'cell_layout' | 'dye_layout' | 'meta_dye';

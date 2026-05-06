@@ -6,7 +6,7 @@
  *  "Finish Mastermix" footer.
  */
 
-import { splitProtocolDetail } from '../utils/protocolInstructions';
+import { splitProtocolDetail } from '../../utils/protocolInstructions';
 import { ProtocolEntry, ProtocolMode } from './protocolTypes';
 
 type ProtocolRow = {

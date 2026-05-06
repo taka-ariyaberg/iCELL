@@ -1,4 +1,4 @@
-import { NumberInput } from '../../components/NumberInput';
+import { NumberInput } from '../../components/inputs/NumberInput';
 
 interface GroupDef {
   density: number;

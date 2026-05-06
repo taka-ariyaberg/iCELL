@@ -1,4 +1,4 @@
-import { generateDyeColor } from '../../components/PlateVisualization';
+import { generateDyeColor } from '../../components/plate/PlateVisualization';
 import { DyeProgramDef } from './types';
 
 interface DyesModePanelProps {

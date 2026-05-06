@@ -1,4 +1,4 @@
-import { Unit } from '../Unit';
+import { Unit } from './Unit';
 
 export type FormattedVolumeProps = {
   value: number;

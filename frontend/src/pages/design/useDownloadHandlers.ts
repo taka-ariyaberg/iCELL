@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { buildDownloadFilename } from '../../utils/downloadFilenames';
+import { buildDownloadFilename } from '../../utils/export/downloadFilenames';
 import {
   downloadFile,
   generateCellLayout,
@@ -8,7 +8,7 @@ import {
   generateDyeSVG,
   generateLayoutPNG,
   generateLayoutSVG,
-} from '../../utils/exportUtils';
+} from '../../utils/export/exportUtils';
 
 interface GroupDef {
   density: number;

@@ -42,6 +42,8 @@ The current release is `1.0.0`. The project is actively developed at Uppsala Uni
 
 ## Repository Layout
 
+For the full directory map and the rules for "where does X go?", see [docs/repo-structure.md](docs/repo-structure.md). Quick overview:
+
 ```text
 iCELL/
 ├── backend/                FastAPI wrapper around the Python engine
@@ -49,14 +51,30 @@ iCELL/
 │   ├── api/routes.py       API endpoints
 │   ├── api/schemas.py      Request/response models
 │   └── services/           Bridges API to the engine
-├── config/                 config template, schema, plate type definitions
+├── config/                 config template, JSON schema, plate type definitions
 ├── data/
 │   ├── examples/           Reference inputs for common run scenarios
 │   ├── input/              Working inputs for notebook/API runs
-│   └── output/             Generated tables, instructions, and logs (gitignored)
+│   ├── output/             Generated tables, instructions, and logs (gitignored)
+│   └── templates/          Empty header-only CSVs to copy from
 ├── docker-compose.yml      Portable app + notebook runtime
 ├── Dockerfile              Multi-stage image for the web app and JupyterLab
+├── docs/                   Project documentation (architecture, examples, deps)
 ├── frontend/               React + TypeScript UI
+│   └── src/
+│       ├── components/     Reusable cross-page components, grouped by domain
+│       │   ├── inputs/         NumberInput, ViewModeSwitch
+│       │   ├── plate/          PlateVisualization, PlateLegend
+│       │   ├── primitives/     Unit, MetricRow, DetailCardHeader, …
+│       │   └── protocol/       ProtocolSection, ProtocolDetailCard, types
+│       ├── pages/          Page-level components, one subdir per page
+│       │   ├── design/         DesignPage + 16 panel/modal/hook companions
+│       │   └── results/        ResultsPage + ResultsDisplay
+│       ├── services/       apiClient
+│       ├── store/          Zustand state (plateStore + tests)
+│       ├── styles/         Centralized stylesheets
+│       └── utils/          Pure-function utilities
+│           └── export/         File-export pipeline (CSV/SVG/PNG/download)
 ├── notebooks/run.ipynb     Notebook entry point
 ├── scripts/start.sh        Canonical Docker launcher
 ├── src/icell/              Core calculation engine
@@ -162,6 +180,7 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for developmen
 
 ## Additional Documentation
 
+- [docs/repo-structure.md](docs/repo-structure.md) — canonical directory layout and the rules for adding new files
 - [docs/architecture.md](docs/architecture.md) — how the engine, backend, frontend, and notebook fit together
 - [docs/examples.md](docs/examples.md) — end-to-end worked examples (simple seeding and dye program)
 - [docs/dependencies.md](docs/dependencies.md) — every dependency, version, and purpose

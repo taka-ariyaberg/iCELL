@@ -15,6 +15,9 @@ That builds the Docker images, starts the FastAPI app + JupyterLab, and opens th
 ## Repo conventions in one place
 
 - **Stack:** Python 3.11, FastAPI, React 18, TypeScript, Vite, Zustand, Docker. See [`docs/dependencies.md`](docs/dependencies.md) for every pinned version.
+- **Repository layout:** [`docs/repo-structure.md`](docs/repo-structure.md) is the source of truth for where files go. Quick rules: domain-grouped subdirs in `frontend/src/components/` (only when 2+ files share a domain), one subdir per page in `pages/`, related utility cluster (e.g. the export pipeline) in `utils/<group>/`, single files stay at the parent level. CSS lives centrally in `frontend/src/styles/`, not co-located.
+- **File-size discipline:** target ~200–300 LOC per source file; >500 LOC trips the `max-lines` warning and is a strong split signal. Split on cohesion (independent concerns), not raw line count — a tight callgraph stays in one file.
+- **Naming:** PascalCase for `.tsx` components, camelCase for `.ts` utilities, snake_case for Python modules. Booleans use `is*`/`has*`/`show*` prefixes; event handlers are `handleX` (internal) vs `onX` (props). Identifiers carrying a unit suffix it (`_ul`, `_ml`, `Ul`, `Pct`).
 - **Commits:** small, focused, one concern per commit. The first line summarizes the change in ≤72 chars; the body explains the *why*. Use Conventional Commits prefixes where they fit (`feat`, `fix`, `chore`, `docs`, `refactor`, `test`).
 - **PRs:** describe the *why*, link to any relevant issue, list manual verification steps you ran. Small PRs review faster.
 - **Branches:** off `main`. Name them descriptively (`feat/seeding-volume-validator`, `fix/µL-display`).

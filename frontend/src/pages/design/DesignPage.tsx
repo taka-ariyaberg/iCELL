@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { PlateVisualization, generateDistinctColors } from '../components/PlateVisualization';
-import { usePlateStore } from '../store/plateStore';
-import { ConfigInput, DyeProgramInput } from '../services/apiClient';
+import { PlateVisualization, generateDistinctColors } from '../../components/plate/PlateVisualization';
+import { usePlateStore } from '../../store/plateStore';
+import { ConfigInput, DyeProgramInput } from '../../services/apiClient';
 import {
   BLANK_DYE,
   DEFAULT_DYE_PROGRAMS,
@@ -11,21 +11,21 @@ import {
   SAVED_PROGRAMS_KEY,
   getTodayDateInputValue,
   parseInitialPlateType,
-} from './design/types';
-import { CellsModePanel } from './design/CellsModePanel';
-import { ConfigBar } from './design/ConfigBar';
-import { ConfirmProcessModal } from './design/ConfirmProcessModal';
-import { DownloadActions } from './design/DownloadActions';
-import { DyesModePanel } from './design/DyesModePanel';
-import { DyeAssignmentModal } from './design/DyeAssignmentModal';
-import { DyeWarningModal } from './design/DyeWarningModal';
-import { EditGroupModal } from './design/EditGroupModal';
-import { GroupModal } from './design/GroupModal';
-import { ManageDyeProgramModal } from './design/ManageDyeProgramModal';
-import { ParametersPanel } from './design/ParametersPanel';
-import { useDesignKeyboard } from './design/useDesignKeyboard';
-import { useDownloadHandlers } from './design/useDownloadHandlers';
-import '../styles/DesignerPage.css';
+} from './types';
+import { CellsModePanel } from './CellsModePanel';
+import { ConfigBar } from './ConfigBar';
+import { ConfirmProcessModal } from './ConfirmProcessModal';
+import { DownloadActions } from './DownloadActions';
+import { DyesModePanel } from './DyesModePanel';
+import { DyeAssignmentModal } from './DyeAssignmentModal';
+import { DyeWarningModal } from './DyeWarningModal';
+import { EditGroupModal } from './EditGroupModal';
+import { GroupModal } from './GroupModal';
+import { ManageDyeProgramModal } from './ManageDyeProgramModal';
+import { ParametersPanel } from './ParametersPanel';
+import { useDesignKeyboard } from './useDesignKeyboard';
+import { useDownloadHandlers } from './useDownloadHandlers';
+import '../../styles/DesignerPage.css';
 
 // Re-export the shared types so existing imports of
 // `DesignOutput` / `DyeProgramDef` etc. via DesignPage.tsx keep working.

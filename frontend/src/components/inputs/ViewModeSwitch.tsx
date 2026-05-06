@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/ViewModeSwitch.css';
+import '../../styles/ViewModeSwitch.css';
 
 type ViewMode = 'cells' | 'dyes';
 

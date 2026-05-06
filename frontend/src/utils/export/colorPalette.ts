@@ -6,7 +6,7 @@
  * `styles/tokens.ts`.
  */
 
-import { GROUP_COLOR_PALETTE } from '../styles/tokens';
+import { GROUP_COLOR_PALETTE } from '../../styles/tokens';
 
 // DYE_PALETTE — must stay in sync with the same array in PlateVisualization.tsx
 const DYE_PALETTE = [

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { ResultsDisplay } from '../components/ResultsDisplay';
-import { usePlateStore } from '../store/plateStore';
-import { ConfigInput } from '../services/apiClient';
-import { generateCellLayout, generateDyeLayout, generateMetaDye, downloadFile } from '../utils/exportUtils';
-import { serializeRecordsToCsv } from '../utils/csvExport';
-import { buildDownloadBaseName, buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
-import '../styles/ResultsPage.css';
+import { ResultsDisplay } from './ResultsDisplay';
+import { usePlateStore } from '../../store/plateStore';
+import { ConfigInput } from '../../services/apiClient';
+import { generateCellLayout, generateDyeLayout, generateMetaDye, downloadFile } from '../../utils/export/exportUtils';
+import { serializeRecordsToCsv } from '../../utils/csvExport';
+import { buildDownloadBaseName, buildDownloadFilenameFromBase } from '../../utils/export/downloadFilenames';
+import '../../styles/ResultsPage.css';
 
 interface ResultsPageProps {
   instructions: string;

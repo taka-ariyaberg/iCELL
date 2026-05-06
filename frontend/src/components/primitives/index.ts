@@ -1,4 +1,4 @@
-export { Unit } from '../Unit';
+export { Unit } from './Unit';
 export { MetricRow } from './MetricRow';
 export type { MetricRowProps } from './MetricRow';
 export { DetailCardHeader } from './DetailCardHeader';

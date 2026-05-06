@@ -1,5 +1,5 @@
-import { NumberInput } from '../../components/NumberInput';
-import { Unit } from '../../components/Unit';
+import { NumberInput } from '../../components/inputs/NumberInput';
+import { Unit } from '../../components/primitives/Unit';
 
 interface ParametersPanelProps {
   mode: 'no_dye' | 'dye';

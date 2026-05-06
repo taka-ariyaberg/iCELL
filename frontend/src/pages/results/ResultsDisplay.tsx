@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { PlateVisualization, generateDistinctColors } from './PlateVisualization';
-import { ProtocolSection } from './ProtocolSection';
-import { ViewModeSwitch } from './ViewModeSwitch';
+import { PlateVisualization, generateDistinctColors } from '../../components/plate/PlateVisualization';
+import { ProtocolSection } from '../../components/protocol/ProtocolSection';
+import { ViewModeSwitch } from '../../components/inputs/ViewModeSwitch';
 import {
   DetailCardHeader,
   MetricRow,
   PlateNavigationChip,
-} from './primitives';
-import { downloadFile } from '../utils/exportUtils';
-import { serializeRecordsToCsv } from '../utils/csvExport';
-import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
-import { getWellRange } from '../utils/wellRange';
+} from '../../components/primitives';
+import { downloadFile } from '../../utils/export/exportUtils';
+import { serializeRecordsToCsv } from '../../utils/csvExport';
+import { buildDownloadFilenameFromBase } from '../../utils/export/downloadFilenames';
+import { getWellRange } from '../../utils/wellRange';
 import {
   buildCellWellHoverDetails,
   buildDyeWellHoverDetails,
   extractValueLabels,
-} from '../utils/wellHoverDetails';
-import '../styles/ResultsDisplay.css';
+} from '../../utils/wellHoverDetails';
+import '../../styles/ResultsDisplay.css';
 
 interface ResultsDisplayProps {
   instructions: string;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NumberInput } from '../../components/NumberInput';
+import { NumberInput } from '../../components/inputs/NumberInput';
 import { DyeDefinition } from './types';
 
 /** Concentration-unit `<option>` set used by both Stock and Final selects below. */

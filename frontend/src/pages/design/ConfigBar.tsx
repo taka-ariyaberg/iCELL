@@ -1,5 +1,5 @@
 import React from 'react';
-import { NumberInput } from '../../components/NumberInput';
+import { NumberInput } from '../../components/inputs/NumberInput';
 
 const S = {
   label: { fontSize: '10px', color: '#888', marginBottom: '3px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' } as React.CSSProperties,

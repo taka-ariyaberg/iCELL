@@ -3,10 +3,10 @@ import {
   PlateVisualization,
   generateDistinctColors,
   generateDyeColor,
-} from './PlateVisualization';
-import { ViewModeSwitch } from './ViewModeSwitch';
-import { downloadFile } from '../utils/exportUtils';
-import { buildDownloadFilenameFromBase } from '../utils/downloadFilenames';
+} from '../plate/PlateVisualization';
+import { ViewModeSwitch } from '../inputs/ViewModeSwitch';
+import { downloadFile } from '../../utils/export/exportUtils';
+import { buildDownloadFilenameFromBase } from '../../utils/export/downloadFilenames';
 import {
   mergeProtocolDetails,
   normalizeProtocolInstructions,
@@ -14,10 +14,10 @@ import {
   parseProtocolSteps,
   parseProtocolSummary,
   parseWellList,
-} from '../utils/protocolInstructions';
+} from '../../utils/protocolInstructions';
 import { ProtocolDetailCard } from './ProtocolDetailCard';
 import { ProtocolEntry, ProtocolMode } from './protocolTypes';
-import '../styles/ProtocolSection.css';
+import '../../styles/ProtocolSection.css';
 
 interface ProtocolSectionProps {
   instructions: string;

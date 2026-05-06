@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { usePlateStore } from '../store/plateStore';
+import { usePlateStore } from '../../store/plateStore';
 import { PlateLegend } from './PlateLegend';
-import '../styles/PlateVisualization.css';
+import '../../styles/PlateVisualization.css';
 
 interface PlateVisualizationProps {
   plateType: string;
@@ -23,7 +23,7 @@ interface PlateVisualizationProps {
   onExternalRangeDeselect?: (start: string, end: string) => void;
 }
 
-import { GROUP_COLOR_PALETTE } from '../styles/tokens';
+import { GROUP_COLOR_PALETTE } from '../../styles/tokens';
 
 function hashName(name: string): number {
   let hash = 0;
