@@ -2,9 +2,6 @@
  *
  * `DesignPage.tsx` is the orchestrator; the modal components and the
  * keyboard hook live in this directory and import from this file.
- *
- * Pure TypeScript — JSX-bearing constants (UNIT_OPTIONS) live in
- * `UnitOptions.tsx`.
  */
 
 export const SAVED_PROGRAMS_KEY = 'iCELL_savedDyePrograms_v2';
