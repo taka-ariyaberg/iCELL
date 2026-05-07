@@ -1,6 +1,6 @@
 # iCELL architecture
 
-A high-level map of how iCELL's pieces fit together. Read this first if you're contributing or just trying to understand where a behavior lives.
+A high-level map of how iCELL's pieces fit together. Read this first if you're trying to understand where a behavior lives.
 
 ## One engine, two surfaces
 

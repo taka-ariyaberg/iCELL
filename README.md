@@ -178,9 +178,9 @@ Quick reference:
 
 If you use iCELL in your research, please cite it. Citation metadata lives in [`CITATION.cff`](CITATION.cff) (GitHub displays a "Cite this repository" button on the repo page that uses it).
 
-## Contributing
+## Reporting Issues
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, conventions, testing, and PR guidance. By participating you agree to the project's [Code of Conduct](CODE_OF_CONDUCT.md). Security issues — see [SECURITY.md](SECURITY.md) (do not file public issues for those).
+Bug reports and feature ideas: open a [GitHub issue](https://github.com/taka-ariyaberg/iCELL/issues/new/choose) using the provided templates. Security issues — see [SECURITY.md](SECURITY.md) (do not file those publicly).
 
 ## Additional Documentation
 

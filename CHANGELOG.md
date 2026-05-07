@@ -23,8 +23,8 @@ This release rolls in the full Phase 0–11 codebase quality roadmap. Behavior-p
 - `docs/examples.md` walkthrough.
 - `docs/architecture.md` — engine ↔ backend ↔ frontend ↔ notebook map.
 - `docs/repo-structure.md` — canonical directory layout and "where does X go?" rules.
-- Public-release scaffolding: `CONTRIBUTING.md`, `CITATION.cff`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`, `.github/ISSUE_TEMPLATE/`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/dependabot.yml`.
-- README polished for a public reader: status badges, problem statement, citation/contributing/disclaimer blocks.
+- Public-release scaffolding: `CITATION.cff`, `SECURITY.md`, `CHANGELOG.md`, `.github/ISSUE_TEMPLATE/`, `.github/dependabot.yml`.
+- README polished for a public reader: status badges, problem statement, citation/issues/disclaimer blocks.
 
 **Refactor: dedup & primitives (Phases 3, 4)**
 - Extracted 5 shared reporting helpers into `src/icell/reporting/_format_utils.py`; deleted the duplicates from `formatted_exports.py` and `imeta.py`.
@@ -52,7 +52,7 @@ This release rolls in the full Phase 0–11 codebase quality roadmap. Behavior-p
 - Moved `jupyterlab` + `ipykernel` install behind a Dockerfile build arg `INSTALL_NOTEBOOK_DEPS` (default `true`, preserves current behavior).
 - `scripts/start.sh` no longer rebuilds on every invocation. First run auto-builds; subsequent runs reuse the cached image. Pass `--build` to force a rebuild after code changes.
 - New `scripts/stop.sh` replaces the old `scripts/start.sh stop` subcommand.
-- Frontend documentation deduplicated: deleted `frontend/DEVELOPER.md` and `frontend/ORGANIZATION.md` (content was covered by `CONTRIBUTING.md` and `docs/repo-structure.md`); slimmed `frontend/README.md` to a small frontend-specific config pointer.
+- Frontend documentation deduplicated: deleted `frontend/DEVELOPER.md` and `frontend/ORGANIZATION.md` (content was covered by `docs/repo-structure.md`); slimmed `frontend/README.md` to a small frontend-specific config pointer.
 
 ### Fixed
 - `µL` rendering on the Design page parameter labels (`Final Well Volume`, `Dead Volume — Cell Suspension`, `Dead Volume — Dye`). Root cause: `text-transform: uppercase` was case-mapping U+00B5 (MICRO SIGN) to U+039C (GREEK CAPITAL LETTER MU), which renders as a Latin "M". Introduced a small `<Unit>` primitive with `text-transform: none`.

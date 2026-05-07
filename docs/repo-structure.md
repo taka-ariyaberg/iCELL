@@ -21,7 +21,7 @@ iCELL/
 └── tests/              Backend (engine + service) unittest suite
 ```
 
-Repo-root files are **only** community/release files (LICENSE, README, CONTRIBUTING, CITATION, SECURITY, CODE_OF_CONDUCT, CHANGELOG) plus build descriptors (Dockerfile, docker-compose.yml, pyproject.toml, .python-version, .nvmrc, .editorconfig, .gitignore, .pre-commit-config.yaml). Everything else lives in a subdirectory.
+Repo-root files are **only** community/release files (LICENSE, README, CITATION, SECURITY, CHANGELOG) plus build descriptors (Dockerfile, docker-compose.yml, pyproject.toml, .python-version, .nvmrc, .editorconfig, .gitignore, .pre-commit-config.yaml). Everything else lives in a subdirectory.
 
 ## `frontend/src/` layout
 

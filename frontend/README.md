@@ -23,8 +23,6 @@ The full directory map is in [`docs/repo-structure.md`](../docs/repo-structure.m
 - `utils/` — pure helpers, with `utils/export/` for the CSV/SVG/PNG export pipeline
 - `styles/` — centralized stylesheets
 
-Conventions for adding new files: see [`CONTRIBUTING.md`](../CONTRIBUTING.md).
-
 ## Environment variables
 
 Frontend-specific config (also in [`.env.example`](.env.example)):
