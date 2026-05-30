@@ -31,8 +31,10 @@ function svgDefs(extraDefs = ''): string {
 ${extraDefs}  </defs>\n`;
 }
 
-function svgDarkBackground(w: number, h: number): string {
-  return `  <!-- Background -->\n  <rect width="${w}" height="${h}" fill="#111827" rx="10"/>\n  <rect x="1" y="1" width="${w - 2}" height="${h - 2}" fill="none" stroke="#1e2a3a" stroke-width="1.5" rx="9"/>\n`;
+/** A dark rounded card. Drawn behind a section of content so the outer
+ *  canvas can stay transparent (iPLAID-style) while light text stays readable. */
+function svgCard(x: number, y: number, w: number, h: number, rx = 10): string {
+  return `  <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#111827" rx="${rx}"/>\n  <rect x="${x + 1}" y="${y + 1}" width="${w - 2}" height="${h - 2}" fill="none" stroke="#1e2a3a" stroke-width="1.5" rx="${rx - 1}"/>\n`;
 }
 
 function svgHeaderText(x: number, y: number, label: string | number): string {
@@ -120,7 +122,12 @@ export function generateLayoutSVG(data: PlateExportData): string {
 
   let svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${svgW}" height="${svgH}" xmlns="http://www.w3.org/2000/svg">\n`;
   svg += svgDefs();
-  svg += svgDarkBackground(svgW, svgH);
+  // Transparent outer canvas + dark cards behind content (iPLAID-style).
+  const OUT = 24;
+  svg += svgCard(OUT, OUT, svgW - OUT * 2, plateY + plateH + 8 - OUT);
+  if (groupNames.length > 0) {
+    svg += svgCard(OUT, plateY + plateH + 14, svgW - OUT * 2, svgH - 24 - (plateY + plateH + 14));
+  }
   svg += svgTitle(margin + headerSize + plateW / 2, margin + 16, 'Plate Layout Assignment', `${plateType}-Well Plate`);
 
   // Column headers
@@ -253,7 +260,10 @@ export function generateDyeSVG(data: PlateExportData): string {
 
   let svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg width="${svgW}" height="${svgH}" xmlns="http://www.w3.org/2000/svg">\n`;
   svg += svgDefs();
-  svg += svgDarkBackground(svgW, svgH);
+  // Transparent outer canvas + dark plate card (iPLAID-style). The group legend
+  // already draws its own dark panel; the flat-list fallback gets a card below.
+  const OUT = 24;
+  svg += svgCard(OUT, OUT, svgW - OUT * 2, plateY + plateH + 8 - OUT);
   svg += svgTitle(margin + headerSize + plateW / 2, margin + 16, 'Dye Program Assignment', `${plateType}-Well Plate`);
 
   // Column headers
@@ -353,7 +363,8 @@ export function generateDyeSVG(data: PlateExportData): string {
       svg += `  <text x="${panelX + PANEL_PAD + 20}" y="${ey + 13}" font-size="11" font-family="Arial,sans-serif"><tspan font-weight="700" fill="#5a6677">Empty (no cells)</tspan><tspan fill="#666"> (${emptyWells}w)</tspan></text>\n`;
     }
   } else if (dyeNames.length > 0) {
-    // Fallback: flat dye list when no groups
+    // Fallback: flat dye list when no groups — give it its own dark card.
+    svg += svgCard(OUT, plateY + plateH + 14, svgW - OUT * 2, svgH - 24 - (plateY + plateH + 14));
     const lx = margin;
     let ly = plateY + plateH + 28;
     const perRow = Math.max(1, Math.floor(plateW / 200));

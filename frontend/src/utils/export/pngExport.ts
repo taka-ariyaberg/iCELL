@@ -34,8 +34,8 @@ async function svgToPng(svgString: string, filename: string): Promise<void> {
 
     const img = new Image();
     img.onload = () => {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, width, height);
+      // No background fill — keep the canvas transparent (iPLAID-style) so the
+      // PNG inherits the SVG's transparent outer area.
       ctx.drawImage(img, 0, 0, width, height);
 
       canvas.toBlob((blob) => {
