@@ -15,7 +15,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 
-APP_URL="${ICELL_APP_URL:-http://localhost:8000}"
+APP_URL="${ICELL_APP_URL:-http://localhost:8080}"
 HEALTH_URL="${ICELL_HEALTH_URL:-${APP_URL%/}/api/health}"
 NOTEBOOK_URL="${ICELL_NOTEBOOK_URL:-http://localhost:8888/lab?token=icell}"
 OPEN_BROWSER="${ICELL_OPEN_BROWSER:-1}"

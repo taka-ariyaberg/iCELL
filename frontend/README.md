@@ -29,11 +29,11 @@ Frontend-specific config (also in [`.env.example`](.env.example)):
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `VITE_API_URL` | `http://localhost:8000/api` | Backend API base URL |
-| `VITE_API_BASE_URL` | `http://localhost:8000/api` | Alias for `VITE_API_URL` |
+| `VITE_API_URL` | `http://localhost:8080/api` | Backend API base URL |
+| `VITE_API_BASE_URL` | `http://localhost:8080/api` | Alias for `VITE_API_URL` |
 | `VITE_ENV` | `development` | Application environment label |
 
-If neither `VITE_API_URL` nor `VITE_API_BASE_URL` is set, the frontend defaults to `http://localhost:8000/api`.
+If neither `VITE_API_URL` nor `VITE_API_BASE_URL` is set, the frontend defaults to `http://localhost:8080/api`.
 
 ## Development principles
 

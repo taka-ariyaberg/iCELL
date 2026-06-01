@@ -24,4 +24,4 @@ See [data/examples/](../examples) for filled-in versions you can run end to end:
 1. Place your three CSVs in `data/input/` with the exact filenames above.
 2. Make sure `config/config.json` exists (copy from [`config/config.template.json`](../../config/config.template.json) if not).
 3. Start iCELL: `bash scripts/start.sh`.
-4. Either open the notebook (`http://localhost:8888/lab?token=icell` → `notebooks/run.ipynb`) or upload the CSVs through the web UI at `http://localhost:8000`.
+4. Either open the notebook (`http://localhost:8888/lab?token=icell` → `notebooks/run.ipynb`) or upload the CSVs through the web UI at `http://localhost:8080`.

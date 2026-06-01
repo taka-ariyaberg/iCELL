@@ -3,6 +3,13 @@
 .DS_Store
 .env
 .env.*
+# Root-level patterns above do NOT match subdirectories. Exclude nested env
+# files (e.g. frontend/.env) too — a baked VITE_API_URL would pin the frontend
+# bundle to a fixed host port. Letting apiClient resolve from window.origin lets
+# iCELL run on any host port (needed to coexist with iPLAID on 8000).
+**/.env
+**/.env.*
+!**/.env.example
 .venv
 __pycache__/
 *.py[cod]

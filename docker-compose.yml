@@ -10,7 +10,7 @@ services:
       ICELL_RESOURCE_ROOT: /workspace
       ICELL_RUNTIME_ROOT: /workspace
     ports:
-      - "8000:8000"
+      - "8080:8000"
     volumes:
       - ./config:/workspace/config
       - ./data:/workspace/data

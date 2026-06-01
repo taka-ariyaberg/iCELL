@@ -30,8 +30,8 @@ bash scripts/start.sh
 
 That builds the Docker images, starts the FastAPI app + JupyterLab, and opens the web UI.
 
-- Web app: `http://localhost:8000`
-- API docs (auto-generated): `http://localhost:8000/docs`
+- Web app: `http://localhost:8080`
+- API docs (auto-generated): `http://localhost:8080/docs`
 - JupyterLab: `http://localhost:8888/lab?token=icell`
 
 For full setup details, see [Setup](#setup) below.
@@ -110,7 +110,7 @@ bash scripts/start.sh --no-open    # start without opening a browser
 
 Open:
 
-- Web app: `http://localhost:8000`
+- Web app: `http://localhost:8080`
 - JupyterLab: `http://localhost:8888/lab?token=icell`
 
 To stop iCELL:
