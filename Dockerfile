@@ -1,6 +1,6 @@
 # Pinned to specific patch versions so rebuilds are deterministic.
 # Bump these intentionally; do not relax to floating tags.
-FROM node:20.18.0-slim AS frontend-build
+FROM node:26.3.0-slim AS frontend-build
 
 WORKDIR /build/frontend
 
