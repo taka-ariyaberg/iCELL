@@ -166,6 +166,12 @@
   min-height: 44px;
 }
 
+.config-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.9;
+}
+
 .number-input-field::-webkit-outer-spin-button,
 .number-input-field::-webkit-inner-spin-button {
   -webkit-appearance: none;
