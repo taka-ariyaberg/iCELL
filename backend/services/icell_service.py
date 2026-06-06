@@ -60,6 +60,11 @@ def _ensure_custom_plate_type(plate_type: str) -> str:
         return plate_type
 
 
+def _format_viability(value: float) -> str:
+    """Render viability without a trailing .0 for whole numbers (95.0 -> '95')."""
+    return str(int(value)) if float(value).is_integer() else str(value)
+
+
 def create_temp_config(config_input: SeededConfigInput) -> dict:
     """Convert frontend config input to iCELL config format."""
     
@@ -272,6 +277,18 @@ def run_icell_calculation(config_input: SeededConfigInput, plate_layout: PlateLa
 
         if plate_layout.well_groups:
             config_dict["well_groups"] = dict(plate_layout.well_groups)
+
+        if plate_layout.group_definitions:
+            config_dict["cell_groups"] = {
+                name: {
+                    "cell_line": (meta.cell_line or ""),
+                    "modification": (meta.modification or ""),
+                    "passage": (meta.passage or ""),
+                    "viability_percent": ("" if meta.viability_percent is None
+                                          else _format_viability(meta.viability_percent)),
+                }
+                for name, meta in plate_layout.group_definitions.items()
+            }
 
         config_dict["paths"]["cell_layout_csv"] = "temp_cell_layout.csv"
         

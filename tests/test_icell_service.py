@@ -34,6 +34,27 @@ class ICellServiceTests(unittest.TestCase):
         self.assertNotIn("initial_cell_suspension_concentration_cells/mL", row)
         self.assertNotIn("cell_suspension_concentration_cells/mL", row)
 
+    def test_group_definitions_appear_in_imeta_rows(self) -> None:
+        config = SeededConfigInput(
+            project_name="p", plate_id="P1", plate_type="96_well", mode="no_dye",
+            stock_cell_concentration=5_000_000,
+        )
+        plate_layout = PlateLayoutInput(
+            well_positions={"A1": 500},
+            well_groups={"A1": "Control"},
+            group_definitions={"Control": {
+                "cell_line": "HeLa", "modification": "Wildtype",
+                "passage": "P12", "viability_percent": 95,
+            }},
+        )
+        result = run_icell_calculation(config, plate_layout)
+        self.assertEqual(result["status"], "success")
+        row = result["imeta_rows"][0]
+        self.assertEqual(row["cell_line"], "HeLa")
+        self.assertEqual(row["cell_modification"], "Wildtype")
+        self.assertEqual(row["passage"], "P12")
+        self.assertEqual(str(row["viability_percent"]), "95")
+
 
 if __name__ == "__main__":
     unittest.main()
