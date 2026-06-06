@@ -66,7 +66,7 @@
 .details-column {
   display: flex;
   flex-direction: column;
-  max-height: 700px;
+  max-height: var(--results-column-height, 700px);
   background-color: var(--icell-panel);
   padding: 24px 20px;
 }

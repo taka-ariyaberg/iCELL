@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { PlateVisualization, generateDistinctColors } from '../../components/plate/PlateVisualization';
 import { ProtocolSection } from '../../components/protocol/ProtocolSection';
 import { ViewModeSwitch } from '../../components/inputs/ViewModeSwitch';
@@ -64,6 +64,28 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   const [selectedWells, setSelectedWells] = useState<Set<string>>(new Set());
   const currentPlate = 1;
   const [summaryMode, setSummaryMode] = useState<'cells' | 'dyes'>('cells');
+
+  // Measure the plate column so the details (gray) column caps its scroll area
+  // to the exact panel height — mirrors the Protocol Navigator's behavior.
+  const [columnHeight, setColumnHeight] = useState<number | null>(null);
+  const plateColumnRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const plateColumn = plateColumnRef.current;
+    if (!plateColumn || typeof ResizeObserver === 'undefined') return;
+    const updateHeight = () => setColumnHeight(Math.round(plateColumn.getBoundingClientRect().height));
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(plateColumn);
+    window.addEventListener('resize', updateHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [summaryMode]);
+  const detailsColumnStyle = columnHeight
+    ? ({ '--results-column-height': `${columnHeight}px` } as React.CSSProperties)
+    : undefined;
+
   const allPlatesSuffix = numPlates > 1 ? ' (all plates)' : '';
   const groupColorMap = useMemo(() => generateDistinctColors(Object.keys(groups)), [groups]);
   const dyeProgramColorMap = useMemo(() => {
@@ -266,7 +288,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
               <>
                 <div className="seeding-summary-container">
                   {/* Left: Plate Visualization */}
-                  <div className="plate-column">
+                  <div className="plate-column" ref={plateColumnRef}>
                     <div className="plate-viewer-container">
                       <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
                       <PlateVisualization
@@ -295,7 +317,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   </div>
 
                   {/* Right: Details Panel */}
-                  <div className="details-column">
+                  <div className="details-column" style={detailsColumnStyle}>
                     {selectedWells.size > 0 ? (() => {
                       const detailsByGroup = getSelectedDetails();
                       if (detailsByGroup.length === 0) {
@@ -401,7 +423,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             <>
               <div className="seeding-summary-container">
                 {/* Left: Plate */}
-                <div className="plate-column">
+                <div className="plate-column" ref={plateColumnRef}>
                   <div className="plate-viewer-container">
                     <div className="plate-header-info">
                       <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
@@ -447,7 +469,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 </div>
 
                 {/* Right: Dye details */}
-                <div className="details-column">
+                <div className="details-column" style={detailsColumnStyle}>
                   {selectedWells.size > 0 ? (
                     dyeDetails.length === 0 ? (
                       <div className="details-empty"><p>No dye data found for selected wells</p></div>
