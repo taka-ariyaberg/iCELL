@@ -24,6 +24,7 @@ import { EditGroupModal } from './EditGroupModal';
 import { GroupModal } from './GroupModal';
 import { ManageDyeProgramModal } from './ManageDyeProgramModal';
 import { ParametersPanel } from './ParametersPanel';
+import { ViewGroupModal } from './ViewGroupModal';
 import { useDesignKeyboard } from './useDesignKeyboard';
 import { useDownloadHandlers } from './useDownloadHandlers';
 import '../../styles/DesignerPage.css';
@@ -77,6 +78,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   const [selectedExistingGroup, setSelectedExistingGroup] = useState<string | null>(null);
   const [cellForm, setCellForm] = useState<CellForm>(EMPTY_CELL_FORM);
   const [editCellForm, setEditCellForm] = useState<CellForm>(EMPTY_CELL_FORM);
+  const [viewingGroup, setViewingGroup] = useState<string | null>(null);
   const [designMode, setDesignMode] = useState<'cells' | 'dyes'>('cells');
   const [dyeProgramInput, setDyeProgramInput] = useState('');
   const [showProgramDropdown, setShowProgramDropdown] = useState(false);
@@ -387,6 +389,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                 setEditGroupDensity(density);
                 setEditCellForm(cellFormFromGroup(groups[name]));
               }}
+              onViewGroup={(name) => setViewingGroup(name)}
             />
           ) : (
             <DyesModePanel
@@ -491,6 +494,14 @@ export const DesignPage: React.FC<DesignPageProps> = ({
           setCellForm={setEditCellForm}
           updateGroupMeta={updateGroupMeta}
           onClose={() => setEditingGroup(null)}
+        />
+      )}
+
+      {viewingGroup !== null && groups[viewingGroup] && (
+        <ViewGroupModal
+          group={groups[viewingGroup]}
+          wellCount={groupCounts[viewingGroup] || 0}
+          onClose={() => setViewingGroup(null)}
         />
       )}
 
