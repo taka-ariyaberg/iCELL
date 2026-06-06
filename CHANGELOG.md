@@ -34,7 +34,7 @@ This release rolls in the full Phase 0–11 codebase quality roadmap. Behavior-p
 **Refactor: types & cleanup (Phases 5, 6)**
 - Typed API responses with `SeedingRow`, `DyeRow`, `IMetaRow`, `FormattedSummaryRow` interfaces; eliminated the last `any` cast in `DesignPage`.
 - Modernized backend typing: `Dict`/`List`/`Optional` from `typing` replaced with `dict`/`list`/`| None`. Added missing return types on `clean_values`, `health_check`, `run_calculation`, `upload_csv_files`, `create_temp_config`.
-- Declared `__all__` in `src/icell/__init__.py` exporting `__version__`, `run_pipeline`, `run_icell`.
+- Declared `__all__` in `src/icell/__init__.py` exporting `__version__` and `run_icell`.
 - Spelled out `target_concentration` (was `target_conc`) for naming consistency in `instructions.py`.
 
 **Refactor: file splits & directory organization (Phases 7, 11)**
@@ -50,7 +50,6 @@ This release rolls in the full Phase 0–11 codebase quality roadmap. Behavior-p
 - Removed the Jupyter notebook interface and its config/CSV scaffolding; the web app is now the sole interface.
 - Pinned Docker base images to patch level: `python:3.11.10-slim-bookworm` and `node:20.18.0-slim`.
 - `pyproject.toml` declares `pandas>=2.0,<3` (loose range for library consumers); `backend/requirements.txt` continues to pin the install version exactly.
-- Moved `jupyterlab` + `ipykernel` install behind a Dockerfile build arg `INSTALL_NOTEBOOK_DEPS` (default `true`, preserves current behavior).
 - `scripts/start.sh` no longer rebuilds on every invocation. First run auto-builds; subsequent runs reuse the cached image. Pass `--build` to force a rebuild after code changes.
 - New `scripts/stop.sh` replaces the old `scripts/start.sh stop` subcommand.
 - Frontend documentation deduplicated: deleted `frontend/DEVELOPER.md` and `frontend/ORGANIZATION.md` (content was covered by `docs/repo-structure.md`); slimmed `frontend/README.md` to a small frontend-specific config pointer.
