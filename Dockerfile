@@ -11,7 +11,7 @@ COPY frontend/ ./
 RUN npm run build
 
 
-FROM python:3.11.10-slim-bookworm
+FROM python:3.14.5-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
