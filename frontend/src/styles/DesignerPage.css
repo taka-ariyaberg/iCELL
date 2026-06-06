@@ -182,7 +182,7 @@
   top: 1px;
   right: 1px;
   bottom: 1px;
-  width: 2.55rem;
+  width: 2.1rem;
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -199,7 +199,7 @@
   padding: 0;
   background: linear-gradient(180deg, rgba(0, 184, 255, 0.18) 0%, rgba(0, 184, 255, 0.08) 100%);
   color: var(--icell-accent);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
