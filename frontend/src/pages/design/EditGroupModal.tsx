@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { NumberInput } from '../../components/inputs/NumberInput';
-import { CellForm, isCellFormComplete, toCellMeta } from './cellMeta';
+import { CellDetailsFields } from './CellDetailsFields';
+import { CellForm, isCellFormComplete, toCellMeta, densityError, sanitizeInteger } from './cellMeta';
 import type { CellMeta, GroupDefinition } from '../../store/plateStore';
 
 interface EditGroupModalProps {
@@ -57,6 +58,7 @@ export const EditGroupModal = ({
       collision: isCollision,
       empty: isEmpty,
       canSave: !isCollision && !isEmpty && isCellFormComplete(cellForm)
+        && densityError(density) === null
         && (isNameChanged || isDensityChanged || cellChanged),
       trimmed: trimmedName,
       nameChanged: isNameChanged,
@@ -78,7 +80,7 @@ export const EditGroupModal = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content modal-content--wide" onClick={(e) => e.stopPropagation()}>
         <h3>Edit Group: {oldName}</h3>
         <div className="modal-form">
           <div className="form-group">
@@ -107,24 +109,13 @@ export const EditGroupModal = ({
             <NumberInput
               id="edit-group-density"
               value={density}
-              onChange={(e) => setDensity(parseInt(e.target.value) || 0)}
+              onChange={(e) => setDensity(Number(sanitizeInteger(e.target.value)))}
               onFocus={(e) => e.target.select()}
+              onKeyDown={(e) => { if (['e', 'E', '+', '-', '.'].includes(e.key)) e.preventDefault(); }}
             />
+            {densityError(density) && <div className="field-error">{densityError(density)}</div>}
           </div>
-          <div className="form-group" style={{ borderTop: '1px solid #3a4857', paddingTop: '12px' }}>
-            <label>Cell details (all required)</label>
-            <input type="text" value={cellForm.cellLine} placeholder="Cell line (e.g. HeLa)"
-              onChange={(e) => setCellForm({ ...cellForm, cellLine: e.target.value })} />
-            <input type="text" value={cellForm.modification} placeholder="Wildtype?"
-              onChange={(e) => setCellForm({ ...cellForm, modification: e.target.value })}
-              style={{ marginTop: '6px' }} />
-            <input type="text" value={cellForm.passage} placeholder="Passage (e.g. P12)"
-              onChange={(e) => setCellForm({ ...cellForm, passage: e.target.value })}
-              style={{ marginTop: '6px' }} />
-            <input type="number" min="0" max="100" value={cellForm.viability ?? ''} placeholder="Viability %"
-              onChange={(e) => setCellForm({ ...cellForm, viability: e.target.value === '' ? null : Number(e.target.value) })}
-              style={{ marginTop: '6px' }} />
-          </div>
+          <CellDetailsFields form={cellForm} setForm={setCellForm} />
         </div>
         <div className="modal-actions">
           <button onClick={onClose} className="modal-cancel-btn">Cancel</button>

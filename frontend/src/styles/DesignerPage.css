@@ -453,6 +453,13 @@
   width: 90%;
   padding: 30px;
   animation: slideIn 0.3s ease;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content--wide {
+  max-width: 600px;
 }
 
 @keyframes slideIn {
@@ -477,6 +484,26 @@
   flex-direction: column;
   gap: 20px;
   margin-bottom: 24px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.cell-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+}
+
+.cell-details-grid .field-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-error {
+  color: #ff6b6b;
+  font-size: 11px;
+  margin-top: 4px;
 }
 
 .form-group {
@@ -532,6 +559,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 168px;
+  overflow-y: auto;
 }
 
 .group-option {

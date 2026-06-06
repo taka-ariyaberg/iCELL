@@ -1,5 +1,6 @@
 import { NumberInput } from '../../components/inputs/NumberInput';
-import { CellForm, cellFormFromGroup } from './cellMeta';
+import { CellDetailsFields } from './CellDetailsFields';
+import { CellForm, cellFormFromGroup, EMPTY_CELL_FORM, densityError, sanitizeInteger } from './cellMeta';
 import type { GroupDefinition } from '../../store/plateStore';
 
 interface GroupModalProps {
@@ -41,7 +42,7 @@ export const GroupModal = ({
   onAssign,
 }: GroupModalProps) => (
   <div className="modal-overlay" onClick={onClose}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-content modal-content--wide" onClick={(e) => e.stopPropagation()}>
       <h3>Assign {selectedWellCount} Well{selectedWellCount === 1 ? '' : 's'} to Group</h3>
       <div className="modal-form">
         <div className="form-group">
@@ -59,30 +60,21 @@ export const GroupModal = ({
           <label htmlFor="density-input">Seeding Density (cells per well)</label>
           <NumberInput
             id="density-input" value={densityInput}
-            onChange={(e) => setDensityInput(parseInt(e.target.value) || 0)}
+            onChange={(e) => setDensityInput(Number(sanitizeInteger(e.target.value)))}
             onFocus={(e) => e.target.select()}
-            onKeyDown={(e) => { if (e.key === 'Enter' && canAssign) onAssign(); }}
+            onKeyDown={(e) => {
+              if (['e', 'E', '+', '-', '.'].includes(e.key)) { e.preventDefault(); return; }
+              if (e.key === 'Enter' && canAssign) onAssign();
+            }}
             min="0" step="100"
           />
+          {densityError(densityInput) && <div className="field-error">{densityError(densityInput)}</div>}
         </div>
-        <div className="form-group" style={{ borderTop: '1px solid #3a4857', paddingTop: '12px' }}>
-          <label>Cell details (all required)</label>
-          <input type="text" value={cellForm.cellLine} placeholder="Cell line (e.g. HeLa)"
-            onChange={(e) => setCellForm({ ...cellForm, cellLine: e.target.value })} />
-          <input type="text" value={cellForm.modification} placeholder="Wildtype?"
-            onChange={(e) => setCellForm({ ...cellForm, modification: e.target.value })}
-            style={{ marginTop: '6px' }} />
-          <input type="text" value={cellForm.passage} placeholder="Passage (e.g. P12)"
-            onChange={(e) => setCellForm({ ...cellForm, passage: e.target.value })}
-            style={{ marginTop: '6px' }} />
-          <input type="number" min="0" max="100" value={cellForm.viability ?? ''} placeholder="Viability %"
-            onChange={(e) => setCellForm({ ...cellForm, viability: e.target.value === '' ? null : Number(e.target.value) })}
-            style={{ marginTop: '6px' }} />
-          <button type="button" className="secondary-btn" style={{ marginTop: '8px' }}
-            onClick={() => setCellForm({ cellLine: '', modification: '', passage: '', viability: null })}>
-            Clear cell details
-          </button>
-        </div>
+        <CellDetailsFields form={cellForm} setForm={setCellForm} />
+        <button type="button" className="secondary-btn" style={{ marginTop: '-8px', alignSelf: 'flex-start' }}
+          onClick={() => setCellForm(EMPTY_CELL_FORM)}>
+          Clear cell details
+        </button>
         {Object.keys(groups).length > 0 && (
           <div className="existing-groups">
             <p><small>Or select existing group:</small></p>
