@@ -13,6 +13,7 @@ import {
   parseInitialPlateType,
 } from './types';
 import { CellsModePanel } from './CellsModePanel';
+import { CellForm, EMPTY_CELL_FORM, isCellFormComplete, cellFormFromGroup, toCellMeta } from './cellMeta';
 import { ConfigBar } from './ConfigBar';
 import { ConfirmProcessModal } from './ConfirmProcessModal';
 import { DownloadActions } from './DownloadActions';
@@ -74,6 +75,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   const [editGroupName, setEditGroupName] = useState('');
   const [editGroupDensity, setEditGroupDensity] = useState(500);
   const [selectedExistingGroup, setSelectedExistingGroup] = useState<string | null>(null);
+  const [cellForm, setCellForm] = useState<CellForm>(EMPTY_CELL_FORM);
   const [designMode, setDesignMode] = useState<'cells' | 'dyes'>('cells');
   const [dyeProgramInput, setDyeProgramInput] = useState('');
   const [showProgramDropdown, setShowProgramDropdown] = useState(false);
@@ -168,26 +170,31 @@ export const DesignPage: React.FC<DesignPageProps> = ({
     clearSelection,
     selectAll,
     setDesignMode,
-    openGroupModal: () => {
-      setShowGroupModal(true);
-      setGroupNameInput(`Group ${Object.keys(groups).length + 1}`);
-    },
+    openGroupModal: () => openAssignModal(),
     openDyeModal: () => setShowDyeModal(true),
   });
 
   // ── handlers ────────────────────────────────────────────────────────────────
+  const openAssignModal = () => {
+    setShowGroupModal(true);
+    setGroupNameInput(`Group ${Object.keys(groups).length + 1}`);
+    const names = Object.keys(groups);
+    setCellForm(names.length ? cellFormFromGroup(groups[names[names.length - 1]]) : EMPTY_CELL_FORM);
+  };
+
   const closeGroupModal = () => {
     setShowGroupModal(false);
     setGroupNameInput('');
     setDensityInput(500);
     setSelectedExistingGroup(null);
+    setCellForm(EMPTY_CELL_FORM);
   };
 
   const handleAssignGroup = () => {
-    if (!selectedWells.size || !groupNameInput.trim()) return;
+    if (!selectedWells.size || !groupNameInput.trim() || !isCellFormComplete(cellForm)) return;
     const update: Record<string, string> = {};
     selectedWells.forEach(w => { update[w] = groupNameInput.trim(); });
-    assignWellsToGroup(groupNameInput.trim(), densityInput, update);
+    assignWellsToGroup(groupNameInput.trim(), densityInput, update, toCellMeta(cellForm));
     closeGroupModal();
   };
 
@@ -372,10 +379,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
               groupColors={groupColors}
               unassignedCount={unassignedCount}
               isLoading={isLoading}
-              onAssignToGroup={() => {
-                setShowGroupModal(true);
-                setGroupNameInput(`Group ${Object.keys(groups).length + 1}`);
-              }}
+              onAssignToGroup={() => openAssignModal()}
               onEditGroup={(name, density) => {
                 setEditingGroup(name);
                 setEditGroupName(name);
@@ -462,6 +466,9 @@ export const DesignPage: React.FC<DesignPageProps> = ({
           groupCounts={groupCounts}
           selectedExistingGroup={selectedExistingGroup}
           setSelectedExistingGroup={setSelectedExistingGroup}
+          cellForm={cellForm}
+          setCellForm={setCellForm}
+          canAssign={selectedWells.size > 0 && groupNameInput.trim().length > 0 && densityInput > 0 && isCellFormComplete(cellForm)}
           onClose={closeGroupModal}
           onAssign={handleAssignGroup}
         />
