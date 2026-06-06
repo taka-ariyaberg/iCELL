@@ -1,9 +1,7 @@
 """iCELL — cell seeding and dye preparation planning toolkit.
 
-The notebook entry point (``notebooks/run.ipynb``) and the FastAPI
-backend both call into this package. The public surface is:
+The FastAPI backend calls into this package. The public surface is:
 
-- ``run_pipeline`` — the notebook-facing pipeline (config-driven).
 - ``run_icell`` — the lower-level entry the backend uses.
 - ``__version__`` — semver string for citation / changelog.
 
@@ -16,10 +14,8 @@ from __future__ import annotations
 __version__ = "1.0.0"
 
 from icell.main import run_icell
-from icell.pipeline import run_pipeline
 
 __all__ = [
     "__version__",
     "run_icell",
-    "run_pipeline",
 ]
