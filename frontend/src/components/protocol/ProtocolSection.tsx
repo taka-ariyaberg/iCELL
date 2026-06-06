@@ -22,8 +22,6 @@ import '../../styles/ProtocolSection.css';
 interface ProtocolSectionProps {
   instructions: string;
   exportBaseName?: string;
-  onDownloadIMeta?: (() => void) | null;
-  hasIMetaDownload?: boolean;
   seedingSummary: Record<string, unknown>[];
   dyeSummary?: Record<string, unknown>[];
   plateType?: string;
@@ -57,8 +55,6 @@ const buildUniqueLabels = (labels: string[]): string[] => {
 export const ProtocolSection: React.FC<ProtocolSectionProps> = ({
   instructions,
   exportBaseName = 'iCELL_plate',
-  onDownloadIMeta = null,
-  hasIMetaDownload = false,
   seedingSummary,
   dyeSummary = [],
   plateType = '96',
@@ -374,11 +370,6 @@ export const ProtocolSection: React.FC<ProtocolSectionProps> = ({
           <button onClick={handleDownloadInstructions} className="download-btn secondary protocol-action-btn">
             📥 Download Instructions
           </button>
-          {hasIMetaDownload && onDownloadIMeta && (
-            <button onClick={onDownloadIMeta} className="download-btn secondary protocol-action-btn">
-              🧾 Download iMETA.csv
-            </button>
-          )}
         </div>
       </div>
 

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ResultsDisplay } from './ResultsDisplay';
+import { useDownloadHandlers } from '../design/useDownloadHandlers';
 import { usePlateStore } from '../../store/plateStore';
 import { ConfigInput } from '../../services/apiClient';
 import { generateCellLayout, generateDyeLayout, generateMetaDye, downloadFile } from '../../utils/export/exportUtils';
@@ -35,7 +36,6 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
   onBackClick,
 }) => {
   const { groups: storeGroups, dyePrograms: storeDyePrograms } = usePlateStore();
-  const [showDownloads, setShowDownloads] = useState(false);
 
   // Reconstruct wells and groups from sessionStorage (saved before processing)
   const storedWells = sessionStorage.getItem('lastProcessedWells');
@@ -58,6 +58,15 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
     configData?.project_name,
     configData?.plate_id,
   );
+
+  const figureHandlers = useDownloadHandlers({
+    effectivePlateType: plateType,
+    projectName: configData?.project_name ?? 'iCELL',
+    plateId: configData?.plate_id ?? 'Plate',
+    wells,
+    groups: storeGroups,
+    dyePrograms,
+  });
 
   const buildReimportConfig = () => {
     if (!configData) return null;
@@ -194,6 +203,11 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
           exportBaseName={exportBaseName}
           onDownloadIMeta={imetaRows.length > 0 ? handleDownloadIMeta : null}
           hasIMetaDownload={imetaRows.length > 0}
+          onDownloadLayoutSVG={figureHandlers.handleDownloadLayoutSVG}
+          onDownloadLayoutPNG={figureHandlers.handleDownloadLayoutPNG}
+          onDownloadDyeSVG={figureHandlers.handleDownloadDyeSVG}
+          onDownloadDyePNG={figureHandlers.handleDownloadDyePNG}
+          downloadingPNG={figureHandlers.downloadingPNG}
           plateType={plateType}
           numPlates={numPlates}
           mode={mode}
@@ -203,53 +217,20 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
         />
       </div>
 
-      {/* Download Input Files Section */}
-      <div className="download-section">
-        <button 
-          onClick={() => setShowDownloads(!showDownloads)}
-          className="download-toggle-btn"
-        >
-          {showDownloads ? '▼ Hide' : '▶ Show'} Download Input Files for Re-import
-        </button>
-
-        {showDownloads && (
-          <div className="download-files">
-            <h3>📥 All Input Files</h3>
-            <p className="download-info">
-              Download all files to reimport this exact protocol later:
-            </p>
-            <div className="download-buttons">
-              <button 
-                onClick={handleDownloadConfig}
-                className="download-btn config-btn"
-              >
-                ⚙️ config.json
-              </button>
-              <button 
-                onClick={handleDownloadCellLayout}
-                className="download-btn cell-layout-btn"
-              >
-                📄 cell_layout.csv
-              </button>
-              {mode === 'dye' && (
-                <>
-                  <button 
-                    onClick={handleDownloadDyeLayout}
-                    className="download-btn dye-layout-btn"
-                  >
-                    📄 dye_layout.csv
-                  </button>
-                  <button 
-                    onClick={handleDownloadMetaDye}
-                    className="download-btn meta-dye-btn"
-                  >
-                    🧬 meta_dye.csv
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
+      {/* Re-import files */}
+      <div className="reimport-section">
+        <h3 className="reimport-title">♻️ Re-import files</h3>
+        <p className="download-info">Download these to reproduce this exact run later via the Import page.</p>
+        <div className="download-buttons">
+          <button onClick={handleDownloadConfig} className="download-btn config-btn">⚙️ config.json</button>
+          <button onClick={handleDownloadCellLayout} className="download-btn cell-layout-btn">📄 cell_layout.csv</button>
+          {mode === 'dye' && (
+            <>
+              <button onClick={handleDownloadDyeLayout} className="download-btn dye-layout-btn">📄 dye_layout.csv</button>
+              <button onClick={handleDownloadMetaDye} className="download-btn meta-dye-btn">🧬 meta_dye.csv</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

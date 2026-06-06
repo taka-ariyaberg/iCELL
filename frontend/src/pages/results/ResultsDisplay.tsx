@@ -27,6 +27,11 @@ interface ResultsDisplayProps {
   exportBaseName?: string;
   onDownloadIMeta?: (() => void) | null;
   hasIMetaDownload?: boolean;
+  onDownloadLayoutSVG?: () => void;
+  onDownloadLayoutPNG?: () => void;
+  onDownloadDyeSVG?: () => void;
+  onDownloadDyePNG?: () => void;
+  downloadingPNG?: string | null;
   plateType?: string;
   numPlates?: number;
   mode?: string;
@@ -44,6 +49,11 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   exportBaseName = 'iCELL_plate',
   onDownloadIMeta = null,
   hasIMetaDownload = false,
+  onDownloadLayoutSVG,
+  onDownloadLayoutPNG,
+  onDownloadDyeSVG,
+  onDownloadDyePNG,
+  downloadingPNG = null,
   plateType = '96',
   numPlates = 1,
   mode = 'no_dye',
@@ -222,8 +232,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
       <ProtocolSection
         instructions={instructions}
         exportBaseName={exportBaseName}
-        onDownloadIMeta={onDownloadIMeta}
-        hasIMetaDownload={hasIMetaDownload}
         seedingSummary={seedingSummary}
         dyeSummary={dyeSummary}
         plateType={plateType}
@@ -290,6 +298,15 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                         onExternalRangeDeselect={handleViewerRangeDeselect}
                       />
                     </div>
+                    <div className="download-panel">
+                      <div className="download-panel-title">Download</div>
+                      <div className="download-buttons">
+                        {onDownloadLayoutSVG && <button onClick={onDownloadLayoutSVG} className="download-btn">🖼 Layout SVG</button>}
+                        {onDownloadLayoutPNG && <button onClick={onDownloadLayoutPNG} disabled={downloadingPNG === 'layout'} className="download-btn">{downloadingPNG === 'layout' ? '… PNG' : '🖼 Layout PNG'}</button>}
+                        <button onClick={() => downloadTable(formattedSeedingSummary.length > 0 ? formattedSeedingSummary : seedingSummary, buildDownloadFilenameFromBase(exportBaseName, 'seeding_summary', 'csv'))} className="download-btn">📄 Seeding summary CSV</button>
+                        {hasIMetaDownload && onDownloadIMeta && <button onClick={onDownloadIMeta} className="download-btn">🧾 iMETA.csv</button>}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Right: Details Panel */}
@@ -328,15 +345,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={() => downloadTable(
-                    formattedSeedingSummary.length > 0 ? formattedSeedingSummary : seedingSummary,
-                    buildDownloadFilenameFromBase(exportBaseName, 'seeding_summary', 'csv')
-                  )}
-                  className="download-btn secondary"
-                >
-                  📥 Download as CSV
-                </button>
               </>
             ) : (
               <p className="empty-state">No seeding summary available</p>
@@ -443,6 +451,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                       onExternalRangeDeselect={handleViewerRangeDeselect}
                     />
                   </div>
+                    <div className="download-panel">
+                      <div className="download-panel-title">Download</div>
+                      <div className="download-buttons">
+                        {onDownloadDyeSVG && <button onClick={onDownloadDyeSVG} className="download-btn">🖼 Dye figure SVG</button>}
+                        {onDownloadDyePNG && <button onClick={onDownloadDyePNG} disabled={downloadingPNG === 'dye'} className="download-btn">{downloadingPNG === 'dye' ? '… PNG' : '🖼 Dye figure PNG'}</button>}
+                        <button onClick={() => downloadTable(formattedDyeSummary.length > 0 ? formattedDyeSummary : dyeSummary, buildDownloadFilenameFromBase(exportBaseName, 'dye_program_summary', 'csv'))} className="download-btn">📄 Dye summary CSV</button>
+                      </div>
+                    </div>
                 </div>
 
                 {/* Right: Dye details */}
@@ -476,15 +492,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   )}
                 </div>
               </div>
-              <button
-                onClick={() => downloadTable(
-                  formattedDyeSummary.length > 0 ? formattedDyeSummary : dyeSummary,
-                  buildDownloadFilenameFromBase(exportBaseName, 'dye_program_summary', 'csv')
-                )}
-                className="download-btn secondary"
-              >
-                📥 Download as CSV
-              </button>
             </>
           );
         })()}

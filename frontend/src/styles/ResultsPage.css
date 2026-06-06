@@ -175,3 +175,33 @@
 .imeta-btn:hover {
   border-color: #57cc99;
 }
+
+.download-panel {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--icell-surface, #1a1f2e);
+  border: 1px solid var(--icell-border-strong, #3a4857);
+  border-radius: 6px;
+}
+
+.download-panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--icell-text-muted, #9fb0bf);
+  margin-bottom: 8px;
+}
+
+.reimport-section {
+  margin-top: 24px;
+  padding: 16px 20px;
+  background: var(--icell-surface, #1a1f2e);
+  border: 1px solid var(--icell-border-strong, #3a4857);
+  border-radius: 8px;
+}
+
+.reimport-title {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+}
