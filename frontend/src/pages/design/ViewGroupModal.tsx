@@ -25,8 +25,8 @@ export const ViewGroupModal = ({ group, wellCount, onClose }: ViewGroupModalProp
         <Row label="Passage" value={group.passage ?? ''} />
         <Row label="Viability" value={group.viability != null ? `${group.viability} %` : ''} />
       </div>
-      <div className="modal-actions">
-        <button onClick={onClose} className="action-btn">Close</button>
+      <div className="modal-actions" style={{ gridTemplateColumns: '1fr' }}>
+        <button onClick={onClose} className="action-btn" style={{ width: '100%' }}>Close</button>
       </div>
     </div>
   </div>
