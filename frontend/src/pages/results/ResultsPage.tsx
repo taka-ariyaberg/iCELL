@@ -61,6 +61,21 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
 
   const buildReimportConfig = () => {
     if (!configData) return null;
+    // Carry group identity + cell metadata so a re-import reproduces the SAME run
+    // (group names and cell_line/modification/passage/viability), not just volumes.
+    // The engine already consumes config.well_groups (apply_well_groups) and
+    // config.cell_groups (build_imeta); the upload path preserves both keys.
+    const usedGroupNames = new Set<string>(Object.values(wells) as string[]);
+    const cellGroups: Record<string, { cell_line: string; modification: string; passage: string; viability_percent: number | string }> = {};
+    Object.values(storeGroups).forEach((g) => {
+      if (!usedGroupNames.has(g.name)) return;
+      cellGroups[g.name] = {
+        cell_line: g.cellLine ?? '',
+        modification: g.modification ?? '',
+        passage: g.passage ?? '',
+        viability_percent: g.viability ?? '',
+      };
+    });
     return {
       project: {
         name: configData.project_name,
@@ -108,6 +123,7 @@ export const ResultsPage: React.FC<ResultsPageProps> = ({
         mastermix_dispense_ul_per_well: configData.mode === 'dye' ? (configData.final_well_volume_ul ?? 40.0) / 2 : 0.0,
         min_dye_handling_volume_ul: 1.0,
       },
+      cell_groups: cellGroups,
       paths: {
         input_dir: 'data/input',
         cell_layout_csv: 'cell_layout.csv',
