@@ -7,15 +7,13 @@ Single source of truth for "where does X go?". When adding a new file, find the 
 ```
 iCELL/
 ├── backend/            FastAPI wrapper around the Python engine
-├── config/             Per-run configuration: template, JSON Schema, plate types
+├── config/             Plate-type definitions
 ├── data/
 │   ├── examples/       End-to-end runnable scenarios
-│   ├── input/          Where users place their three CSV inputs
-│   ├── output/         Generated CSVs, instructions, logs (gitignored)
-│   └── templates/      Empty header-only CSVs to copy from
+│   ├── input/          Where the app stages the three CSV inputs
+│   └── output/         Generated CSVs, instructions, logs (gitignored)
 ├── docs/               Human-facing project documentation
 ├── frontend/           React + TypeScript + Vite single-page app
-├── notebooks/          Jupyter entry point (run.ipynb) for the file-driven workflow
 ├── scripts/            Project-wide shell scripts (start.sh)
 ├── src/icell/          Python calculation engine — single source of truth
 └── tests/              Backend (engine + service) unittest suite
@@ -69,9 +67,8 @@ Stylesheets live in `frontend/src/styles/`, **not** alongside the `.tsx` files t
 
 ```
 src/icell/
-├── __init__.py            Public surface: run_pipeline, run_icell, __version__
-├── main.py                Lower-level entry point used by the backend service
-├── pipeline.py            Notebook entry point: run_pipeline()
+├── __init__.py            Public surface: run_icell, __version__
+├── main.py                Engine entry point used by the backend service: run_icell()
 ├── paths.py               Path constants
 ├── config/                Config + plate-type loading
 ├── io/                    CSV readers
@@ -81,7 +78,7 @@ src/icell/
 └── utils/                 (reserved)
 ```
 
-`__init__.py` declares `__all__`; the notebook contract `from icell.pipeline import run_pipeline` is frozen.
+`__init__.py` declares `__all__`; the engine entry point `from icell.main import run_icell` is the backend's contract.
 
 ## `backend/` layout
 

@@ -7,12 +7,7 @@
 
 **iCELL** is a planning toolkit for cell seeding and dye preparation on multi-well plates. Given seeding parameters and per-well layouts, it computes per-well dispense volumes, total mastermix recipes, and machine-readable instructions — replacing error-prone manual spreadsheets in the wet-lab planning step.
 
-It exposes the same engine through two surfaces so different users get the right ergonomics:
-
-| Interface | When to use |
-|---|---|
-| Notebook + config | File-driven, reproducible runs. Edit a config + three CSVs, run a notebook cell, get the outputs. |
-| Web app (React + FastAPI) | Interactive plate design in the browser with the same calculations and exports. |
+It runs as a web app (React + FastAPI): interactive plate design in the browser, with the calculations and exports driven by a shared Python engine.
 
 iCELL output (`iCELL_..._cell_seeding.csv`, `iCELL_..._iMETA.csv`) feeds downstream tools — notably **iMETA** — without a manual reformat step.
 
@@ -28,11 +23,10 @@ cd iCELL
 bash scripts/start.sh
 ```
 
-That builds the Docker images, starts the FastAPI app + JupyterLab, and opens the web UI.
+That builds the Docker image, starts the FastAPI app, and opens the web UI.
 
 - Web app: `http://localhost:8080`
 - API docs (auto-generated): `http://localhost:8080/docs`
-- JupyterLab: `http://localhost:8888/lab?token=icell`
 
 For full setup details, see [Setup](#setup) below.
 
@@ -55,14 +49,13 @@ iCELL/
 │   ├── api/routes.py       API endpoints
 │   ├── api/schemas.py      Request/response models
 │   └── services/           Bridges API to the engine
-├── config/                 config template, JSON schema, plate type definitions
+├── config/                 plate type definitions
 ├── data/
 │   ├── examples/           Reference inputs for common run scenarios
-│   ├── input/              Working inputs for notebook/API runs
-│   ├── output/             Generated tables, instructions, and logs (gitignored)
-│   └── templates/          Empty header-only CSVs to copy from
-├── docker-compose.yml      Portable app + notebook runtime
-├── Dockerfile              Multi-stage image for the web app and JupyterLab
+│   ├── input/              Working inputs for API runs
+│   └── output/             Generated tables, instructions, and logs (gitignored)
+├── docker-compose.yml      Portable web app runtime
+├── Dockerfile              Multi-stage image for the web app
 ├── docs/                   Project documentation (architecture, examples, deps)
 ├── frontend/               React + TypeScript UI
 │   └── src/
@@ -79,7 +72,6 @@ iCELL/
 │       ├── styles/         Centralized stylesheets
 │       └── utils/          Pure-function utilities
 │           └── export/         File-export pipeline (CSV/SVG/PNG/download)
-├── notebooks/run.ipynb     Notebook entry point
 ├── scripts/start.sh        Start the stack (auto-builds on first run)
 ├── scripts/stop.sh         Stop the stack
 ├── src/icell/              Core calculation engine
@@ -111,7 +103,6 @@ bash scripts/start.sh --no-open    # start without opening a browser
 Open:
 
 - Web app: `http://localhost:8080`
-- JupyterLab: `http://localhost:8888/lab?token=icell`
 
 To stop iCELL:
 
@@ -119,7 +110,7 @@ To stop iCELL:
 bash scripts/stop.sh
 ```
 
-The Docker runtime mounts [config](config), [data](data), and [notebooks](notebooks) from your clone, so inputs, outputs, and notebook edits stay on the host machine.
+The Docker runtime mounts [config](config) and [data](data) from your clone, so inputs and outputs stay on the host machine.
 
 Manual Docker commands, if you want them:
 
@@ -128,17 +119,12 @@ docker compose up -d --build
 docker compose down
 ```
 
-## Notebook Workflow
+## Workflow
 
-1. Copy [config/config.template.json](config/config.template.json) to `config/config.json`
-2. Edit `config/config.json` for your run
-3. Create `data/input/` if it does not already exist, then place your input CSVs there
-4. Start iCELL with `bash scripts/start.sh`
-5. Open [notebooks/run.ipynb](notebooks/run.ipynb) in JupyterLab
-
-**Inputs:** `config/config.json`, `config/schema.json`, `data/input/cell_layout.csv`, `data/input/dye_layout.csv`, `data/input/meta_dye.csv`
-
-`meta_dye.csv` remains the dye recipe input file. It is separate from the exported metadata report.
+1. Start iCELL with `bash scripts/start.sh`
+2. Open the web app at `http://localhost:8080`
+3. Design your plate in the browser — set the plate type, seeding parameters, and (optionally) a dye program
+4. Click **Process** to run the calculation, then download the generated tables, instructions, and metadata export from the results page
 
 **Outputs** (written to [data/output](data/output), not committed):
 - `tables/` — formatted CSV summaries, merged layouts, and `iMETA.csv`
@@ -158,7 +144,7 @@ Exported artifacts follow the format `iCELL_<base>_<artifact>_<timestamp>.<ext>`
 
 ## Development Notes
 
-- Calculation logic lives in [src/icell](src/icell) — changes there apply to both workflows.
+- Calculation logic lives in [src/icell](src/icell) — the shared engine behind the web app.
 - API layer is in [backend](backend); UI logic is in [frontend](frontend).
 - The design workflow now uses `Plate ID` as the primary project identifier. Legacy `run_name` is still accepted for backward compatibility.
 - The results page includes an interactive protocol navigator plus direct downloads for instructions and `iMETA.csv`.
@@ -185,11 +171,10 @@ Bug reports and feature ideas: open a [GitHub issue](https://github.com/taka-ari
 ## Additional Documentation
 
 - [docs/repo-structure.md](docs/repo-structure.md) — canonical directory layout and the rules for adding new files
-- [docs/architecture.md](docs/architecture.md) — how the engine, backend, frontend, and notebook fit together
+- [docs/architecture.md](docs/architecture.md) — how the engine, backend, and frontend fit together
 - [docs/examples.md](docs/examples.md) — end-to-end worked examples (simple seeding and dye program)
 - [docs/dependencies.md](docs/dependencies.md) — every dependency, version, and purpose
-- [data/templates/](data/templates) — empty CSV templates for the three input files
-- [config/README.md](config/README.md) — config directory and `config.json` schema
+- [config/README.md](config/README.md) — config directory and plate type definitions
 - [config/plate_type/README.md](config/plate_type/README.md) — defining new plate types
 - [frontend/README.md](frontend/README.md) — frontend-specific config (env variables, principles)
 - [CHANGELOG.md](CHANGELOG.md) — release notes

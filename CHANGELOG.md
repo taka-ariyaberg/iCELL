@@ -47,6 +47,7 @@ This release rolls in the full Phase 0–11 codebase quality roadmap. Behavior-p
 - After both phases, no source file >500 LOC. ESLint `max-lines` warning list is empty.
 
 ### Changed
+- Removed the Jupyter notebook interface and its config/CSV scaffolding; the web app is now the sole interface.
 - Pinned Docker base images to patch level: `python:3.11.10-slim-bookworm` and `node:20.18.0-slim`.
 - `pyproject.toml` declares `pandas>=2.0,<3` (loose range for library consumers); `backend/requirements.txt` continues to pin the install version exactly.
 - Moved `jupyterlab` + `ipykernel` install behind a Dockerfile build arg `INSTALL_NOTEBOOK_DEPS` (default `true`, preserves current behavior).

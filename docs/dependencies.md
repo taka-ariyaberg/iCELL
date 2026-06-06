@@ -15,7 +15,7 @@ If you change a dependency in any of the source-of-truth files below, update thi
 | Python base image | `python:3.11.10-slim-bookworm` | `Dockerfile` | |
 | Node base image | `node:20.18.0-slim` | `Dockerfile` (frontend-build stage) | |
 
-Exposed ports (via Docker): `8000` (FastAPI), `8888` (JupyterLab).
+Exposed ports (via Docker): `8000` (FastAPI).
 
 ---
 
@@ -39,17 +39,6 @@ These are the seven direct production dependencies installed into the FastAPI ap
 docker run --rm -v "$PWD/backend:/app" -w /app python:3.11.10-slim-bookworm sh -c \
   "pip install --quiet pip-tools && pip-compile --quiet --output-file=requirements.lock requirements.txt"
 ```
-
----
-
-## Python — notebook only (`pyproject.toml [project.optional-dependencies] dev`)
-
-Installed in the Docker image when `INSTALL_NOTEBOOK_DEPS=true` (the current default). To produce a slim production image without these, build with `--build-arg INSTALL_NOTEBOOK_DEPS=false`.
-
-| Package | Version | Purpose |
-|---|---|---|
-| `jupyterlab` | `>=4,<5` | Notebook UI for the `notebook` Docker service |
-| `ipykernel` | `>=6,<7` | Jupyter Python kernel |
 
 ---
 
