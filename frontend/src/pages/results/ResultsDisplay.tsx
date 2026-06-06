@@ -268,21 +268,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   {/* Left: Plate Visualization */}
                   <div className="plate-column">
                     <div className="plate-viewer-container">
-                      <div className="plate-header-info">
-                        <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
-                        {selectedWells.size > 0 ? (
-                          <div className="selected-info">
-                            <span className="info-label">Selected:</span>
-                            <span className="info-value">{selectedWells.size} wells</span>
-                            {Array.from(new Set(Array.from(selectedWells).map(w => wells[w]).filter(Boolean))).length > 0 && (
-                              <>
-                                <span className="info-label">Groups:</span>
-                                <span className="info-value">{Array.from(new Set(Array.from(selectedWells).map(w => wells[w]).filter(Boolean))).join(', ')}</span>
-                              </>
-                            )}
-                          </div>
-                        ) : null}
-                      </div>
+                      <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
                       <PlateVisualization
                         plateType={plateType}
                         wells={wells}

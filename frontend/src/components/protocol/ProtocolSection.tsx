@@ -12,7 +12,6 @@ import {
   normalizeProtocolInstructions,
   parseProtocolSections,
   parseProtocolSteps,
-  parseProtocolSummary,
   parseWellList,
 } from '../../utils/protocolInstructions';
 import { ProtocolDetailCard } from './ProtocolDetailCard';
@@ -85,13 +84,6 @@ export const ProtocolSection: React.FC<ProtocolSectionProps> = ({
     () => parseProtocolSections(displayInstructions),
     [displayInstructions],
   );
-
-  const runSummaryEntries = useMemo(() => {
-    const section = instructionSections.find((entry) => entry.title === 'RUN SUMMARY');
-    if (!section) return [];
-    return parseProtocolSummary(section.lines)
-      .filter((entry) => entry.label !== 'Wells');
-  }, [instructionSections]);
 
   const cellSteps = useMemo(() => {
     const section = instructionSections.find((entry) => entry.title === 'CELL SUSPENSION PREPARATION');
@@ -318,22 +310,6 @@ export const ProtocolSection: React.FC<ProtocolSectionProps> = ({
     [activeEntry],
   );
 
-  const summaryCards = useMemo(() => {
-    const summaryMap = new Map(runSummaryEntries.map((entry) => [entry.label, entry.value]));
-    const cards = [
-      { label: 'Plate ID', value: summaryMap.get('Plate ID') ?? '' },
-      { label: 'Seeded Wells', value: summaryMap.get('Seeded wells') ?? '' },
-      { label: 'Final Well Volume', value: summaryMap.get('Final well volume') ?? '' },
-      { label: 'Cell Prep Batches', value: `${cellEntries.length}` },
-    ];
-
-    if (mode === 'dye' && dyeEntries.length > 0) {
-      cards.push({ label: 'Dye Programs', value: `${dyeEntries.length}` });
-    }
-
-    return cards.filter((entry) => entry.value);
-  }, [cellEntries.length, dyeEntries.length, mode, runSummaryEntries]);
-
   const noDyeWellCount = useMemo(() => (
     Object.keys(wells).filter((well) => wells[well] && !dyePlatePrograms[well]).length
   ), [dyePlatePrograms, wells]);
@@ -381,17 +357,6 @@ export const ProtocolSection: React.FC<ProtocolSectionProps> = ({
           )}
         </div>
       </div>
-
-      {summaryCards.length > 0 && (
-        <div className="protocol-summary-grid">
-          {summaryCards.map((entry) => (
-            <div key={entry.label} className="protocol-summary-card">
-              <span className="protocol-summary-label">{entry.label}</span>
-              <span className="protocol-summary-value">{entry.value}</span>
-            </div>
-          ))}
-        </div>
-      )}
 
       {mode === 'dye' && dyeEntries.length > 0 && (
         <ViewModeSwitch
