@@ -77,7 +77,7 @@ export const GroupModal = ({
         </button>
         {Object.keys(groups).length > 0 && (
           <div className="existing-groups">
-            <p><small>Or select existing group:</small></p>
+            <p>Or select existing group:</p>
             <div className="group-buttons">
               {Object.entries(groups).map(([gName, gDef]) => (
                 <button key={gName} className="group-option"
@@ -95,7 +95,7 @@ export const GroupModal = ({
                   }}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onAssign(); } }}
                 >
-                  {gName} <small>({groupCounts[gName] || 0}w • {gDef.density}c/w)</small>
+                  {gName} <small>({groupCounts[gName] || 0} {(groupCounts[gName] || 0) === 1 ? 'well' : 'wells'} • {gDef.density} cells/well)</small>
                 </button>
               ))}
             </div>
