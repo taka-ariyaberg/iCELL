@@ -14,7 +14,7 @@ authors:
     affiliation: "Uppsala University"
 abstract: >-
   iCELL is a full-stack toolkit (Python engine, FastAPI backend, React
-  frontend, JupyterLab notebook) for planning cell seeding and dye
+  frontend) for planning cell seeding and dye
   preparation on multi-well plates. Given seeding parameters and
   per-well layouts, it computes per-well volumes, total mastermix
   recipes, and machine-readable dispense instructions. Output CSVs

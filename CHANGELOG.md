@@ -18,10 +18,9 @@ This release rolls in the full Phase 0–11 codebase quality roadmap. Behavior-p
 - `pyproject.toml` tooling sections for `ruff`, `mypy`, and `pytest`.
 - `.editorconfig`, `.pre-commit-config.yaml`, and `.github/workflows/ci.yml`.
 - `docs/dependencies.md` documenting every runtime and tooling dependency.
-- `data/templates/` containing header-only CSV templates (`cell_layout`, `dye_layout`, `meta_dye`) plus a README.
-- `config/config.schema.json` (JSON Schema draft 2020-12) and `config/README.md`.
+- `config/README.md` documenting plate-type definitions.
 - `docs/examples.md` walkthrough.
-- `docs/architecture.md` — engine ↔ backend ↔ frontend ↔ notebook map.
+- `docs/architecture.md` — engine ↔ backend ↔ frontend map.
 - `docs/repo-structure.md` — canonical directory layout and "where does X go?" rules.
 - Public-release scaffolding: `CITATION.cff`, `SECURITY.md`, `CHANGELOG.md`, `.github/ISSUE_TEMPLATE/`, `.github/dependabot.yml`.
 - README polished for a public reader: status badges, problem statement, citation/issues/disclaimer blocks.

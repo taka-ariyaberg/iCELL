@@ -1,9 +1,8 @@
 /** Generate the iCELL input CSVs (cell_layout.csv, dye_layout.csv,
  *  meta_dye.csv) from in-memory plate state.
  *
- *  These produce the exact same shape the engine consumes when read
- *  from `data/input/`. See `data/templates/` for the empty-template
- *  versions.
+ *  These produce the exact same shape the engine consumes. The same CSVs
+ *  are offered as downloads on the results page for re-import.
  */
 
 import { PlateExportData, getPlateDimensions } from './plateLayout';

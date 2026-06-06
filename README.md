@@ -162,7 +162,28 @@ Quick reference:
 
 ## Citing iCELL
 
-If you use iCELL in your research, please cite it. Citation metadata lives in [`CITATION.cff`](CITATION.cff) (GitHub displays a "Cite this repository" button on the repo page that uses it).
+If you use iCELL in your research, please cite it. Citation metadata also lives in [`CITATION.cff`](CITATION.cff) (GitHub shows a "Cite this repository" button that uses it).
+
+**BibTeX**
+
+```bibtex
+@software{ariyaberg_icell_2026,
+  author       = {Ariyaberg, Taka},
+  title        = {{iCELL: Cell seeding and dye preparation planning toolkit}},
+  year         = {2026},
+  version      = {1.0.0},
+  url          = {https://github.com/taka-ariyaberg/iCELL},
+  organization = {Uppsala University}
+}
+```
+
+**APA (7th edition)**
+
+> Ariyaberg, T. (2026). *iCELL: Cell seeding and dye preparation planning toolkit* (Version 1.0.0) [Computer software]. Uppsala University. https://github.com/taka-ariyaberg/iCELL
+
+**IEEE / plain text**
+
+> T. Ariyaberg, "iCELL: Cell seeding and dye preparation planning toolkit," Version 1.0.0, Uppsala University, 2026. [Online]. Available: https://github.com/taka-ariyaberg/iCELL
 
 ## Reporting Issues
 

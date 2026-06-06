@@ -4,7 +4,6 @@ This directory contains plate format definitions. Each JSON file defines the lay
 
 These definitions are shared by:
 
-- the notebook pipeline
 - the design-page plate editor
 - the results-page summary viewers
 - the protocol navigator plate viewer

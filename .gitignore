@@ -8,7 +8,6 @@
 .ruff_cache/
 .coverage
 .coverage.*
-.ipynb_checkpoints/
 
 __pycache__/
 *.py[cod]
