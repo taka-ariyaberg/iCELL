@@ -232,6 +232,8 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
       <ProtocolSection
         instructions={instructions}
         exportBaseName={exportBaseName}
+        onDownloadIMeta={onDownloadIMeta}
+        hasIMetaDownload={hasIMetaDownload}
         seedingSummary={seedingSummary}
         dyeSummary={dyeSummary}
         plateType={plateType}
@@ -304,7 +306,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                         {onDownloadLayoutSVG && <button onClick={onDownloadLayoutSVG} className="download-btn">🖼 Layout SVG</button>}
                         {onDownloadLayoutPNG && <button onClick={onDownloadLayoutPNG} disabled={downloadingPNG === 'layout'} className="download-btn">{downloadingPNG === 'layout' ? '… PNG' : '🖼 Layout PNG'}</button>}
                         <button onClick={() => downloadTable(formattedSeedingSummary.length > 0 ? formattedSeedingSummary : seedingSummary, buildDownloadFilenameFromBase(exportBaseName, 'seeding_summary', 'csv'))} className="download-btn">📄 Seeding summary CSV</button>
-                        {hasIMetaDownload && onDownloadIMeta && <button onClick={onDownloadIMeta} className="download-btn">🧾 iMETA.csv</button>}
                       </div>
                     </div>
                   </div>
