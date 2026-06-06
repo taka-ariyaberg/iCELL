@@ -23,6 +23,15 @@ def _has_text(value: object) -> bool:
     return not _is_missing(value) and str(value).strip() != ""
 
 
+def _cell_meta_fields(meta: dict) -> dict[str, str]:
+    return {
+        "cell_line": _clean_text(meta.get("cell_line")),
+        "cell_modification": _clean_text(meta.get("modification")),
+        "passage": _clean_text(meta.get("passage")),
+        "viability_percent": _clean_text(meta.get("viability_percent")),
+    }
+
+
 def _format_cell_concentration_value(value: object, default: str = "") -> str:
     concentration = _to_float(value, 0.0)
     if concentration <= 0:
@@ -174,6 +183,10 @@ def build_imeta_dataframe(
         "plate_id",
         "well",
         "group",
+        "cell_line",
+        "cell_modification",
+        "passage",
+        "viability_percent",
         "seeding_density_cells_per_well",
         initial_concentration_column,
         per_well_concentration_column,
@@ -193,6 +206,8 @@ def build_imeta_dataframe(
 
     max_column = int(pd.to_numeric(seeded_layout_df["column"], errors="coerce").max())
     pad_width = max(2, len(str(max_column)))
+
+    cell_groups = config.get("cell_groups") or {}
 
     program_summary_map = _build_program_summary_map(dye_program_summary_df)
     component_value_map, ordered_component_columns = _build_component_value_map(
@@ -218,6 +233,7 @@ def build_imeta_dataframe(
             "plate_id": user_plate_id,
             "well": _format_well(row_label, column_index, pad_width),
             "group": _clean_text(seeded_row.get("group")),
+            **_cell_meta_fields(cell_groups.get(_clean_text(seeded_row.get("group")), {})),
             "seeding_density_cells_per_well": int(float(seeded_row.get("cells_per_well", 0))),
             initial_concentration_column: initial_cell_suspension_concentration,
             per_well_concentration_column: _format_cell_concentration_value(
