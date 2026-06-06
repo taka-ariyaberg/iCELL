@@ -281,9 +281,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                               </>
                             )}
                           </div>
-                        ) : (
-                          <div className="placeholder-info">Click wells to select</div>
-                        )}
+                        ) : null}
                       </div>
                       <PlateVisualization
                         plateType={plateType}
