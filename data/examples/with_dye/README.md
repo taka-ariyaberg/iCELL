@@ -6,13 +6,10 @@ This example demonstrates iCELL with **cell seeding + dye staining**.
 
 Start the web app with `bash scripts/start.sh` and open http://localhost:8080.
 
-You can use this example in either of two ways:
+Recreate this scenario in the Plate Designer UI:
 
-- **Load the CSVs** — upload the CSV files from this directory via the web app's CSV upload:
-   - `cell_layout.csv` - defines which wells get seeded and with how many cells
-   - `dye_layout.csv` - defines which wells get which dye program
-   - `meta_dye.csv` - defines the dye recipes and concentrations
-- **Recreate it by hand** — build the same cell and dye layout in the Plate Designer UI.
+- Define which wells get seeded and with how many cells.
+- Assign a dye program to the relevant wells and define the dye recipes/concentrations.
 
 Then adjust the seeding parameters in the UI as needed (e.g. stock cell concentration to match your suspension, overage fraction, plate ID, seeding date) and run the calculation.
 
