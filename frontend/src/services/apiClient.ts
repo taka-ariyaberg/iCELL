@@ -59,11 +59,19 @@ export interface DyeProgramInput {
   dyes: DyeDefinitionInput[];
 }
 
+export interface GroupMetaInput {
+  cell_line: string;
+  modification: string;
+  passage: string;
+  viability_percent: number;
+}
+
 export interface PlateLayoutInput {
   well_positions: Record<string, number>;
   well_groups?: Record<string, string>;
   dye_programs?: Record<string, string>;
   meta_dye_programs?: DyeProgramInput[];
+  group_definitions?: Record<string, GroupMetaInput>;
 }
 
 /** One row of the engine's per-group seeding summary. The engine
