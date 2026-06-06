@@ -1,7 +1,7 @@
 [project]
 name = "icell"
 version = "1.0.0"
-description = "Cell seeding and dye planning toolkit with notebook and web app workflows"
+description = "Cell seeding and dye planning toolkit (web app)"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 classifiers = [
@@ -14,10 +14,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "jupyterlab",
-    "ipykernel",
-]
+dev = []
 
 # ---------------------------------------------------------------------------
 # Tooling configuration
@@ -31,7 +28,6 @@ line-length = 100
 extend-exclude = [
     "data",
     "frontend",
-    "notebooks",
     "build",
     ".venv",
 ]
