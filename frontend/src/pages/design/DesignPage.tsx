@@ -76,6 +76,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   const [editGroupDensity, setEditGroupDensity] = useState(500);
   const [selectedExistingGroup, setSelectedExistingGroup] = useState<string | null>(null);
   const [cellForm, setCellForm] = useState<CellForm>(EMPTY_CELL_FORM);
+  const [editCellForm, setEditCellForm] = useState<CellForm>(EMPTY_CELL_FORM);
   const [designMode, setDesignMode] = useState<'cells' | 'dyes'>('cells');
   const [dyeProgramInput, setDyeProgramInput] = useState('');
   const [showProgramDropdown, setShowProgramDropdown] = useState(false);
@@ -100,7 +101,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
     clearWells,
     setPlateType: storeSetPlateType, clearSelection, selectAll,
     assignWellsToGroup, assignDyePrograms,
-    renameGroup, updateGroupDensity,
+    renameGroup, updateGroupDensity, updateGroupMeta,
   } = usePlateStore();
 
   // Load saved programs; seed defaults if nothing stored yet
@@ -384,6 +385,7 @@ export const DesignPage: React.FC<DesignPageProps> = ({
                 setEditingGroup(name);
                 setEditGroupName(name);
                 setEditGroupDensity(density);
+                setEditCellForm(cellFormFromGroup(groups[name]));
               }}
             />
           ) : (
@@ -485,6 +487,9 @@ export const DesignPage: React.FC<DesignPageProps> = ({
           setDensity={setEditGroupDensity}
           renameGroup={renameGroup}
           updateGroupDensity={updateGroupDensity}
+          cellForm={editCellForm}
+          setCellForm={setEditCellForm}
+          updateGroupMeta={updateGroupMeta}
           onClose={() => setEditingGroup(null)}
         />
       )}

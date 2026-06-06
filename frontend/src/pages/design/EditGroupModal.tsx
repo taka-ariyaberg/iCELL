@@ -1,14 +1,12 @@
 import { useMemo } from 'react';
 import { NumberInput } from '../../components/inputs/NumberInput';
-
-interface GroupDef {
-  density: number;
-}
+import { CellForm, isCellFormComplete, toCellMeta } from './cellMeta';
+import type { CellMeta, GroupDefinition } from '../../store/plateStore';
 
 interface EditGroupModalProps {
   /** The group being edited. Component is only rendered when non-null. */
   oldName: string;
-  groups: Record<string, GroupDef>;
+  groups: Record<string, GroupDefinition>;
   name: string;
   setName: (next: string) => void;
   density: number;
@@ -17,6 +15,9 @@ interface EditGroupModalProps {
   renameGroup: (oldName: string, newName: string) => void;
   /** Atomic density update from the store. */
   updateGroupDensity: (name: string, density: number) => void;
+  cellForm: CellForm;
+  setCellForm: (n: CellForm) => void;
+  updateGroupMeta: (name: string, meta: CellMeta) => void;
   onClose: () => void;
 }
 
@@ -34,6 +35,9 @@ export const EditGroupModal = ({
   setDensity,
   renameGroup,
   updateGroupDensity,
+  cellForm,
+  setCellForm,
+  updateGroupMeta,
   onClose,
 }: EditGroupModalProps) => {
   const { collision, empty, canSave, trimmed, nameChanged, densityChanged } = useMemo(() => {
@@ -43,21 +47,29 @@ export const EditGroupModal = ({
       && Object.prototype.hasOwnProperty.call(groups, trimmedName);
     const isNameChanged = trimmedName !== oldName;
     const isDensityChanged = density !== groups[oldName]?.density;
+    const cellChanged = JSON.stringify(toCellMeta(cellForm)) !== JSON.stringify({
+      cellLine: groups[oldName]?.cellLine ?? '',
+      modification: groups[oldName]?.modification ?? '',
+      passage: groups[oldName]?.passage ?? '',
+      viability: groups[oldName]?.viability ?? NaN,
+    });
     return {
       collision: isCollision,
       empty: isEmpty,
-      canSave: !isCollision && !isEmpty && (isNameChanged || isDensityChanged),
+      canSave: !isCollision && !isEmpty && isCellFormComplete(cellForm)
+        && (isNameChanged || isDensityChanged || cellChanged),
       trimmed: trimmedName,
       nameChanged: isNameChanged,
       densityChanged: isDensityChanged,
     };
-  }, [name, oldName, groups, density]);
+  }, [name, oldName, groups, density, cellForm]);
 
   const handleSave = () => {
     try {
       const effectiveName = nameChanged ? trimmed : oldName;
       if (nameChanged) renameGroup(oldName, trimmed);
       if (densityChanged) updateGroupDensity(effectiveName, density);
+      updateGroupMeta(effectiveName, toCellMeta(cellForm));
       onClose();
     } catch (err) {
       console.error('[EditGroupModal] Save failed', err);
@@ -98,6 +110,20 @@ export const EditGroupModal = ({
               onChange={(e) => setDensity(parseInt(e.target.value) || 0)}
               onFocus={(e) => e.target.select()}
             />
+          </div>
+          <div className="form-group" style={{ borderTop: '1px solid #3a4857', paddingTop: '12px' }}>
+            <label>Cell details (all required)</label>
+            <input type="text" value={cellForm.cellLine} placeholder="Cell line (e.g. HeLa)"
+              onChange={(e) => setCellForm({ ...cellForm, cellLine: e.target.value })} />
+            <input type="text" value={cellForm.modification} placeholder="Wildtype?"
+              onChange={(e) => setCellForm({ ...cellForm, modification: e.target.value })}
+              style={{ marginTop: '6px' }} />
+            <input type="text" value={cellForm.passage} placeholder="Passage (e.g. P12)"
+              onChange={(e) => setCellForm({ ...cellForm, passage: e.target.value })}
+              style={{ marginTop: '6px' }} />
+            <input type="number" min="0" max="100" value={cellForm.viability ?? ''} placeholder="Viability %"
+              onChange={(e) => setCellForm({ ...cellForm, viability: e.target.value === '' ? null : Number(e.target.value) })}
+              style={{ marginTop: '6px' }} />
           </div>
         </div>
         <div className="modal-actions">
