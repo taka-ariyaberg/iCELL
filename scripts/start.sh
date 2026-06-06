@@ -17,7 +17,6 @@ REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 
 APP_URL="${ICELL_APP_URL:-http://localhost:8080}"
 HEALTH_URL="${ICELL_HEALTH_URL:-${APP_URL%/}/api/health}"
-NOTEBOOK_URL="${ICELL_NOTEBOOK_URL:-http://localhost:8888/lab?token=icell}"
 OPEN_BROWSER="${ICELL_OPEN_BROWSER:-1}"
 WAIT_TIMEOUT_SECONDS="${ICELL_START_TIMEOUT_SECONDS:-180}"
 IMAGE_NAME="${ICELL_IMAGE:-icell:local}"
@@ -133,7 +132,6 @@ fi
 
 echo ""
 echo "Web app   → $APP_URL"
-echo "Notebook  → $NOTEBOOK_URL"
 echo "Stop      → bash scripts/stop.sh"
 echo "Rebuild   → bash scripts/start.sh --build"
 echo "Logs      → docker compose logs -f app"
