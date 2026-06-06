@@ -36,12 +36,23 @@ class DyeProgramInput(BaseModel):
     dyes: list[DyeDefinitionInput] = Field(default_factory=list, description="Dye definitions in this program")
 
 
+class GroupMetaInput(BaseModel):
+    """Per-group cell identity metadata (recorded in iMETA, never affects calculations)."""
+    cell_line: str | None = Field(default=None)
+    modification: str | None = Field(default=None)
+    passage: str | None = Field(default=None)
+    viability_percent: float | None = Field(default=None)
+
+
 class PlateLayoutInput(BaseModel):
     """Plate layout data from frontend."""
     well_positions: dict[str, int] = Field(..., description="Well positions and cell counts e.g. A1: 500")
     well_groups: dict[str, str] | None = Field(None, description="Optional well to group-name mapping e.g. A1: Control")
     dye_programs: dict[str, str] | None = Field(None, description="Optional dye programs per well e.g. B2: CP_A")
     meta_dye_programs: list[DyeProgramInput] | None = Field(None, description="Full dye program definitions (concentrations, units) from the Configuration UI")
+    group_definitions: dict[str, GroupMetaInput] | None = Field(
+        default=None, description="Per-group cell metadata keyed by group name"
+    )
 
 
 class RunRequest(BaseModel):

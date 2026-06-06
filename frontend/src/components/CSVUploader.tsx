@@ -25,7 +25,7 @@ const FILE_SPECS: FileInfo[] = [
   {
     key: 'config',
     name: 'Configuration',
-    description: 'Project name, plate type, seeding parameters, volumes',
+    description: 'Project, plate type, seeding parameters, volumes, and optional group names + cell metadata',
     type: 'json',
     required: true,
     hint: 'Accepted: config.json',
@@ -101,6 +101,14 @@ const TEMPLATE_GENERATORS = {
         meta_dye_csv: "meta_dye.csv",
         mastermix_dispense_ul_per_well: 20.0,
         min_dye_handling_volume_ul: 1.0
+      },
+      well_groups: {
+        A1: "Control",
+        A2: "Treated"
+      },
+      cell_groups: {
+        Control: { cell_line: "HeLa", modification: "Wildtype", passage: "P12", viability_percent: 95 },
+        Treated: { cell_line: "HeLa", modification: "KRAS-KO", passage: "P13", viability_percent: 88 }
       },
       paths: {
         input_dir: "data/input",

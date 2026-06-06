@@ -30,7 +30,7 @@ What actually happened. Include the full error message or stack trace if any.
 - Operating system:
 - Docker version (`docker --version`):
 - Browser (if a UI bug):
-- Interface used: [ ] Web app  [ ] Notebook  [ ] API directly
+- Interface used: [ ] Web app  [ ] API directly
 
 ## Inputs
 

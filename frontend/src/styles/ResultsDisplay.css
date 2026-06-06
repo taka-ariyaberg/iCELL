@@ -45,20 +45,30 @@
 .seeding-summary-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  gap: 0;
   margin-bottom: 32px;
-  align-items: start;
+  align-items: stretch;
+  background-color: var(--icell-panel);
+  border: 1px solid var(--icell-border);
+  border-radius: var(--icell-radius-panel);
+  box-shadow: var(--icell-shadow-panel);
+  overflow: hidden;
 }
 
 .plate-column {
   display: flex;
   flex-direction: column;
+  padding: 24px;
+  background-color: var(--icell-bg);
+  border-right: 1px solid var(--icell-border);
 }
 
 .details-column {
   display: flex;
   flex-direction: column;
-  max-height: 700px;
+  max-height: var(--results-column-height, 700px);
+  background-color: var(--icell-panel);
+  padding: 24px 20px;
 }
 
 .plate-header-info {
@@ -155,6 +165,16 @@
   box-shadow: var(--icell-shadow-panel);
   min-height: 0;
   overflow: hidden;
+}
+
+/* Inside the unified results panel the plate sits directly on the column
+   (like the Protocol Navigator), not as a nested bordered card. */
+.seeding-summary-container .plate-viewer-container {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 /* Details Cards Container */
@@ -340,7 +360,12 @@
 @media (max-width: 960px) {
   .seeding-summary-container {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 0;
+  }
+
+  .plate-column {
+    border-right: none;
+    border-bottom: 1px solid var(--icell-border);
   }
 
   .details-column {

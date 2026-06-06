@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { PlateVisualization, generateDistinctColors } from '../../components/plate/PlateVisualization';
 import { ProtocolSection } from '../../components/protocol/ProtocolSection';
 import { ViewModeSwitch } from '../../components/inputs/ViewModeSwitch';
@@ -27,6 +27,11 @@ interface ResultsDisplayProps {
   exportBaseName?: string;
   onDownloadIMeta?: (() => void) | null;
   hasIMetaDownload?: boolean;
+  onDownloadLayoutSVG?: () => void;
+  onDownloadLayoutPNG?: () => void;
+  onDownloadDyeSVG?: () => void;
+  onDownloadDyePNG?: () => void;
+  downloadingPNG?: string | null;
   plateType?: string;
   numPlates?: number;
   mode?: string;
@@ -44,6 +49,11 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   exportBaseName = 'iCELL_plate',
   onDownloadIMeta = null,
   hasIMetaDownload = false,
+  onDownloadLayoutSVG,
+  onDownloadLayoutPNG,
+  onDownloadDyeSVG,
+  onDownloadDyePNG,
+  downloadingPNG = null,
   plateType = '96',
   numPlates = 1,
   mode = 'no_dye',
@@ -54,6 +64,28 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
   const [selectedWells, setSelectedWells] = useState<Set<string>>(new Set());
   const currentPlate = 1;
   const [summaryMode, setSummaryMode] = useState<'cells' | 'dyes'>('cells');
+
+  // Measure the plate column so the details (gray) column caps its scroll area
+  // to the exact panel height — mirrors the Protocol Navigator's behavior.
+  const [columnHeight, setColumnHeight] = useState<number | null>(null);
+  const plateColumnRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const plateColumn = plateColumnRef.current;
+    if (!plateColumn || typeof ResizeObserver === 'undefined') return;
+    const updateHeight = () => setColumnHeight(Math.round(plateColumn.getBoundingClientRect().height));
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(plateColumn);
+    window.addEventListener('resize', updateHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [summaryMode]);
+  const detailsColumnStyle = columnHeight
+    ? ({ '--results-column-height': `${columnHeight}px` } as React.CSSProperties)
+    : undefined;
+
   const allPlatesSuffix = numPlates > 1 ? ' (all plates)' : '';
   const groupColorMap = useMemo(() => generateDistinctColors(Object.keys(groups)), [groups]);
   const dyeProgramColorMap = useMemo(() => {
@@ -256,25 +288,9 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
               <>
                 <div className="seeding-summary-container">
                   {/* Left: Plate Visualization */}
-                  <div className="plate-column">
+                  <div className="plate-column" ref={plateColumnRef}>
                     <div className="plate-viewer-container">
-                      <div className="plate-header-info">
-                        <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
-                        {selectedWells.size > 0 ? (
-                          <div className="selected-info">
-                            <span className="info-label">Selected:</span>
-                            <span className="info-value">{selectedWells.size} wells</span>
-                            {Array.from(new Set(Array.from(selectedWells).map(w => wells[w]).filter(Boolean))).length > 0 && (
-                              <>
-                                <span className="info-label">Groups:</span>
-                                <span className="info-value">{Array.from(new Set(Array.from(selectedWells).map(w => wells[w]).filter(Boolean))).join(', ')}</span>
-                              </>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="placeholder-info">Click wells to select</div>
-                        )}
-                      </div>
+                      <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
                       <PlateVisualization
                         plateType={plateType}
                         wells={wells}
@@ -290,10 +306,18 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                         onExternalRangeDeselect={handleViewerRangeDeselect}
                       />
                     </div>
+                    <div className="download-panel">
+                      <div className="download-panel-title">Download</div>
+                      <div className="download-buttons">
+                        {onDownloadLayoutSVG && <button onClick={onDownloadLayoutSVG} className="download-btn">🖼 Layout SVG</button>}
+                        {onDownloadLayoutPNG && <button onClick={onDownloadLayoutPNG} disabled={downloadingPNG === 'layout'} className="download-btn">{downloadingPNG === 'layout' ? '… PNG' : '🖼 Layout PNG'}</button>}
+                        <button onClick={() => downloadTable(formattedSeedingSummary.length > 0 ? formattedSeedingSummary : seedingSummary, buildDownloadFilenameFromBase(exportBaseName, 'seeding_summary', 'csv'))} className="download-btn">📄 Seeding summary CSV</button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Right: Details Panel */}
-                  <div className="details-column">
+                  <div className="details-column" style={detailsColumnStyle}>
                     {selectedWells.size > 0 ? (() => {
                       const detailsByGroup = getSelectedDetails();
                       if (detailsByGroup.length === 0) {
@@ -328,15 +352,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={() => downloadTable(
-                    formattedSeedingSummary.length > 0 ? formattedSeedingSummary : seedingSummary,
-                    buildDownloadFilenameFromBase(exportBaseName, 'seeding_summary', 'csv')
-                  )}
-                  className="download-btn secondary"
-                >
-                  📥 Download as CSV
-                </button>
               </>
             ) : (
               <p className="empty-state">No seeding summary available</p>
@@ -408,7 +423,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             <>
               <div className="seeding-summary-container">
                 {/* Left: Plate */}
-                <div className="plate-column">
+                <div className="plate-column" ref={plateColumnRef}>
                   <div className="plate-viewer-container">
                     <div className="plate-header-info">
                       <PlateNavigationChip currentPlate={currentPlate} numPlates={numPlates} />
@@ -443,10 +458,18 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                       onExternalRangeDeselect={handleViewerRangeDeselect}
                     />
                   </div>
+                    <div className="download-panel">
+                      <div className="download-panel-title">Download</div>
+                      <div className="download-buttons">
+                        {onDownloadDyeSVG && <button onClick={onDownloadDyeSVG} className="download-btn">🖼 Dye figure SVG</button>}
+                        {onDownloadDyePNG && <button onClick={onDownloadDyePNG} disabled={downloadingPNG === 'dye'} className="download-btn">{downloadingPNG === 'dye' ? '… PNG' : '🖼 Dye figure PNG'}</button>}
+                        <button onClick={() => downloadTable(formattedDyeSummary.length > 0 ? formattedDyeSummary : dyeSummary, buildDownloadFilenameFromBase(exportBaseName, 'dye_program_summary', 'csv'))} className="download-btn">📄 Dye summary CSV</button>
+                      </div>
+                    </div>
                 </div>
 
                 {/* Right: Dye details */}
-                <div className="details-column">
+                <div className="details-column" style={detailsColumnStyle}>
                   {selectedWells.size > 0 ? (
                     dyeDetails.length === 0 ? (
                       <div className="details-empty"><p>No dye data found for selected wells</p></div>
@@ -476,15 +499,6 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                   )}
                 </div>
               </div>
-              <button
-                onClick={() => downloadTable(
-                  formattedDyeSummary.length > 0 ? formattedDyeSummary : dyeSummary,
-                  buildDownloadFilenameFromBase(exportBaseName, 'dye_program_summary', 'csv')
-                )}
-                className="download-btn secondary"
-              >
-                📥 Download as CSV
-              </button>
             </>
           );
         })()}

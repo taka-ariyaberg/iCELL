@@ -60,7 +60,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
   const mergedInputStyle = useMemo<React.CSSProperties | undefined>(() => {
     return {
       ...(inputStyle ?? {}),
-      paddingRight: '2.9rem',
+      paddingRight: '2.4rem',
     };
   }, [inputStyle]);
 

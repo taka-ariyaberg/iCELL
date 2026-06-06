@@ -134,6 +134,10 @@ class IMetaBuilderTests(unittest.TestCase):
                 "plate_id",
                 "well",
                 "group",
+                "cell_line",
+                "cell_modification",
+                "passage",
+                "viability_percent",
                 "seeding_density_cells_per_well",
                 "stock_cell_suspension_concentration_cells/mL",
                 "working_cell_suspension_concentration_cells/mL",
@@ -225,6 +229,10 @@ class IMetaBuilderTests(unittest.TestCase):
                 "plate_number",
                 "well",
                 "group",
+                "cell_line",
+                "cell_modification",
+                "passage",
+                "viability_percent",
                 "seeding_density_cells_per_well",
                 "stock_cell_suspension_concentration_cells/mL",
                 "working_cell_suspension_concentration_cells/mL",
@@ -237,6 +245,70 @@ class IMetaBuilderTests(unittest.TestCase):
         self.assertEqual(imeta_df.iloc[0]["well"], "B10")
         self.assertEqual(imeta_df.iloc[0]["plate_number"], 2)
         self.assertEqual(imeta_df.iloc[0]["group"], "")
+
+    def test_cell_metadata_columns_populate_from_cell_groups(self) -> None:
+        config = {
+            "project": {"name": "iCELL", "plate_id": "P1", "run_name": "P1", "seeding_date": "2026-06-06"},
+            "mode": "no_dye", "plate_type": "96_well", "num_plates": 1,
+            "seeding": {"final_well_volume_ul": 40.0, "stock_cell_concentration_cells_per_ml": 5_000_000, "overage_fraction": 0.3},
+            "dead_volume": {"cell_suspension_ul": 2000.0, "dye_ul": 500.0},
+            "cell_groups": {"Control": {"cell_line": "HeLa", "modification": "Wildtype", "passage": "P12", "viability_percent": "95"}},
+        }
+        seeded = pd.DataFrame([{
+            "plate_id": 1, "well": "P1-A1", "row": "A", "column": 1, "group": "Control",
+            "cells_per_well": 500, "dye_program": pd.NA,
+            "cell_suspension_dispense_ul_per_well": 40.0,
+            "required_cell_suspension_conc_cells_per_ml": 12_500.0,
+        }])
+        df = build_imeta_dataframe(config=config, seeded_layout_df=seeded)
+        cols = list(df.columns)
+        gi = cols.index("group")
+        self.assertEqual(cols[gi + 1: gi + 5], ["cell_line", "cell_modification", "passage", "viability_percent"])
+        r = df.iloc[0]
+        self.assertEqual(r["cell_line"], "HeLa")
+        self.assertEqual(r["cell_modification"], "Wildtype")
+        self.assertEqual(r["passage"], "P12")
+        self.assertEqual(r["viability_percent"], "95")
+
+    def test_cell_metadata_columns_empty_when_no_cell_groups(self) -> None:
+        config = {
+            "project": {"name": "iCELL", "plate_id": "P1", "run_name": "P1", "seeding_date": ""},
+            "mode": "no_dye", "plate_type": "96_well", "num_plates": 1,
+            "seeding": {"final_well_volume_ul": 40.0, "stock_cell_concentration_cells_per_ml": 5_000_000, "overage_fraction": 0.3},
+            "dead_volume": {"cell_suspension_ul": 2000.0, "dye_ul": 500.0},
+        }
+        seeded = pd.DataFrame([{
+            "plate_id": 1, "well": "P1-A1", "row": "A", "column": 1, "group": "Control",
+            "cells_per_well": 500, "dye_program": pd.NA,
+            "cell_suspension_dispense_ul_per_well": 40.0,
+            "required_cell_suspension_conc_cells_per_ml": 12_500.0,
+        }])
+        df = build_imeta_dataframe(config=config, seeded_layout_df=seeded)
+        self.assertIn("cell_line", df.columns)
+        self.assertEqual(df.iloc[0]["cell_line"], "")
+        self.assertEqual(df.iloc[0]["viability_percent"], "")
+
+    def test_numeric_columns_identical_with_and_without_cell_groups(self) -> None:
+        base = {
+            "project": {"name": "iCELL", "plate_id": "P1", "run_name": "P1", "seeding_date": ""},
+            "mode": "no_dye", "plate_type": "96_well", "num_plates": 1,
+            "seeding": {"final_well_volume_ul": 40.0, "stock_cell_concentration_cells_per_ml": 5_000_000, "overage_fraction": 0.3},
+            "dead_volume": {"cell_suspension_ul": 2000.0, "dye_ul": 500.0},
+        }
+        seeded = pd.DataFrame([{
+            "plate_id": 1, "well": "P1-A1", "row": "A", "column": 1, "group": "Control",
+            "cells_per_well": 500, "dye_program": pd.NA,
+            "cell_suspension_dispense_ul_per_well": 40.0,
+            "required_cell_suspension_conc_cells_per_ml": 12_500.0,
+        }])
+        without = build_imeta_dataframe(config=base, seeded_layout_df=seeded.copy())
+        with_meta = build_imeta_dataframe(
+            config={**base, "cell_groups": {"Control": {"cell_line": "HeLa", "modification": "WT", "passage": "P1", "viability_percent": "95"}}},
+            seeded_layout_df=seeded.copy(),
+        )
+        for c in ["seeding_density_cells_per_well", "cell_suspension_dispense_ul_per_well"]:
+            self.assertTrue((without[c].astype(str).values == with_meta[c].astype(str).values).all(),
+                            f"column {c} changed when cell_groups added")
 
 
 if __name__ == "__main__":

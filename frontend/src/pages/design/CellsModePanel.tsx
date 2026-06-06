@@ -11,6 +11,7 @@ interface CellsModePanelProps {
   isLoading: boolean;
   onAssignToGroup: () => void;
   onEditGroup: (name: string, currentDensity: number) => void;
+  onViewGroup: (name: string) => void;
 }
 
 /** Cells-mode side panel of the Design page: assign-to-group action,
@@ -26,6 +27,7 @@ export const CellsModePanel = ({
   isLoading,
   onAssignToGroup,
   onEditGroup,
+  onViewGroup,
 }: CellsModePanelProps) => (
   <>
     {selectedWellCount > 0 && (
@@ -47,6 +49,14 @@ export const CellsModePanel = ({
             <div key={name} className="group-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span className="group-label" style={{ backgroundColor: `${groupColors[name]}33`, color: groupColors[name] }}>{name}</span>
               <span className="group-density" style={{ flex: 1 }}>{groupCounts[name] || 0} wells • {def.density} cells/well</span>
+              <button
+                className="dye-edit-btn"
+                onClick={() => onViewGroup(name)}
+                style={{ background: 'rgba(120,138,153,0.12)', border: '1px solid rgba(120,138,153,0.35)',
+                  borderRadius: '3px', cursor: 'pointer', fontSize: '12px', padding: '2px 6px',
+                  lineHeight: 1, color: '#9fb0bf', fontWeight: 600 }}
+                title="View group details"
+              >View</button>
               <button
                 className="dye-edit-btn"
                 onClick={() => onEditGroup(name, def.density)}

@@ -1,6 +1,6 @@
 # iCELL Frontend
 
-React + TypeScript + Vite single-page app that talks to the FastAPI backend. The interactive plate designer and results page; same calculation engine as the notebook workflow (`src/icell/`).
+React + TypeScript + Vite single-page app that talks to the FastAPI backend. The interactive plate designer and results page; same calculation engine as the backend (`src/icell/`).
 
 ## Setup
 

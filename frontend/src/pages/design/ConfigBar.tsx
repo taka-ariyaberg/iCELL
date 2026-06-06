@@ -49,7 +49,12 @@ export const ConfigBar = ({
   onViewResults,
 }: ConfigBarProps) => {
   const modeBtn = (m: 'no_dye' | 'dye'): React.CSSProperties => ({
-    padding: '6px 12px',
+    minHeight: '44px',
+    boxSizing: 'border-box',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '0 14px',
     background: mode === m ? '#00b8ff' : '#1a1f2e',
     color: mode === m ? '#0f1419' : '#aaa',
     border: `1px solid ${mode === m ? '#00b8ff' : '#3a4857'}`,
@@ -76,6 +81,7 @@ export const ConfigBar = ({
             <div style={S.label}>Seeding Date</div>
             <input
               type="date"
+              className="config-date-input"
               value={seedingDate}
               onChange={(e) => {
                 setSeedingDate(e.target.value);

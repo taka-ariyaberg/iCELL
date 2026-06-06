@@ -2,23 +2,16 @@
 
 This example demonstrates iCELL with **cell seeding + dye staining**.
 
-## Setup
+## Usage
 
-1. Copy the CSV files from this directory to `data/input/`:
-   - `cell_layout.csv` - defines which wells get seeded and with how many cells
-   - `dye_layout.csv` - defines which wells get which dye program
-   - `meta_dye.csv` - defines the dye recipes and concentrations
+Start the web app with `bash scripts/start.sh` and open http://localhost:8080.
 
-2. Copy `config.json` from this directory to the project root `config/` directory
+Recreate this scenario in the Plate Designer UI:
 
-3. Update the config if needed:
-   - Change `stock_cell_concentration_cells_per_ml` to match your cell suspension
-   - Adjust `overage_fraction` if needed (default 30%)
-   - Set `project.plate_id` to the identifier you want to see in exports
-   - Optionally set `project.seeding_date`
-   - Update dye `meta_dye_csv` path if necessary
+- Define which wells get seeded and with how many cells.
+- Assign a dye program to the relevant wells and define the dye recipes/concentrations.
 
-4. Run the notebook!
+Then adjust the seeding parameters in the UI as needed (e.g. stock cell concentration to match your suspension, overage fraction, plate ID, seeding date) and run the calculation.
 
 ## Key Differences from Simple Seeding
 
@@ -31,7 +24,7 @@ This example demonstrates iCELL with **cell seeding + dye staining**.
 
 ## Expected Output
 
-The notebook will generate:
+The app will generate:
 - **Seeding summary table** - cell suspension volumes per concentration group
 - **Dye mastermix summary table** - dye volumes per dye program
 - **Cell and dye preparation instructions** - complete mixing steps

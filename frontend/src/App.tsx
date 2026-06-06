@@ -83,11 +83,24 @@ const App: React.FC = () => {
         }
       }
 
+      const usedGroupNames = new Set(Object.values(wells));
+      const groupDefinitions: Record<string, { cell_line: string; modification: string; passage: string; viability_percent: number }> = {};
+      Object.values(groups).forEach((g) => {
+        if (!usedGroupNames.has(g.name)) return;
+        groupDefinitions[g.name] = {
+          cell_line: g.cellLine ?? '',
+          modification: g.modification ?? '',
+          passage: g.passage ?? '',
+          viability_percent: g.viability ?? 0,
+        };
+      });
+
       const plateLayout: PlateLayoutInput = {
         well_positions: numericWells,
         well_groups: wells,
         dye_programs: receivedConfig.mode === 'dye' ? wellDyePrograms : undefined,
         meta_dye_programs: receivedConfig.mode === 'dye' ? metaDyePrograms : undefined,
+        group_definitions: Object.keys(groupDefinitions).length ? groupDefinitions : undefined,
       };
 
       console.log('📤 Sending to backend:', { config: receivedConfig, plateLayout });
