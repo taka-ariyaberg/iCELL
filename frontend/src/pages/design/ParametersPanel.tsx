@@ -58,7 +58,6 @@ export const ParametersPanel = ({
             onChange={(e) => setOveragePct(parseInt(e.target.value))} disabled={isLoading}
             onFocus={(e) => e.target.select()}
           />
-          <small>Extra volume to account for waste</small>
         </div>
         <div className="form-group">
           <label htmlFor="final_well_vol">Final Well Volume <Unit>(µL)</Unit></label>
@@ -67,11 +66,6 @@ export const ParametersPanel = ({
             onChange={(e) => setFinalWellVolume(parseInt(e.target.value))} disabled={isLoading}
             onFocus={(e) => e.target.select()}
           />
-          <small>
-            {mode === 'no_dye'
-              ? `All ${finalWellVolume} µL from cells`
-              : `Split: ${finalWellVolume / 2} µL cells + ${finalWellVolume / 2} µL dye mix`}
-          </small>
         </div>
         <div className="form-group">
           <label htmlFor="dead_vol_cells">Dead Volume – Cell Suspension <Unit>(µL)</Unit></label>
