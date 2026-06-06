@@ -3,6 +3,17 @@ import { create } from 'zustand';
 export interface GroupDefinition {
   name: string; // e.g. "Group 1", "Control", etc
   density: number; // cells per well
+  cellLine?: string;
+  modification?: string;
+  passage?: string;
+  viability?: number;
+}
+
+export interface CellMeta {
+  cellLine: string;
+  modification: string;
+  passage: string;
+  viability: number;
 }
 
 interface Snapshot {
@@ -46,14 +57,16 @@ export interface PlateState {
   clearSelection: () => void;
   captureSnapshot: () => void; // Push current state to history without any other change
 
-  createOrUpdateGroup: (groupName: string, density: number) => void; // Create group with seeding density
+  createOrUpdateGroup: (groupName: string, density: number, meta?: CellMeta) => void; // Create group with seeding density
   getActiveGroups: () => string[]; // Get groups that have wells assigned
   /** Atomic: assign wells to a group in one undo step, restoring previous selection on undo */
-  assignWellsToGroup: (groupName: string, density: number, wellsToAssign: Record<string, string>) => void;
+  assignWellsToGroup: (groupName: string, density: number, wellsToAssign: Record<string, string>, meta?: CellMeta) => void;
   /** Atomic rename: re-keys the group, updates GroupDefinition.name, rewrites referencing wells. */
   renameGroup: (oldName: string, newName: string) => void;
   /** Update the density of an existing group. No-op + console.error if the group is missing. */
   updateGroupDensity: (name: string, density: number) => void;
+  /** Replace the four cell-identity fields on an existing group. No-op + console.error if the group is missing. */
+  updateGroupMeta: (name: string, meta: CellMeta) => void;
 
   setDyeProgram: (well: string, program: string) => void;
   setMultipleDyePrograms: (programs: Record<string, string>) => void;
@@ -337,9 +350,9 @@ export const usePlateStore = create<PlateState>((set, get) => ({
       selectedWells: new Set(),
     }),
   
-  createOrUpdateGroup: (groupName, density) =>
+  createOrUpdateGroup: (groupName, density, meta) =>
     set((state) => {
-      const nextGroups = { ...state.groups, [groupName]: { name: groupName, density } };
+      const nextGroups = { ...state.groups, [groupName]: { name: groupName, density, ...(meta ?? {}) } };
       assertGroupsWellsInvariant({ groups: nextGroups, wells: state.wells });
       return {
         ...pushHistory(state),
@@ -347,9 +360,9 @@ export const usePlateStore = create<PlateState>((set, get) => ({
       };
     }),
 
-  assignWellsToGroup: (groupName, density, wellsToAssign) =>
+  assignWellsToGroup: (groupName, density, wellsToAssign, meta) =>
     set((state) => {
-      const nextGroups = { ...state.groups, [groupName]: { name: groupName, density } };
+      const nextGroups = { ...state.groups, [groupName]: { name: groupName, density, ...(meta ?? {}) } };
       const nextWells = { ...state.wells, ...wellsToAssign };
       assertGroupsWellsInvariant({ groups: nextGroups, wells: nextWells });
       return {
@@ -407,6 +420,26 @@ export const usePlateStore = create<PlateState>((set, get) => ({
       const nextGroups = {
         ...s.groups,
         [name]: { ...s.groups[name], density },
+      };
+      const next = {
+        ...pushHistory(s),
+        groups: nextGroups,
+      };
+      assertGroupsWellsInvariant({ groups: nextGroups, wells: s.wells });
+      return next;
+    });
+  },
+
+  updateGroupMeta: (name, meta) => {
+    const state = get();
+    if (!state.groups[name]) {
+      console.error('[plateStore] updateGroupMeta: group not found', name);
+      return;
+    }
+    set((s) => {
+      const nextGroups = {
+        ...s.groups,
+        [name]: { ...s.groups[name], ...meta },
       };
       const next = {
         ...pushHistory(s),

@@ -193,3 +193,28 @@ describe('updateGroupDensity', () => {
     expect(usePlateStore.getState().groups['A'].density).toBe(500);
   });
 });
+
+describe('cell metadata', () => {
+  it('assignWellsToGroup stores the four cell fields on the group', () => {
+    usePlateStore.setState({ wells: {}, groups: {}, history: [], future: [], selectedWells: new Set() });
+    usePlateStore.getState().assignWellsToGroup(
+      'Control', 500, { A1: 'Control' },
+      { cellLine: 'HeLa', modification: 'Wildtype', passage: 'P12', viability: 95 },
+    );
+    expect(usePlateStore.getState().groups['Control']).toEqual({
+      name: 'Control', density: 500,
+      cellLine: 'HeLa', modification: 'Wildtype', passage: 'P12', viability: 95,
+    });
+  });
+
+  it('updateGroupMeta replaces only the four cell fields, preserving name/density', () => {
+    usePlateStore.setState({
+      groups: { A: { name: 'A', density: 500, cellLine: 'X', modification: 'WT', passage: '1', viability: 90 } },
+      wells: { A1: 'A' }, history: [], future: [], selectedWells: new Set(),
+    });
+    usePlateStore.getState().updateGroupMeta('A', { cellLine: 'MCF7', modification: 'KO', passage: 'P3', viability: 88 });
+    expect(usePlateStore.getState().groups['A']).toEqual({
+      name: 'A', density: 500, cellLine: 'MCF7', modification: 'KO', passage: 'P3', viability: 88,
+    });
+  });
+});
