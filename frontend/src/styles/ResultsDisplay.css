@@ -59,6 +59,10 @@
   display: flex;
   flex-direction: column;
   max-height: 700px;
+  background-color: var(--icell-panel);
+  border: 1px solid var(--icell-border);
+  border-radius: var(--icell-radius-panel);
+  padding: 24px 20px;
 }
 
 .plate-header-info {
