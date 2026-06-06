@@ -2,24 +2,20 @@
 
 This example demonstrates iCELL with **cell seeding only** (no dye).
 
-## Setup
+## Usage
 
-1. Copy the CSV files from this directory to `data/input/`:
-   - `cell_layout.csv` - defines which wells get seeded and with how many cells
+Start the web app with `bash scripts/start.sh` and open http://localhost:8080.
 
-2. Copy `config.json` from this directory to the project root `config/` directory
+You can use this example in either of two ways:
 
-3. Update the config if needed:
-   - Change `stock_cell_concentration_cells_per_ml` to match your cell suspension
-   - Adjust `overage_fraction` if needed (default 30%)
-   - Set `project.plate_id` to the identifier you want to see in exports
-   - Optionally set `project.seeding_date`
+- **Load the CSV** — upload `cell_layout.csv` from this directory via the web app's CSV upload, which recreates the well layout for you.
+- **Recreate it by hand** — build the same layout in the Plate Designer UI, choosing which wells get seeded and with how many cells.
 
-4. Run the notebook!
+Then adjust the seeding parameters in the UI as needed (e.g. stock cell concentration to match your suspension, overage fraction, plate ID, seeding date) and run the calculation.
 
 ## Expected Output
 
-The notebook will generate:
+The app will generate:
 - **Seeding summary table** - how much cell suspension to prepare per cell concentration group
 - **Seeding instructions** - step-by-step mixing instructions
 - **iMETA.csv** - per-well metadata export for downstream use

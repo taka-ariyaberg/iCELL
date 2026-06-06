@@ -23,7 +23,6 @@ Other approaches you've thought through, and why they don't work as well.
 - [ ] Engine (`src/icell/`)
 - [ ] Backend (`backend/`)
 - [ ] Frontend (`frontend/`)
-- [ ] Notebook (`notebooks/`)
 - [ ] Docs / templates / config
 - [ ] CI / tooling
 
