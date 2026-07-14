@@ -137,6 +137,9 @@ export const DesignPage: React.FC<DesignPageProps> = ({
   // Keep effective plate type in sync
   const effectivePlateType = customPlate ? `${customRows},${customCols}` : plateType;
   const normalizedPlateType = effectivePlateType.replace('_well', '');
+  const plateTypeLabel = effectivePlateType.includes(',')
+    ? `${customRows}×${customCols}`
+    : `${normalizedPlateType}-well`;
 
   useEffect(() => {
     storeSetPlateType(normalizedPlateType);
@@ -510,8 +513,17 @@ export const DesignPage: React.FC<DesignPageProps> = ({
         <ConfirmProcessModal
           projectName={projectName}
           plateId={plateId}
-          plateType={plateType}
+          plateTypeLabel={plateTypeLabel}
           mode={mode}
+          numPlates={numPlates}
+          plateSize={plateSize}
+          assignedWellCount={Object.keys(wells).length}
+          seedingDate={seedingDate}
+          stockCellConcentration={stockCellConc}
+          overagePct={overagePct}
+          finalWellVolumeUl={finalWellVolume}
+          deadVolumeCellsUl={deadVolumeCells}
+          deadVolumeDyeUl={deadVolumeDye}
           groups={groups}
           groupCounts={groupCounts}
           savedPrograms={savedPrograms}

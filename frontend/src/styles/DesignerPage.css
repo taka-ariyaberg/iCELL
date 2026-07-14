@@ -465,6 +465,12 @@
   max-width: 600px;
 }
 
+/* Confirm Process modal can grow with many groups — keep it on-screen. */
+.modal-content--confirm {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
 @keyframes slideIn {
   from {
     transform: translateY(-20px);
@@ -630,6 +636,36 @@
   cursor: not-allowed;
 }
 
+/* ── Config bar ─────────────────────────────────────────────────────────────
+   Mirrors the .designer-layout grid so the divider between the setup fields and
+   the mode/results controls lands on the same vertical line as the plate/panel
+   border below it. Long Project / Plate ID names wrap within the left column
+   rather than pushing the divider off that line. */
+.config-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr);
+  gap: 0;
+  background-color: var(--icell-bg);
+  border-bottom: 1px solid var(--icell-border);
+}
+
+.config-bar-left {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  border-right: 1px solid var(--icell-border);
+}
+
+.config-bar-right {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+}
+
 @media (max-width: 1024px) {
   .designer-layout {
     grid-template-columns: 1fr;
@@ -644,6 +680,15 @@
   .controls-section {
     border-left: none;
     max-height: 400px;
+  }
+
+  .config-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .config-bar-left {
+    border-right: none;
+    border-bottom: 1px solid var(--icell-border);
   }
 }
 
