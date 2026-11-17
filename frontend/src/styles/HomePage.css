@@ -1,0 +1,495 @@
+/*
+ * Home page (start screen).
+ *
+ * Every selector is scoped under .home-page so nothing here reaches another
+ * page. The .home-page box keeps its original App.css rule (centred flex,
+ * min-height 60vh); this file only styles what sits inside it, so App.css
+ * stays untouched. Colours, radii and shadows come from the --icell-* tokens.
+ * @keyframes names are global, so they are prefixed home-.
+ */
+
+/* min-height 65vh balances the block on tall screens (e.g. 1080p) without
+   overflowing when the API-down banner is shown; on short screens the
+   content is taller than this anyway. */
+.home-page .home-shell {
+  width: 100%;
+  max-width: 1180px;
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+}
+
+.home-page .home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: center;
+  gap: clamp(32px, 4.5vw, 72px);
+}
+
+/* ── Hero copy ───────────────────────────────────────────── */
+
+.home-page .home-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.home-page .home-eyebrow {
+  margin: 0 0 14px;
+  color: var(--icell-accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.home-page .home-title {
+  margin: 0 0 16px;
+  color: var(--icell-text);
+  font-size: clamp(34px, 2.4vw + 6px, 50px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.home-page .home-title-accent {
+  color: var(--icell-accent);
+}
+
+.home-page .home-lead {
+  max-width: 36em;
+  margin: 0 0 28px;
+  color: var(--icell-text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ── Primary actions ─────────────────────────────────────── */
+
+.home-page .home-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+/*
+ * Each action is a card holding a real <button> (the title). The button's
+ * ::after stretches over the card, so the whole card is clickable while the
+ * accessible name stays the visible title (WCAG 2.5.3); the description is
+ * outside the button and linked with aria-describedby. The card's `color`
+ * sets the title colour.
+ */
+.home-page .home-action {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px 18px 18px;
+  border: 1px solid var(--icell-border-strong);
+  border-radius: var(--icell-radius-panel);
+  background: var(--icell-panel);
+  color: var(--icell-accent);
+  transition-property: transform, box-shadow, border-color, background-color;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Resets the global button rules in index.css (padding, border, background,
+   hover lift, `transition: all`) so the button reads as the card title. */
+.home-page .home-action-button,
+.home-page .home-action-button:hover {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+  color: inherit;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  transition: none;
+}
+
+.home-page .home-action-button::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--icell-radius-panel);
+}
+
+/* The focus ring is drawn on the stretched ::after so it outlines the card. */
+.home-page .home-action-button:focus-visible {
+  outline: none;
+}
+
+.home-page .home-action-button:focus-visible::after {
+  outline: 2px solid var(--icell-accent);
+  outline-offset: 3px;
+}
+
+.home-page .home-action-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-page .home-action-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--icell-radius-control);
+  background: var(--icell-accent-soft);
+  color: var(--icell-accent);
+}
+
+.home-page .home-action-icon svg,
+.home-page .home-action-arrow svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.home-page .home-action-arrow {
+  flex: none;
+  color: var(--icell-text-dim);
+  transition-property: transform, color;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.home-page .home-action-desc {
+  margin: 0;
+  color: var(--icell-text-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Primary: accent fill with dark text (8.6:1 on #00b8ff, 5.0:1 on #0088cc). */
+.home-page .home-action--primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--icell-accent) 0%, var(--icell-accent-strong) 100%) border-box;
+  box-shadow: 0 10px 28px -16px rgba(0, 184, 255, 0.7);
+  color: var(--icell-bg-alt);
+}
+
+.home-page .home-action--primary .home-action-desc,
+.home-page .home-action--primary .home-action-arrow {
+  color: var(--icell-bg-alt);
+}
+
+.home-page .home-action--primary .home-action-desc {
+  font-weight: 500;
+}
+
+.home-page .home-action--primary .home-action-icon {
+  background: rgba(10, 14, 22, 0.16);
+  color: var(--icell-bg-alt);
+}
+
+.home-page .home-action:hover {
+  transform: translateY(-2px);
+  border-color: var(--icell-accent);
+  background-color: var(--icell-surface);
+  box-shadow: 0 12px 28px -16px rgba(0, 184, 255, 0.5);
+}
+
+.home-page .home-action--primary:hover {
+  border-color: transparent;
+  box-shadow: var(--icell-shadow-accent);
+}
+
+.home-page .home-action:hover .home-action-arrow {
+  transform: translateX(3px);
+}
+
+.home-page .home-action--secondary:hover .home-action-arrow {
+  color: var(--icell-accent);
+}
+
+.home-page .home-action:active {
+  transform: translateY(0) scale(0.985);
+  transition-duration: 80ms;
+}
+
+/* ── Plate preview ───────────────────────────────────────── */
+/* Mirrors the Plate Designer grid: bg-alt panel, faint accent bed,
+   rgba(255,255,255,.05) wells with a border-strong outline, accent labels. */
+
+.home-page .home-plate {
+  width: 100%;
+  max-width: 480px;
+  justify-self: end;
+  padding: 18px;
+  border: 1px solid var(--icell-border);
+  border-radius: var(--icell-radius-panel);
+  background: var(--icell-bg-alt);
+  box-shadow: var(--icell-shadow-panel);
+}
+
+.home-page .home-plate-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--icell-accent);
+}
+
+.home-page .home-plate-bed {
+  fill: var(--icell-accent);
+  fill-opacity: 0.03;
+}
+
+.home-page .home-plate-labels text {
+  fill: currentColor;
+  font-size: 9px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.home-page .home-plate-wells rect {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: var(--icell-border-strong);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.home-page .home-plate-fill {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Three groups, kept below the primary button's brightness so the actions
+   stay the strongest thing on the page. */
+.home-page .home-plate-fill--1 {
+  fill-opacity: 0.72;
+}
+
+.home-page .home-plate-fill--2 {
+  fill-opacity: 0.44;
+}
+
+.home-page .home-plate-fill--3 {
+  fill-opacity: 0.22;
+}
+
+/* The dispense head is only visible while the pass animates. */
+.home-page .home-plate-head {
+  opacity: 0;
+}
+
+/* ── Motion: dispense pass ───────────────────────────────── */
+/*
+ * 9 s loop. The head crosses the 12 columns in 1.65 s (11 steps of 150 ms,
+ * i.e. 18.333% of the cycle), and column N starts filling N × 150 ms in, so
+ * each column lights as the head reaches it. Wells hold, then clear in the
+ * same order. Only opacity and transform animate, inside a fixed-size SVG, so
+ * nothing reflows. Keep the 150 ms step, the 9 s cycle, 18.333% and 308px
+ * (11 steps × 28 user-unit pitch) in sync if any of them change.
+ * Without this block (reduced motion) the plate is static and fully mapped.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .home-page .home-plate-fill {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: home-well-fill 9s cubic-bezier(0.2, 0.8, 0.2, 1) infinite both;
+    animation-delay: calc(var(--col, 0) * 150ms);
+  }
+
+  .home-page .home-plate-head {
+    animation: home-head-pass 9s linear infinite both;
+  }
+}
+
+@keyframes home-well-fill {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  4% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  66% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  76% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes home-head-pass {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  2% {
+    opacity: 1;
+  }
+  18.333% {
+    opacity: 1;
+    transform: translateX(308px);
+  }
+  22% {
+    opacity: 0;
+    transform: translateX(308px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(308px);
+  }
+}
+
+/* ── Capability highlights ───────────────────────────────── */
+/* A divided row rather than boxed cards, so the actions stay the only
+   card-like elements on the page. */
+
+.home-page .home-capabilities {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--icell-border);
+  list-style: none;
+}
+
+.home-page .home-capability {
+  min-width: 0;
+  padding: 0 24px;
+  border-left: 1px solid var(--icell-border);
+}
+
+.home-page .home-capability:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.home-page .home-capability-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  color: var(--icell-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.home-page .home-capability-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--icell-radius-control);
+  background: var(--icell-accent-soft);
+  color: var(--icell-accent);
+}
+
+.home-page .home-capability-icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.home-page .home-capability-text {
+  margin: 0;
+  color: var(--icell-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (min-width: 1600px) {
+  .home-page .home-shell {
+    max-width: 1280px;
+  }
+
+  .home-page .home-plate {
+    max-width: 560px;
+  }
+
+  .home-page .home-lead {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 960px) {
+  .home-page .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page .home-plate {
+    justify-self: center;
+    max-width: 520px;
+  }
+
+  .home-page .home-capabilities {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 24px;
+  }
+
+  .home-page .home-capability:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-page .home-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page .home-capabilities {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page .home-capability {
+    padding: 0;
+    border-left: 0;
+  }
+}
+
+/* ── Reduced motion: no movement, no transitions ─────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page .home-action,
+  .home-page .home-action-arrow {
+    transition: none;
+  }
+
+  .home-page .home-action:hover,
+  .home-page .home-action:active,
+  .home-page .home-action:hover .home-action-arrow {
+    transform: none;
+  }
+}
