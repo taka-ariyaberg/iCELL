@@ -61,6 +61,7 @@ ignore_errors = true  # Phase 3 fixes; revisit then.
 # Pytest: discover tests/, run with verbose-on-failure formatting.
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]  # repo root, so tests can `import backend...` under the plain `pytest` entrypoint (CI)
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
