@@ -1,10 +1,10 @@
 # Pinned production install for the FastAPI app.
 # The pyproject.toml `dependencies` block declares the loose range
 # (`pandas>=2.0,<3`); this file pins the exact install for reproducibility.
-fastapi==0.104.1
-uvicorn==0.24.0
-python-multipart==0.0.6
+fastapi==0.163.1
+starlette==1.10.0
+uvicorn==0.54.0
+python-multipart==0.0.34
 numpy==1.26.4
 pandas==2.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
+pydantic==2.14.3
