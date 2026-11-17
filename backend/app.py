@@ -1,6 +1,7 @@
 """FastAPI application for iCELL App."""
 
 import os
+from contextlib import suppress
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -32,22 +33,38 @@ app.add_middleware(
 app.include_router(router)
 
 
-if FRONTEND_DIST.exists():
+def register_frontend(app: FastAPI, dist: Path) -> None:
+    """Serve the built frontend in ``dist``; other paths fall back to index.html."""
+    root = dist.resolve()
+    index = root / "index.html"
+
+    def serve_index() -> FileResponse:
+        # Without Cache-Control, browsers cache index.html heuristically and
+        # keep loading the previous build's hashed bundle after a rebuild.
+        return FileResponse(index, headers={"Cache-Control": "no-cache"})
+
     @app.get("/", include_in_schema=False)
     def serve_frontend_index():
-        return FileResponse(FRONTEND_DIST / "index.html")
-
+        return serve_index()
 
     @app.get("/{full_path:path}", include_in_schema=False)
     def serve_frontend_app(full_path: str):
         if full_path.startswith("api/"):
             raise HTTPException(status_code=404, detail="Not Found")
 
-        file_path = FRONTEND_DIST / full_path
-        if file_path.is_file():
-            return FileResponse(file_path)
+        # resolve() collapses ".." and absolute paths, so the containment check
+        # stops requests like /..%2F..%2Fetc/passwd from leaving dist. Paths the
+        # OS rejects (null bytes, over-long names) fall back to index.html too.
+        with suppress(OSError, ValueError):
+            file_path = (root / full_path).resolve()
+            if file_path != index and file_path.is_relative_to(root) and file_path.is_file():
+                return FileResponse(file_path)
 
-        return FileResponse(FRONTEND_DIST / "index.html")
+        return serve_index()
+
+
+if FRONTEND_DIST.exists():
+    register_frontend(app, FRONTEND_DIST)
 else:
     @app.get("/")
     def root():
