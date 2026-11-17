@@ -44,7 +44,7 @@ def _load_plate_matrix_csv(path: str) -> pd.DataFrame:
     if len(normalized_cols) != len(set(normalized_cols)):
         raise ValueError(f"Duplicate plate columns found: {normalized_cols}")
 
-    rename_map = {old: new for old, new in zip(plate_cols, normalized_cols)}
+    rename_map = {old: new for old, new in zip(plate_cols, normalized_cols, strict=True)}
     df.rename(columns=rename_map, inplace=True)
 
     return df

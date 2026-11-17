@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime
 import re
+from datetime import datetime
 
 
 def sanitize_filename_part(value: object, default: str) -> str:

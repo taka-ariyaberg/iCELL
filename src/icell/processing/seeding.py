@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+
 import pandas as pd
 
 
@@ -69,7 +70,7 @@ def summarize_seeding_groups(
         if not isinstance(group_key, tuple):
             group_key = (group_key,)
 
-        row = {col: val for col, val in zip(group_cols, group_key)}
+        row = {col: val for col, val in zip(group_cols, group_key, strict=True)}
         group_df = group_df.sort_values(["row", "column"]).reset_index(drop=True)
 
         row["n_wells"] = int(len(group_df))
