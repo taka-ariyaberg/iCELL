@@ -63,13 +63,16 @@ describe('HomePage', () => {
     expect(onNewProject).not.toHaveBeenCalled();
   });
 
-  it('names actions by their titles and hides the decorative plate', () => {
+  it('names actions by their visible titles and hides the decorative plate', () => {
     const html = renderToStaticMarkup(
       React.createElement(HomePage, { onNewProject: () => {}, onImportFiles: () => {} }),
     );
-    expect(html).toMatch(/aria-labelledby="home-action-new-title"/);
-    expect(html).toMatch(/<span id="home-action-new-title"[^>]*>New Project<\/span>/);
-    expect(html).toMatch(/<span id="home-action-import-title"[^>]*>Import Files<\/span>/);
+    // Button content is exactly the visible label (WCAG 2.5.3); the
+    // description lives outside the button and is linked by id.
+    expect(html).toMatch(/<button[^>]*aria-describedby="home-action-new-desc"[^>]*>New Project<\/button>/);
+    expect(html).toMatch(/<button[^>]*aria-describedby="home-action-import-desc"[^>]*>Import Files<\/button>/);
+    expect(html).toMatch(/<p id="home-action-new-desc"[^>]*>Design plate layout/);
+    expect(html).toMatch(/<p id="home-action-import-desc"[^>]*>Upload existing plate layouts/);
     expect(html).toContain('<div class="home-plate" aria-hidden="true">');
     expect(html.match(/<li class="home-capability">/g)).toHaveLength(4);
   });

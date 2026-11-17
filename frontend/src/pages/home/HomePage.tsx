@@ -52,24 +52,28 @@ interface HomeActionProps {
 }
 
 /**
- * One of the two start actions. The accessible name is just the title
- * ("New Project"); the longer text is attached as its description.
+ * One of the two start actions: a card whose real <button> is the title, so
+ * the accessible name is exactly the visible label ("New Project"). The
+ * description sits outside the button and is linked with aria-describedby.
+ * The button's ::after covers the whole card (HomePage.css), so the full card
+ * is the click target and carries the focus ring.
  */
 const HomeAction: React.FC<HomeActionProps> = ({ id, variant, title, description, icon, onClick }) => (
-  <button
-    type="button"
-    className={`home-action home-action--${variant}`}
-    onClick={onClick}
-    aria-labelledby={`${id}-title`}
-    aria-describedby={`${id}-desc`}
-  >
-    <span className="home-action-head">
+  <div className={`home-action home-action--${variant}`}>
+    <div className="home-action-head">
       <span className="home-action-icon" aria-hidden="true">{icon}</span>
-      <span id={`${id}-title`} className="home-action-title">{title}</span>
+      <button
+        type="button"
+        className="home-action-button"
+        onClick={onClick}
+        aria-describedby={`${id}-desc`}
+      >
+        {title}
+      </button>
       <span className="home-action-arrow" aria-hidden="true"><ArrowRightIcon /></span>
-    </span>
-    <span id={`${id}-desc`} className="home-action-desc">{description}</span>
-  </button>
+    </div>
+    <p id={`${id}-desc`} className="home-action-desc">{description}</p>
+  </div>
 );
 
 export const HomePage: React.FC<HomePageProps> = ({ onNewProject, onImportFiles }) => (
