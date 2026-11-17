@@ -6,8 +6,12 @@ import React from 'react';
  *
  * The inner wells (rows B–G, columns 2–11) are mapped in three groups by row
  * band; the edge wells stay empty. It is a single SVG with a fixed viewBox, so
- * it scales with its container and never changes size. It is a static
- * illustration that is not connected to the plate store.
+ * it scales with its container and never changes size. It is an illustration
+ * only, not connected to the plate store.
+ *
+ * Motion ("dispense pass", HomePage.css): a soft head sweeps across the
+ * columns and each mapped column lights up as it passes, staggered by the
+ * --col custom property. With reduced motion the plate is shown fully mapped.
  */
 
 const ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as const;
@@ -42,6 +46,14 @@ export const PlatePreview: React.FC = () => (
       height={VIEW_H}
       focusable="false"
     >
+      <defs>
+        <linearGradient id="home-plate-head-fill" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="currentColor" stopOpacity="0" />
+          <stop offset="0.5" stopColor="currentColor" stopOpacity="0.22" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
       <rect className="home-plate-bed" width={VIEW_W} height={VIEW_H} rx={6} />
 
       <g className="home-plate-labels">
@@ -65,8 +77,19 @@ export const PlatePreview: React.FC = () => (
         )}
       </g>
 
+      {/* Dispense head: starts over column 1 and travels to column 12. */}
+      <rect
+        className="home-plate-head"
+        x={wellX(0) - 5}
+        y={GRID_Y - 7}
+        width={WELL + 10}
+        height={ROWS.length * PITCH - (PITCH - WELL) + 14}
+        rx={7}
+        fill="url(#home-plate-head-fill)"
+      />
+
       {COLUMNS.filter(isMappedColumn).map((col) => (
-        <g key={`fill-${col}`} className="home-plate-column">
+        <g key={`fill-${col}`} className="home-plate-column" style={{ '--col': col } as React.CSSProperties}>
           {ROWS.map((row, r) => {
             const tone = toneForRow(r);
             return tone === 0 ? null : (

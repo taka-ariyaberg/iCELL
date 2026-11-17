@@ -261,6 +261,80 @@
   fill-opacity: 0.22;
 }
 
+/* The dispense head is only visible while the pass animates. */
+.home-page .home-plate-head {
+  opacity: 0;
+}
+
+/* ── Motion: dispense pass ───────────────────────────────── */
+/*
+ * 9 s loop. The head crosses the 12 columns in 1.65 s (11 steps of 150 ms,
+ * i.e. 18.333% of the cycle), and column N starts filling N × 150 ms in, so
+ * each column lights as the head reaches it. Wells hold, then clear in the
+ * same order. Only opacity and transform animate, inside a fixed-size SVG, so
+ * nothing reflows. Keep the 150 ms step, the 9 s cycle, 18.333% and 308px
+ * (11 steps × 28 user-unit pitch) in sync if any of them change.
+ * Without this block (reduced motion) the plate is static and fully mapped.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .home-page .home-plate-fill {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: home-well-fill 9s cubic-bezier(0.2, 0.8, 0.2, 1) infinite both;
+    animation-delay: calc(var(--col, 0) * 150ms);
+  }
+
+  .home-page .home-plate-head {
+    animation: home-head-pass 9s linear infinite both;
+  }
+}
+
+@keyframes home-well-fill {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  4% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  66% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  76% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes home-head-pass {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  2% {
+    opacity: 1;
+  }
+  18.333% {
+    opacity: 1;
+    transform: translateX(308px);
+  }
+  22% {
+    opacity: 0;
+    transform: translateX(308px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(308px);
+  }
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 
 @media (min-width: 1600px) {
