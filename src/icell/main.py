@@ -91,6 +91,8 @@ def run_icell(config_path: str | None = None) -> dict:
     )
 
     if bool(config["dye"]["enabled"]):
+        if meta_dye_df is None:  # always loaded above when dye mode is enabled
+            raise RuntimeError("Dye mode is enabled but meta_dye.csv was not loaded")
         dye_program_summary_df, dye_recipe_df = build_all_dye_recipes(
             merged_df=merged_df,
             meta_dye_df=meta_dye_df,

@@ -12,11 +12,12 @@ in their owning module.
 from __future__ import annotations
 
 import re
+from typing import Any
 
 import pandas as pd
 
 
-def _is_missing(value: object) -> bool:
+def _is_missing(value: Any) -> bool:
     try:
         return bool(pd.isna(value))
     except TypeError:
@@ -30,7 +31,7 @@ def _clean_text(value: object, default: str = "") -> str:
     return text if text else default
 
 
-def _to_float(value: object, default: float = 0.0) -> float:
+def _to_float(value: Any, default: float = 0.0) -> float:
     if _is_missing(value):
         return default
     return float(value)

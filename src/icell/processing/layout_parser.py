@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import pandas as pd
 
 
@@ -19,7 +21,7 @@ def _load_plate_matrix_csv(path: str) -> pd.DataFrame:
 
     df = df.copy()
     df.rename(columns={df.columns[0]: "row_name"}, inplace=True)
-    df["row_name"] = df["row_name"].astype(str).str.strip().str.upper()
+    df["row_name"] = df["row_name"].astype("str").str.strip().str.upper()
 
     if df["row_name"].eq("").any():
         raise ValueError("row_name cannot be blank.")
@@ -62,7 +64,7 @@ def load_cell_layout_csv(path: str) -> pd.DataFrame:
     long_df["column"] = pd.to_numeric(long_df["column"], errors="raise").astype(int)
 
     non_empty = long_df["cells_per_well"].notna() & (
-        long_df["cells_per_well"].astype(str).str.strip() != ""
+        long_df["cells_per_well"].astype("str").str.strip() != ""
     )
     df = long_df.loc[non_empty].copy()
 
@@ -80,7 +82,7 @@ def load_cell_layout_csv(path: str) -> pd.DataFrame:
 
     df["row"] = df["row_name"]
     df["seed"] = 1
-    df["well"] = df["row"] + df["column"].astype(str)
+    df["well"] = df["row"] + df["column"].astype("str")
 
     if df["well"].duplicated().any():
         dupes = df.loc[df["well"].duplicated(keep=False), ["row", "column", "well"]]
@@ -105,16 +107,16 @@ def load_dye_layout_csv(path: str) -> pd.DataFrame:
     long_df["column"] = pd.to_numeric(long_df["column"], errors="raise").astype(int)
 
     non_empty = long_df["dye_program"].notna() & (
-        long_df["dye_program"].astype(str).str.strip() != ""
+        long_df["dye_program"].astype("str").str.strip() != ""
     )
     df = long_df.loc[non_empty].copy()
 
     if df.empty:
         return pd.DataFrame(columns=["row", "column", "dye_program", "well"])
 
-    df["dye_program"] = df["dye_program"].astype(str).str.strip()
+    df["dye_program"] = df["dye_program"].astype("str").str.strip()
     df["row"] = df["row_name"]
-    df["well"] = df["row"] + df["column"].astype(str)
+    df["well"] = df["row"] + df["column"].astype("str")
 
     if df["well"].duplicated().any():
         dupes = df.loc[df["well"].duplicated(keep=False), ["row", "column", "well"]]
@@ -133,7 +135,7 @@ def get_seeded_wells(df: pd.DataFrame) -> pd.DataFrame:
 
 def apply_well_groups(
     df: pd.DataFrame,
-    well_groups: dict[str, object] | None,
+    well_groups: dict[str, Any] | None,
 ) -> pd.DataFrame:
     if df.empty or not well_groups:
         return df
@@ -155,15 +157,15 @@ def apply_well_groups(
         return df
 
     grouped_df = df.copy()
-    exact_matches = grouped_df["well"].astype(str).map(normalized_groups)
-    base_wells = grouped_df["well"].astype(str).str.replace(r"^P\d+-", "", regex=True)
+    exact_matches = grouped_df["well"].astype("str").map(normalized_groups)
+    base_wells = grouped_df["well"].astype("str").str.replace(r"^P\d+-", "", regex=True)
     fallback_matches = base_wells.map(normalized_groups)
     resolved_groups = exact_matches.combine_first(fallback_matches)
 
     if "group" in grouped_df.columns:
         existing_groups = grouped_df["group"]
         has_existing_value = existing_groups.notna() & (
-            existing_groups.astype(str).str.strip() != ""
+            existing_groups.astype("str").str.strip() != ""
         )
         grouped_df.loc[~has_existing_value, "group"] = resolved_groups.loc[~has_existing_value]
     else:
@@ -196,7 +198,7 @@ def merge_cell_and_dye_layout(
             plate_df = merged.copy()
             plate_df["plate_id"] = plate_id
             # Update well names to include plate ID
-            plate_df["well"] = "P" + str(plate_id) + "-" + plate_df["well"].astype(str)
+            plate_df["well"] = "P" + str(plate_id) + "-" + plate_df["well"].astype("str")
             plate_dfs.append(plate_df)
         merged = pd.concat(plate_dfs, ignore_index=True)
     else:

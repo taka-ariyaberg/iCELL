@@ -137,10 +137,10 @@ def validate_meta_dye_df(df: pd.DataFrame) -> None:
     if df.empty:
         raise ValueError("meta_dye.csv is empty")
 
-    if df["dye_program"].astype(str).str.strip().eq("").any():
+    if df["dye_program"].astype("str").str.strip().eq("").any():
         raise ValueError("meta_dye.csv contains blank dye_program values")
 
-    if df["dye_name"].astype(str).str.strip().eq("").any():
+    if df["dye_name"].astype("str").str.strip().eq("").any():
         raise ValueError("meta_dye.csv contains blank dye_name values")
 
     if (pd.to_numeric(df["stock_concentration"], errors="coerce") <= 0).any():
@@ -151,8 +151,8 @@ def validate_meta_dye_df(df: pd.DataFrame) -> None:
 
 
 def validate_dye_programs_match(dye_layout_df: pd.DataFrame, meta_dye_df: pd.DataFrame) -> None:
-    layout_programs = set(dye_layout_df["dye_program"].astype(str).str.strip())
-    meta_programs = set(meta_dye_df["dye_program"].astype(str).str.strip())
+    layout_programs = set(dye_layout_df["dye_program"].astype("str").str.strip())
+    meta_programs = set(meta_dye_df["dye_program"].astype("str").str.strip())
 
     missing_in_meta = layout_programs - meta_programs
     if missing_in_meta:
