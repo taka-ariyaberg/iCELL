@@ -34,7 +34,7 @@ def build_formatted_seeding_summary_dataframe(
         column
         for column in ["group", "cell_line", "condition"]
         if column in seeding_summary_df.columns
-        and seeding_summary_df[column].astype(str).str.strip().ne("").any()
+        and seeding_summary_df[column].astype("str").str.strip().ne("").any()
     ]
 
     base_columns = [

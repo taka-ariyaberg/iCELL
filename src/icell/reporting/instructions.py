@@ -26,7 +26,7 @@ def build_cell_prep_instructions(
     lines.append("CELL SUSPENSION PREPARATION")
     lines.append("=" * 32)
 
-    for i, row in seeding_summary_df.reset_index(drop=True).iterrows():
+    for i, (_, row) in enumerate(seeding_summary_df.reset_index(drop=True).iterrows()):
         target_concentration = float(row["required_cell_suspension_conc_cells_per_ml"])
         total_volume_ul = float(row["total_cell_suspension_volume_ul"])
         cell_suspension_dispense_ul = float(row["cell_suspension_dispense_ul_per_well"])
@@ -116,7 +116,7 @@ def build_dye_prep_instructions(
     lines.append("DYE MASTERMIX PREPARATION")
     lines.append("=" * 26)
 
-    for i, summary_row in dye_program_summary_df.reset_index(drop=True).iterrows():
+    for i, (_, summary_row) in enumerate(dye_program_summary_df.reset_index(drop=True).iterrows()):
         dye_program = str(summary_row["dye_program"])
         n_wells = int(summary_row["n_wells"])
         wells = str(summary_row["wells"])

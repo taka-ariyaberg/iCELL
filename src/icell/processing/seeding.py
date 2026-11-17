@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 import math
+from typing import cast
 
 import pandas as pd
 
 
 def calculate_required_cell_suspension_concentration(
     cells_per_well: pd.Series,
-    cell_suspension_dispense_ul: float,
+    cell_suspension_dispense_ul: float | pd.Series,
 ) -> pd.Series:
     dispense = pd.to_numeric(cell_suspension_dispense_ul, errors="raise")
     if hasattr(dispense, "any"):
-        if (dispense <= 0).any():
+        if (cast(pd.Series, dispense) <= 0).any():
             raise ValueError("cell_suspension_dispense_ul must be > 0")
     elif dispense <= 0:
         raise ValueError("cell_suspension_dispense_ul must be > 0")
@@ -30,7 +31,7 @@ def add_seeding_calculations(
 
     if dye_enabled and "dye_program" in df.columns:
         has_dye_program = df["dye_program"].notna() & (
-            df["dye_program"].astype(str).str.strip() != ""
+            df["dye_program"].astype("str").str.strip() != ""
         )
         df["cell_suspension_dispense_ul_per_well"] = default_cell_suspension_dispense_ul
         df.loc[~has_dye_program, "cell_suspension_dispense_ul_per_well"] = final_well_volume_ul
