@@ -1,5 +1,13 @@
 import React from 'react';
-import { ArrowRightIcon, ImportFilesIcon, NewProjectIcon } from './HomeIcons';
+import {
+  ArrowRightIcon,
+  CsvFileIcon,
+  FlaskIcon,
+  HandoffIcon,
+  ImportFilesIcon,
+  NewProjectIcon,
+  PlateIcon,
+} from './HomeIcons';
 import { PlatePreview } from './PlatePreview';
 import '../../styles/HomePage.css';
 
@@ -9,6 +17,30 @@ interface HomePageProps {
   /** Opens the Import page (CSV uploader). */
   onImportFiles: () => void;
 }
+
+/** What iCELL does. Every line is sourced from README.md. */
+const CAPABILITIES: ReadonlyArray<{ title: string; text: string; icon: React.ReactNode }> = [
+  {
+    title: 'Interactive plate design',
+    text: 'Assign groups and dye programs well by well, right in the browser.',
+    icon: <PlateIcon />,
+  },
+  {
+    title: 'Per-well volumes & mastermix',
+    text: 'Dispense volumes for every well and total mastermix recipes from your seeding parameters.',
+    icon: <FlaskIcon />,
+  },
+  {
+    title: 'Machine-ready CSV exports',
+    text: 'Seeding and dye-program summaries as CSV, plus step-by-step preparation instructions.',
+    icon: <CsvFileIcon />,
+  },
+  {
+    title: 'Feeds iMETA directly',
+    text: 'iMETA.csv carries per-well metadata into iMETA without a manual reformat step.',
+    icon: <HandoffIcon />,
+  },
+];
 
 interface HomeActionProps {
   id: string;
@@ -77,6 +109,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNewProject, onImportFiles 
 
         <PlatePreview />
       </div>
+
+      <ul className="home-capabilities" aria-label="What iCELL does">
+        {CAPABILITIES.map(({ title, text, icon }) => (
+          <li key={title} className="home-capability">
+            <h3 className="home-capability-title">
+              <span className="home-capability-icon" aria-hidden="true">{icon}</span>
+              {title}
+            </h3>
+            <p className="home-capability-text">{text}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   </div>
 );
