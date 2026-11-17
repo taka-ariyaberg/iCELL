@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRightIcon, ImportFilesIcon, NewProjectIcon } from './HomeIcons';
+import { PlatePreview } from './PlatePreview';
 import '../../styles/HomePage.css';
 
 interface HomePageProps {
@@ -73,6 +74,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNewProject, onImportFiles 
             />
           </div>
         </div>
+
+        <PlatePreview />
       </div>
     </div>
   </div>

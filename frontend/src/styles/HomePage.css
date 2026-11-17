@@ -18,8 +18,9 @@
 
 .home-page .home-hero {
   display: grid;
-  grid-template-columns: minmax(0, 640px);
-  justify-content: center;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: center;
+  gap: clamp(32px, 4.5vw, 72px);
 }
 
 /* ── Hero copy ───────────────────────────────────────────── */
@@ -197,7 +198,95 @@
   outline-offset: 3px;
 }
 
+/* ── Plate preview ───────────────────────────────────────── */
+/* Mirrors the Plate Designer grid: bg-alt panel, faint accent bed,
+   rgba(255,255,255,.05) wells with a border-strong outline, accent labels. */
+
+.home-page .home-plate {
+  width: 100%;
+  max-width: 480px;
+  justify-self: end;
+  padding: 18px;
+  border: 1px solid var(--icell-border);
+  border-radius: var(--icell-radius-panel);
+  background: var(--icell-bg-alt);
+  box-shadow: var(--icell-shadow-panel);
+}
+
+.home-page .home-plate-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--icell-accent);
+}
+
+.home-page .home-plate-bed {
+  fill: var(--icell-accent);
+  fill-opacity: 0.03;
+}
+
+.home-page .home-plate-labels text {
+  fill: currentColor;
+  font-size: 9px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.home-page .home-plate-wells rect {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: var(--icell-border-strong);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.home-page .home-plate-fill {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Three groups, kept below the primary button's brightness so the actions
+   stay the strongest thing on the page. */
+.home-page .home-plate-fill--1 {
+  fill-opacity: 0.72;
+}
+
+.home-page .home-plate-fill--2 {
+  fill-opacity: 0.44;
+}
+
+.home-page .home-plate-fill--3 {
+  fill-opacity: 0.22;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
+
+@media (min-width: 1600px) {
+  .home-page .home-shell {
+    max-width: 1280px;
+  }
+
+  .home-page .home-plate {
+    max-width: 560px;
+  }
+
+  .home-page .home-lead {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 960px) {
+  .home-page .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page .home-plate {
+    justify-self: center;
+    max-width: 520px;
+  }
+}
 
 @media (max-width: 560px) {
   .home-page .home-actions {
