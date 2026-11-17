@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DesignPage } from './pages/design/DesignPage';
 import { ResultsPage } from './pages/results/ResultsPage';
+import { HomePage } from './pages/home/HomePage';
 import { CSVUploader } from './components/CSVUploader';
 import { usePlateStore } from './store/plateStore';
 import { runCalculation, uploadCSVFiles, ConfigInput, PlateLayoutInput, DyeProgramInput, CalculationResult, healthCheck } from './services/apiClient';
@@ -201,25 +202,10 @@ const App: React.FC = () => {
 
       <main className="app-content">
         {currentPage === 'home' && (
-          <div className="home-page">
-            <div className="mode-selector">
-              <button
-                className="mode-button"
-                onClick={() => setCurrentPage('design')}
-              >
-                <h3>New Project</h3>
-                <p>Design plate layout, assign groups and dye programs, then configure seeding parameters.</p>
-              </button>
-
-              <button
-                className="mode-button"
-                onClick={() => setCurrentPage('designer')}
-              >
-                <h3>Import Files</h3>
-                <p>Upload existing plate layouts for processing.</p>
-              </button>
-            </div>
-          </div>
+          <HomePage
+            onNewProject={() => setCurrentPage('design')}
+            onImportFiles={() => setCurrentPage('designer')}
+          />
         )}
 
         {/* DesignPage: always mounted once visited so local state is preserved */}
