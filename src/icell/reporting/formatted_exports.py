@@ -6,7 +6,6 @@ from icell import __version__
 from icell.reporting._format_utils import (
     _clean_text,
     _format_number,
-    _is_missing,
     _normalize_header_text,
     _to_float,
 )
