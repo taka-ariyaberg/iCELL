@@ -1,0 +1,221 @@
+/*
+ * Home page (start screen).
+ *
+ * Every selector is scoped under .home-page so nothing here reaches another
+ * page. The .home-page box keeps its original App.css rule (centred flex,
+ * min-height 60vh); this file only styles what sits inside it, so App.css
+ * stays untouched. Colours, radii and shadows come from the --icell-* tokens.
+ * @keyframes names are global, so they are prefixed home-.
+ */
+
+.home-page .home-shell {
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.home-page .home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 640px);
+  justify-content: center;
+}
+
+/* ── Hero copy ───────────────────────────────────────────── */
+
+.home-page .home-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.home-page .home-eyebrow {
+  margin: 0 0 14px;
+  color: var(--icell-accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.home-page .home-title {
+  margin: 0 0 16px;
+  color: var(--icell-text);
+  font-size: clamp(34px, 2.4vw + 6px, 50px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.home-page .home-title-accent {
+  color: var(--icell-accent);
+}
+
+.home-page .home-lead {
+  max-width: 36em;
+  margin: 0 0 28px;
+  color: var(--icell-text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ── Primary actions ─────────────────────────────────────── */
+
+.home-page .home-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+/* Overrides the global button rules in index.css (padding, colours, hover
+   lift and `transition: all`) with explicit, home-only values. */
+.home-page .home-action {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px 18px 18px;
+  border: 1px solid var(--icell-border-strong);
+  border-radius: var(--icell-radius-panel);
+  background: var(--icell-panel);
+  box-shadow: none;
+  color: var(--icell-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition-property: transform, box-shadow, border-color, background-color;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.home-page .home-action-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-page .home-action-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--icell-radius-control);
+  background: var(--icell-accent-soft);
+  color: var(--icell-accent);
+}
+
+.home-page .home-action-icon svg,
+.home-page .home-action-arrow svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.home-page .home-action-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--icell-accent);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.home-page .home-action-arrow {
+  flex: none;
+  color: var(--icell-text-dim);
+  transition-property: transform, color;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.home-page .home-action-desc {
+  color: var(--icell-text-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Primary: accent fill with dark text (8.6:1 on #00b8ff, 5.0:1 on #0088cc). */
+.home-page .home-action--primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--icell-accent) 0%, var(--icell-accent-strong) 100%) border-box;
+  box-shadow: 0 10px 28px -16px rgba(0, 184, 255, 0.7);
+}
+
+.home-page .home-action--primary .home-action-title,
+.home-page .home-action--primary .home-action-desc,
+.home-page .home-action--primary .home-action-arrow {
+  color: var(--icell-bg-alt);
+}
+
+.home-page .home-action--primary .home-action-desc {
+  font-weight: 500;
+}
+
+.home-page .home-action--primary .home-action-icon {
+  background: rgba(10, 14, 22, 0.16);
+  color: var(--icell-bg-alt);
+}
+
+.home-page .home-action:hover {
+  transform: translateY(-2px);
+  border-color: var(--icell-accent);
+  background-color: var(--icell-surface);
+  box-shadow: 0 12px 28px -16px rgba(0, 184, 255, 0.5);
+}
+
+.home-page .home-action--primary:hover {
+  border-color: transparent;
+  box-shadow: var(--icell-shadow-accent);
+}
+
+.home-page .home-action:hover .home-action-arrow {
+  transform: translateX(3px);
+}
+
+.home-page .home-action--secondary:hover .home-action-arrow {
+  color: var(--icell-accent);
+}
+
+.home-page .home-action:active {
+  transform: translateY(0) scale(0.985);
+  transition-duration: 80ms;
+}
+
+.home-page .home-action:focus-visible {
+  outline: 2px solid var(--icell-accent);
+  outline-offset: 3px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 560px) {
+  .home-page .home-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── Reduced motion: no movement, no transitions ─────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page .home-action,
+  .home-page .home-action-arrow {
+    transition: none;
+  }
+
+  .home-page .home-action:hover,
+  .home-page .home-action:active,
+  .home-page .home-action:hover .home-action-arrow {
+    transform: none;
+  }
+}
